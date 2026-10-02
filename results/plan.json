@@ -1,0 +1,941 @@
+{
+  "property_id": "tier3_lidar",
+  "tier": "lidar",
+  "timestamp": "2026-10-02T23:18:01.041623",
+  "processing_time_seconds": 0.02,
+  "drift_correction_applied": true,
+  "loop_closures_detected": 0,
+  "total_footprint_m2": {
+    "val": 59.01,
+    "ci_95": [
+      58.3,
+      59.72
+    ],
+    "unit": "m2"
+  },
+  "net_floor_area_m2": {
+    "val": 54.64,
+    "ci_95": [
+      53.98,
+      55.3
+    ],
+    "unit": "m2"
+  },
+  "overlaps_detected": false,
+  "rooms": [
+    {
+      "room_id": "connector_hall",
+      "name": "Central Hallway",
+      "polygon": [
+        [
+          -0.001,
+          -0.001
+        ],
+        [
+          1.501,
+          -0.001
+        ],
+        [
+          1.501,
+          4.203
+        ],
+        [
+          -0.001,
+          4.203
+        ]
+      ],
+      "floor_area_m2": {
+        "val": 6.31,
+        "ci_95": [
+          6.21,
+          6.41
+        ],
+        "unit": "m2"
+      },
+      "ceiling_height_m": {
+        "val": 2.701,
+        "ci_95": [
+          2.689,
+          2.713
+        ],
+        "unit": "m"
+      },
+      "walls": [
+        {
+          "wall_id": "connector_hall_w1",
+          "start_point": [
+            -0.001,
+            -0.001
+          ],
+          "end_point": [
+            1.501,
+            -0.001
+          ],
+          "length_m": {
+            "val": 1.502,
+            "ci_95": [
+              1.494,
+              1.51
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "connector_hall_w2",
+          "start_point": [
+            1.501,
+            -0.001
+          ],
+          "end_point": [
+            1.501,
+            4.203
+          ],
+          "length_m": {
+            "val": 4.204,
+            "ci_95": [
+              4.191,
+              4.217
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "door_to_living",
+              "type": "door",
+              "width_m": {
+                "val": 0.819,
+                "ci_95": [
+                  0.804,
+                  0.834
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.1,
+              "connected_room_id": "room_living"
+            },
+            {
+              "opening_id": "door_to_kitchen",
+              "type": "door",
+              "width_m": {
+                "val": 0.799,
+                "ci_95": [
+                  0.784,
+                  0.814
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.1,
+              "connected_room_id": "room_kitchen"
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "connector_hall_w3",
+          "start_point": [
+            1.501,
+            4.203
+          ],
+          "end_point": [
+            -0.001,
+            4.203
+          ],
+          "length_m": {
+            "val": 1.502,
+            "ci_95": [
+              1.494,
+              1.51
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "connector_hall_w4",
+          "start_point": [
+            -0.001,
+            4.203
+          ],
+          "end_point": [
+            -0.001,
+            -0.001
+          ],
+          "length_m": {
+            "val": 4.204,
+            "ci_95": [
+              4.191,
+              4.217
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "door_to_bedroom",
+              "type": "door",
+              "width_m": {
+                "val": 0.85,
+                "ci_95": [
+                  0.835,
+                  0.865
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.1,
+              "connected_room_id": "room_bedroom"
+            }
+          ],
+          "damage_regions": []
+        }
+      ],
+      "placed_polygon": [
+        [
+          -0.001,
+          -0.001
+        ],
+        [
+          1.501,
+          -0.001
+        ],
+        [
+          1.501,
+          4.203
+        ],
+        [
+          -0.001,
+          4.203
+        ]
+      ],
+      "transform": {
+        "rot_deg": 0.0,
+        "trans": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "room_id": "room_living",
+      "name": "Living Room",
+      "polygon": [
+        [
+          -0.001,
+          -0.001
+        ],
+        [
+          5.201,
+          -0.001
+        ],
+        [
+          5.201,
+          4.299
+        ],
+        [
+          -0.001,
+          4.299
+        ]
+      ],
+      "floor_area_m2": {
+        "val": 22.37,
+        "ci_95": [
+          22.1,
+          22.64
+        ],
+        "unit": "m2"
+      },
+      "ceiling_height_m": {
+        "val": 2.701,
+        "ci_95": [
+          2.689,
+          2.713
+        ],
+        "unit": "m"
+      },
+      "walls": [
+        {
+          "wall_id": "room_living_w1",
+          "start_point": [
+            -0.001,
+            -0.001
+          ],
+          "end_point": [
+            5.201,
+            -0.001
+          ],
+          "length_m": {
+            "val": 5.202,
+            "ci_95": [
+              5.186,
+              5.218
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "living_entry_door",
+              "type": "door",
+              "width_m": {
+                "val": 0.82,
+                "ci_95": [
+                  0.805,
+                  0.835
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.6,
+              "connected_room_id": "connector_hall"
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_living_w2",
+          "start_point": [
+            5.201,
+            -0.001
+          ],
+          "end_point": [
+            5.201,
+            4.299
+          ],
+          "length_m": {
+            "val": 4.3,
+            "ci_95": [
+              4.287,
+              4.313
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_living_w3",
+          "start_point": [
+            5.201,
+            4.299
+          ],
+          "end_point": [
+            -0.001,
+            4.299
+          ],
+          "length_m": {
+            "val": 5.202,
+            "ci_95": [
+              5.186,
+              5.218
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "living_window_south",
+              "type": "window",
+              "width_m": {
+                "val": 1.599,
+                "ci_95": [
+                  1.584,
+                  1.614
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 1.35,
+                "ci_95": [
+                  1.338,
+                  1.362
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.6,
+              "connected_room_id": null
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_living_w4",
+          "start_point": [
+            -0.001,
+            4.299
+          ],
+          "end_point": [
+            -0.001,
+            -0.001
+          ],
+          "length_m": {
+            "val": 4.3,
+            "ci_95": [
+              4.287,
+              4.313
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "placed_polygon": [
+        [
+          1.621,
+          4.702
+        ],
+        [
+          1.621,
+          -0.5
+        ],
+        [
+          5.921,
+          -0.5
+        ],
+        [
+          5.921,
+          4.702
+        ]
+      ],
+      "transform": {
+        "rot_deg": 270.0,
+        "trans": [
+          1.6220000000000006,
+          4.701
+        ]
+      }
+    },
+    {
+      "room_id": "room_bedroom",
+      "name": "Primary Bedroom",
+      "polygon": [
+        [
+          -0.001,
+          -0.001
+        ],
+        [
+          4.099,
+          -0.001
+        ],
+        [
+          4.099,
+          3.598
+        ],
+        [
+          -0.001,
+          3.598
+        ]
+      ],
+      "floor_area_m2": {
+        "val": 14.76,
+        "ci_95": [
+          14.58,
+          14.93
+        ],
+        "unit": "m2"
+      },
+      "ceiling_height_m": {
+        "val": 2.701,
+        "ci_95": [
+          2.689,
+          2.713
+        ],
+        "unit": "m"
+      },
+      "walls": [
+        {
+          "wall_id": "room_bedroom_w1",
+          "start_point": [
+            -0.001,
+            -0.001
+          ],
+          "end_point": [
+            4.099,
+            -0.001
+          ],
+          "length_m": {
+            "val": 4.1,
+            "ci_95": [
+              4.088,
+              4.112
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "bed_entry_door",
+              "type": "door",
+              "width_m": {
+                "val": 0.851,
+                "ci_95": [
+                  0.836,
+                  0.866
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.05,
+              "connected_room_id": "connector_hall"
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bedroom_w2",
+          "start_point": [
+            4.099,
+            -0.001
+          ],
+          "end_point": [
+            4.099,
+            3.598
+          ],
+          "length_m": {
+            "val": 3.599,
+            "ci_95": [
+              3.588,
+              3.61
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bedroom_w3",
+          "start_point": [
+            4.099,
+            3.598
+          ],
+          "end_point": [
+            -0.001,
+            3.598
+          ],
+          "length_m": {
+            "val": 4.1,
+            "ci_95": [
+              4.088,
+              4.112
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "bed_window_east",
+              "type": "window",
+              "width_m": {
+                "val": 1.399,
+                "ci_95": [
+                  1.384,
+                  1.414
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 1.2,
+                "ci_95": [
+                  1.188,
+                  1.212
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 2.05,
+              "connected_room_id": null
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_bedroom_w4",
+          "start_point": [
+            -0.001,
+            3.598
+          ],
+          "end_point": [
+            -0.001,
+            -0.001
+          ],
+          "length_m": {
+            "val": 3.599,
+            "ci_95": [
+              3.588,
+              3.61
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "placed_polygon": [
+        [
+          -0.121,
+          0.051
+        ],
+        [
+          -0.121,
+          4.151
+        ],
+        [
+          -3.72,
+          4.151
+        ],
+        [
+          -3.72,
+          0.051
+        ]
+      ],
+      "transform": {
+        "rot_deg": 90.0,
+        "trans": [
+          -0.12200000000000012,
+          0.052000000000000046
+        ]
+      }
+    },
+    {
+      "room_id": "room_kitchen",
+      "name": "Kitchen",
+      "polygon": [
+        [
+          -0.001,
+          -0.001
+        ],
+        [
+          3.499,
+          -0.001
+        ],
+        [
+          3.499,
+          3.198
+        ],
+        [
+          -0.001,
+          3.198
+        ]
+      ],
+      "floor_area_m2": {
+        "val": 11.2,
+        "ci_95": [
+          11.06,
+          11.33
+        ],
+        "unit": "m2"
+      },
+      "ceiling_height_m": {
+        "val": 2.701,
+        "ci_95": [
+          2.689,
+          2.713
+        ],
+        "unit": "m"
+      },
+      "walls": [
+        {
+          "wall_id": "room_kitchen_w1",
+          "start_point": [
+            -0.001,
+            -0.001
+          ],
+          "end_point": [
+            3.499,
+            -0.001
+          ],
+          "length_m": {
+            "val": 3.5,
+            "ci_95": [
+              3.49,
+              3.51
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [
+            {
+              "opening_id": "kitch_entry_door",
+              "type": "door",
+              "width_m": {
+                "val": 0.799,
+                "ci_95": [
+                  0.784,
+                  0.814
+                ],
+                "unit": "m"
+              },
+              "height_m": {
+                "val": 2.05,
+                "ci_95": [
+                  2.038,
+                  2.062
+                ],
+                "unit": "m"
+              },
+              "offset_along_wall_m": 1.75,
+              "connected_room_id": "connector_hall"
+            }
+          ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_kitchen_w2",
+          "start_point": [
+            3.499,
+            -0.001
+          ],
+          "end_point": [
+            3.499,
+            3.198
+          ],
+          "length_m": {
+            "val": 3.199,
+            "ci_95": [
+              3.189,
+              3.209
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_kitchen_w3",
+          "start_point": [
+            3.499,
+            3.198
+          ],
+          "end_point": [
+            -0.001,
+            3.198
+          ],
+          "length_m": {
+            "val": 3.5,
+            "ci_95": [
+              3.49,
+              3.51
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "room_kitchen_w4",
+          "start_point": [
+            -0.001,
+            3.198
+          ],
+          "end_point": [
+            -0.001,
+            -0.001
+          ],
+          "length_m": {
+            "val": 3.199,
+            "ci_95": [
+              3.189,
+              3.209
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.701,
+            "ci_95": [
+              2.689,
+              2.713
+            ],
+            "unit": "m"
+          },
+          "openings": [],
+          "damage_regions": []
+        }
+      ],
+      "placed_polygon": [
+        [
+          6.421,
+          -0.001
+        ],
+        [
+          9.921000000000001,
+          -0.001
+        ],
+        [
+          9.921000000000001,
+          3.198
+        ],
+        [
+          6.421,
+          3.198
+        ]
+      ],
+      "transform": {
+        "rot_deg": 0.0,
+        "trans": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "concealed_damage_flags": [],
+  "scope_line_items": [],
+  "total_estimated_restoration_cost": 0,
+  "device_matrix_reference": {
+    "tier": "lidar",
+    "compliance_gate": "PASSED"
+  }
+}

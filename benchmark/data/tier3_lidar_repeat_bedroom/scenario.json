@@ -6,20 +6,20 @@
       "name": "Primary Bedroom",
       "polygon": [
         [
-          0.0,
-          0.0
+          -0.001,
+          -0.001
         ],
         [
-          4.101,
-          0.0
+          4.099,
+          -0.001
         ],
         [
-          4.101,
-          3.597
+          4.099,
+          3.598
         ],
         [
-          0.0,
-          3.597
+          -0.001,
+          3.598
         ]
       ],
       "ceiling_height_m": 2.701,
@@ -28,7 +28,7 @@
           "opening_id": "bed_entry_door",
           "wall_index": 0,
           "type": "door",
-          "width_m": 0.85,
+          "width_m": 0.851,
           "height_m": 2.05,
           "connected_room_id": "connector_hall"
         },
@@ -36,7 +36,7 @@
           "opening_id": "bed_window_east",
           "wall_index": 2,
           "type": "window",
-          "width_m": 1.401,
+          "width_m": 1.399,
           "height_m": 1.2,
           "connected_room_id": null
         }

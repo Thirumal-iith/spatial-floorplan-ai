@@ -1,11 +1,12 @@
 {
-  "gate_evaluated": "photo_stitch_overlap_gate",
+  "gate": "photo_stitch_overlap_gate",
   "tier": "photos",
-  "status": "FAIL",
-  "failing_metric": {
-    "overlaps_detected": true,
-    "colliding_pairs": [["room_living", "room_kitchen"]],
-    "collision_area_m2": 3.42
-  },
-  "summary": "Photo tier whole-property stitch failed: room_living and room_kitchen collided due to portal normal orientation ambiguity."
+  "overlaps_detected": true,
+  "collision_count": 1,
+  "colliding_rooms": [
+    "room_living",
+    "room_kitchen"
+  ],
+  "gate_status": "FAIL",
+  "description": "Baseline algorithm lacks outward half-plane parity validation and collision relaxation."
 }
