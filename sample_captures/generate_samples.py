@@ -96,7 +96,48 @@ def generate_sample_damage_photo(file_path: str):
     print(f"[SAMPLE GENERATOR] Generated photo in {file_path}")
 
 
+def generate_sample_video(file_path: str, duration_sec: int = 4, fps: int = 15):
+    """
+    Generates a synthetic room walkthrough video panning across walls with damage.
+    """
+    import cv2
+    os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
+    w, h = 640, 480
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(file_path, fourcc, fps, (w, h))
+
+    total_frames = duration_sec * fps
+    for f in range(total_frames):
+        frame = np.ones((h, w, 3), dtype=np.uint8) * 235
+
+        # Pan offset simulates walking and looking horizontally
+        pan_x = int((f / total_frames) * 200)
+
+        # Baseboard
+        cv2.rectangle(frame, (0, h - 50), (w, h), (60, 85, 120), -1)
+
+        # Door frame moving into view
+        door_x = 100 - pan_x
+        if door_x > -150 and door_x < w:
+            cv2.rectangle(frame, (door_x, h - 350), (door_x + 120, h - 50), (180, 180, 180), 3)
+
+        # Water damage stain moving across
+        stain_x = 350 - pan_x
+        if stain_x > -100 and stain_x < w:
+            cv2.ellipse(frame, (stain_x, h - 100), (90, 45), 0, 0, 360, (70, 120, 170), -1)
+
+        # Add camera motion noise and texture
+        noise = np.random.normal(0, 3, (h, w, 3)).astype(np.int16)
+        frame_noisy = np.clip(frame.astype(np.int16) + noise, 0, 255).astype(np.uint8)
+
+        out.write(frame_noisy)
+
+    out.release()
+    print(f"[SAMPLE GENERATOR] Generated video in {file_path}")
+
+
 if __name__ == "__main__":
     generate_sample_ply_room("sample_captures/living_room_lidar.ply", 5.2, 4.3, 2.7, True, True)
     generate_sample_ply_room("sample_captures/bedroom_lidar.ply", 4.1, 3.6, 2.7, True, False)
     generate_sample_damage_photo("sample_captures/water_damage_wall.jpg")
+    generate_sample_video("sample_captures/room_walkthrough.mp4")

@@ -2,10 +2,10 @@
   "lidar": {
     "tier": "lidar",
     "wall_error_mean_pct": 0.05,
-    "opening_error_mean_cm": 0.09,
+    "opening_error_mean_cm": 0.11,
     "pct_openings_le_2cm": 100.0,
     "max_ceiling_error_cm": 0.1,
-    "footprint_error_pct": 0.07,
+    "footprint_error_pct": 0.0,
     "overlaps_detected": false,
     "gates": {
       "opening_widths_gate": "PASS",
@@ -25,11 +25,11 @@
   },
   "video": {
     "tier": "video",
-    "wall_error_mean_pct": 0.24,
-    "opening_error_mean_cm": 0.51,
+    "wall_error_mean_pct": 0.25,
+    "opening_error_mean_cm": 0.49,
     "pct_openings_le_2cm": 100.0,
     "max_ceiling_error_cm": 0.3,
-    "footprint_error_pct": 0.39,
+    "footprint_error_pct": 0.03,
     "overlaps_detected": false,
     "gates": {
       "wall_accuracy_gate": "PASS",
@@ -38,11 +38,11 @@
   },
   "photos": {
     "tier": "photos",
-    "wall_error_mean_pct": 0.62,
-    "opening_error_mean_cm": 1.34,
-    "pct_openings_le_2cm": 100.0,
+    "wall_error_mean_pct": 0.65,
+    "opening_error_mean_cm": 1.24,
+    "pct_openings_le_2cm": 87.5,
     "max_ceiling_error_cm": 10.0,
-    "footprint_error_pct": 1.02,
+    "footprint_error_pct": 0.1,
     "overlaps_detected": false,
     "gates": {
       "photo_stitch_overlap_gate": "PASS",
@@ -51,13 +51,13 @@
   },
   "drift_ablation": {
     "drift_correction_ON": {
-      "footprint_m2": 59.04,
-      "error_m2": 0.04,
+      "footprint_m2": 59.0,
+      "error_m2": 0.0,
       "residual_loop_drift_cm": 0.4
     },
     "drift_correction_OFF": {
-      "footprint_m2": 61.89,
-      "error_m2": 2.89,
+      "footprint_m2": 61.85,
+      "error_m2": 2.85,
       "residual_loop_drift_cm": 38.6
     },
     "gate": "PASS",

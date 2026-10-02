@@ -25,9 +25,11 @@ from pipeline.damage.concealed_engine import ConcealedDamageRuleEngine
 from pipeline.damage.scoping import RestorationScoper
 from pipeline.calibration.uncertainty import UncertaintyCalibrator
 from pipeline.rendering.plan_renderer import FloorPlanRenderer
+import zipfile
 from pipeline.ingestion.ply_parser import PointCloudParser
 from pipeline.geometry.pointcloud_pipeline import PointCloudProcessor
 from pipeline.ingestion.image_cv import ImageCVProcessor
+from pipeline.ingestion.video_cv import VideoProcessor
 
 
 class PipelineRunner:
@@ -45,6 +47,7 @@ class PipelineRunner:
         self.ply_parser = PointCloudParser()
         self.pc_processor = PointCloudProcessor()
         self.cv_processor = ImageCVProcessor()
+        self.video_processor = VideoProcessor()
 
     def process_capture(self, input_dir: str, tier: str = "lidar") -> Dict[str, Any]:
         """
@@ -237,8 +240,36 @@ class PipelineRunner:
                 room_obj = self.cv_processor.analyze_photo_set([input_dir], room_name=os.path.basename(input_dir))
                 damages = room_obj.get("detected_damages", [])
                 return [room_obj], damages, []
+            elif ext in (".mp4", ".mov", ".avi", ".mkv", ".webm"):
+                room_obj = self.video_processor.process_video_file(input_dir)
+                damages = room_obj.get("detected_damages", [])
+                raw_poses = [np.array(p) for p in room_obj.get("poses", [])]
+                return [room_obj], damages, raw_poses
+            elif ext == ".zip":
+                import tempfile
+                extract_path = tempfile.mkdtemp(prefix="capture_zip_")
+                with zipfile.ZipFile(input_dir, 'r') as zip_ref:
+                    zip_ref.extractall(extract_path)
+                return self._ingest_directory(extract_path, tier)
 
         # 2. Directory input handling
+        # Check for video files in directory
+        video_files = [
+            os.path.join(input_dir, f) for f in os.listdir(input_dir)
+            if f.lower().endswith((".mp4", ".mov", ".avi", ".mkv", ".webm"))
+        ]
+        if video_files:
+            rooms = []
+            all_damages = []
+            all_poses = []
+            for vf in video_files:
+                room_obj = self.video_processor.process_video_file(vf)
+                rooms.append(room_obj)
+                all_damages.extend(room_obj.get("detected_damages", []))
+                for p in room_obj.get("poses", []):
+                    all_poses.append(np.array(p))
+            return rooms, all_damages, all_poses
+
         # Check for .ply point cloud files in directory
         ply_files = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.lower().endswith((".ply", ".obj", ".xyz"))]
         if ply_files:

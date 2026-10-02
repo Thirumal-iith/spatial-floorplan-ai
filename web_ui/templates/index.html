@@ -351,6 +351,7 @@
       <div class="sample-pill-group">
         <button class="sample-pill active" onclick="loadSample('lidar_living', this)">LiDAR Room (.PLY)</button>
         <button class="sample-pill" onclick="loadSample('lidar_bedroom', this)">Bedroom (.PLY)</button>
+        <button class="sample-pill" onclick="loadSample('video_walkthrough', this)">Video (.MP4)</button>
         <button class="sample-pill" onclick="loadSample('multi_room', this)">Multi-Room Apt</button>
         <button class="sample-pill" onclick="loadSample('photo_damage', this)">Photo CV</button>
       </div>
@@ -455,22 +456,63 @@
       renderCurrentTab();
     }
 
-    async function handleFileUpload(event) {
-      const file = event.target.files[0];
+    async function processUploadedFile(file) {
       if (!file) return;
 
-      document.getElementById('svgViewport').innerHTML = `<p style="color: var(--text-muted)">Uploading & parsing ${file.name}...</p>`;
+      let tier = 'lidar';
+      const nameLower = file.name.toLowerCase();
+      if (nameLower.endsWith('.mp4') || nameLower.endsWith('.mov') || nameLower.endsWith('.avi') || nameLower.endsWith('.mkv')) {
+        tier = 'video';
+      } else if (nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg') || nameLower.endsWith('.png') || nameLower.endsWith('.heic')) {
+        tier = 'photos';
+      }
+
+      document.getElementById('svgViewport').innerHTML = `<p style="color: var(--accent-blue)">Ingesting & processing live ${tier.toUpperCase()} capture: <strong>${file.name}</strong>...</p>`;
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('tier', file.name.endsWith('.ply') ? 'lidar' : 'photos');
+      formData.append('tier', tier);
 
-      const res = await fetch('/api/upload-file', {
-        method: 'POST',
-        body: formData
-      });
-      planData = await res.json();
-      refreshSvg();
-      renderCurrentTab();
+      try {
+        const res = await fetch('/api/upload-file', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.error) {
+          alert('Upload Error: ' + data.error);
+          return;
+        }
+        planData = data;
+        refreshSvg();
+        renderCurrentTab();
+      } catch (err) {
+        alert('Processing failed: ' + err);
+      }
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      processUploadedFile(file);
+    }
+
+    function onDragOverZone(event) {
+      event.preventDefault();
+      event.currentTarget.style.borderColor = 'var(--accent-blue)';
+      event.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
+    }
+
+    function onDragLeaveZone(event) {
+      event.preventDefault();
+      event.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+      event.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+    }
+
+    function onDropZone(event) {
+      event.preventDefault();
+      onDragLeaveZone(event);
+      if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+        processUploadedFile(event.dataTransfer.files[0]);
+      }
     }
 
     function switchTab(tabId, el) {
@@ -527,17 +569,18 @@
           </div>
 
           <!-- File Upload Zone -->
-          <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-zone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOverZone(event)" ondragleave="onDragLeaveZone(event)" ondrop="onDropZone(event)">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom:0.4rem; color:var(--accent-blue);"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-            <p style="font-size:0.85rem; font-weight:700;">Drop your own .PLY point cloud or photo here</p>
-            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">Supports Record3D / Scaniverse / Polycam LiDAR exports (.ply, .obj) & photos (.jpg, .png)</p>
+            <p style="font-size:0.85rem; font-weight:700;">Drop your recorded video (.mp4), photo (.jpg), or point cloud (.ply) here</p>
+            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">Live processing of real video clips, smartphone photos, or LiDAR point clouds (.ply, .obj, .mp4, .jpg)</p>
             <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)">
           </div>
 
           <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
-            <strong>Test Pipeline Autonomously:</strong><br>
-            • Select any preset from top right (LiDAR .PLY, Bedroom .PLY, Multi-Room Apt, or Photo CV).<br>
-            • Or tune the room dimensions and water stain height above to watch the building code rules trigger live!
+            <strong>Test Pipeline on Live Captured Data:</strong><br>
+            • Drop any recorded room video (.mp4, .mov), smartphone photo (.jpg, .png), or LiDAR (.ply).<br>
+            • Quick test presets: LiDAR (.PLY), Bedroom (.PLY), Video Walkthrough (.MP4), Multi-Room Apt, Photo CV.<br>
+            • Or use the Live Room Simulator sliders above to test custom dimensions and concealed damage rules!
           </div>
         `;
       } else if (activeTab === "tabSpatial") {

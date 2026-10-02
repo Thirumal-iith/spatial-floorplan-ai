@@ -90,6 +90,7 @@ def load_sample_api():
     samples_map = {
         "lidar_living": (os.path.join(PROJECT_ROOT, "sample_captures", "living_room_lidar.ply"), "lidar"),
         "lidar_bedroom": (os.path.join(PROJECT_ROOT, "sample_captures", "bedroom_lidar.ply"), "lidar"),
+        "video_walkthrough": (os.path.join(PROJECT_ROOT, "sample_captures", "room_walkthrough.mp4"), "video"),
         "photo_damage": (os.path.join(PROJECT_ROOT, "sample_captures", "water_damage_wall.jpg"), "photos"),
         "multi_room": (os.path.join(PROJECT_ROOT, "benchmark", "data", "tier3_lidar"), "lidar"),
     }
@@ -120,6 +121,14 @@ def upload_file_api():
         return jsonify({"error": "Empty filename"}), 400
 
     tier = request.form.get("tier", "lidar")
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext in (".mp4", ".mov", ".avi", ".mkv", ".webm"):
+        tier = "video"
+    elif ext in (".jpg", ".jpeg", ".png", ".heic", ".bmp"):
+        tier = "photos"
+    elif ext in (".ply", ".obj", ".xyz", ".pts"):
+        tier = "lidar"
+
     upload_dir = os.path.join(PROJECT_ROOT, "uploads")
     os.makedirs(upload_dir, exist_ok=True)
     save_path = os.path.join(upload_dir, file.filename)

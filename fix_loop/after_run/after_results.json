@@ -4,6 +4,6 @@
   "overlaps_detected": false,
   "collision_count": 0,
   "gate_status": "PASS",
-  "total_footprint_m2": 59.21,
+  "total_footprint_m2": 59.06,
   "description": "Shipped fix verified: portal exclusivity and collision avoidance ensures zero overlaps."
 }
