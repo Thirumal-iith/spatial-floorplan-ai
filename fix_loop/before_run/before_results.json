@@ -1,0 +1,11 @@
+{
+  "gate_evaluated": "photo_stitch_overlap_gate",
+  "tier": "photos",
+  "status": "FAIL",
+  "failing_metric": {
+    "overlaps_detected": true,
+    "colliding_pairs": [["room_living", "room_kitchen"]],
+    "collision_area_m2": 3.42
+  },
+  "summary": "Photo tier whole-property stitch failed: room_living and room_kitchen collided due to portal normal orientation ambiguity."
+}

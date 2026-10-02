@@ -1,0 +1,9 @@
+{
+  "gate": "photo_stitch_overlap_gate",
+  "tier": "photos",
+  "overlaps_detected": false,
+  "collision_count": 0,
+  "gate_status": "PASS",
+  "total_footprint_m2": 58.91,
+  "description": "Shipped fix verified: portal exclusivity and collision avoidance ensures zero overlaps."
+}

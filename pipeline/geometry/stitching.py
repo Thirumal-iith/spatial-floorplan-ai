@@ -58,6 +58,7 @@ class MultiRoomStitcher:
         placed_rooms[start_id] = root_room
 
         adjacency_graph = {start_id: []}
+        used_portals = set()
 
         # Step 2: Iteratively align pending rooms through door portals
         max_iterations = len(room_data_list) * 2
@@ -69,13 +70,10 @@ class MultiRoomStitcher:
 
             for pending_id, pending_room in list(pending_rooms.items()):
                 # Find connection between pending_room and any already placed_room
-                matched = self._find_door_match(pending_room, placed_rooms)
+                matched = self._find_door_match(pending_room, placed_rooms, used_portals)
                 if matched:
-                    target_id, p_door, t_door = matched
-                    # Compute transform to align p_door with t_door
-                    aligned_poly, transform = self._align_room_to_portal(
-                        pending_room["polygon"], p_door, t_door, placed_rooms[target_id]["placed_polygon"]
-                    )
+                    target_id, p_door, t_door, aligned_poly, transform = matched
+                    used_portals.add((target_id, t_door.get("opening_id", "")))
                     
                     pending_room["placed_polygon"] = aligned_poly
                     pending_room["transform"] = transform
@@ -117,26 +115,76 @@ class MultiRoomStitcher:
             "adjacency_graph": adjacency_graph
         }
 
-    def _find_door_match(self, candidate_room: Dict, placed_rooms: Dict[str, Dict]) -> Optional[Tuple[str, Dict, Dict]]:
+    def _find_door_match(
+        self,
+        candidate_room: Dict,
+        placed_rooms: Dict[str, Dict],
+        used_portals: set
+    ) -> Optional[Tuple[str, Dict, Dict, List[List[float]], Dict]]:
         """
-        Finds compatible door opening between candidate room and placed rooms.
+        Finds compatible door opening between candidate room and placed rooms,
+        enforcing topological connection keys, portal exclusivity, and zero-collision placement.
         """
         cand_doors = self._extract_doors(candidate_room)
+        cand_rid = candidate_room.get("room_id", "")
+
         for target_id, target_room in placed_rooms.items():
             target_doors = self._extract_doors(target_room)
             for cd in cand_doors:
                 for td in target_doors:
-                    # Match if door widths are within 8cm or explicitly linked
-                    if abs(cd.get("width_m", 0.8) - td.get("width_m", 0.8)) < 0.10:
-                        return (target_id, cd, td)
+                    target_op_key = (target_id, td.get("opening_id", ""))
+                    if target_op_key in used_portals:
+                        continue
+
+                    # Topological matching: check explicit connection
+                    t_conn = td.get("connected_room_id")
+                    c_conn = cd.get("connected_room_id")
+                    if t_conn and t_conn != cand_rid:
+                        continue
+                    if c_conn and c_conn != target_id:
+                        continue
+
+                    # Dimension check (within 10cm)
+                    w_cd = cd["width_m"]["val"] if isinstance(cd.get("width_m"), dict) else cd.get("width_m", 0.8)
+                    w_td = td["width_m"]["val"] if isinstance(td.get("width_m"), dict) else td.get("width_m", 0.8)
+                    if abs(w_cd - w_td) > 0.10:
+                        continue
+
+                    # Test alignment
+                    aligned_poly, transform = self._align_room_to_portal(
+                        candidate_room["polygon"], cd, td, target_room["placed_polygon"]
+                    )
+
+                    # Verify no collision with any already placed room
+                    test_room = {"placed_polygon": aligned_poly}
+                    if not self._check_single_room_collision(test_room, list(placed_rooms.values())):
+                        return (target_id, cd, td, aligned_poly, transform)
+
         return None
+
+    def _check_single_room_collision(self, candidate_room: Dict, placed_rooms: List[Dict]) -> bool:
+        poly_a = np.array(candidate_room["placed_polygon"])
+        min_a = np.min(poly_a, axis=0)
+        max_a = np.max(poly_a, axis=0)
+
+        for pr in placed_rooms:
+            poly_b = np.array(pr["placed_polygon"])
+            min_b = np.min(poly_b, axis=0)
+            max_b = np.max(poly_b, axis=0)
+
+            # Check overlap margin
+            overlap_x = (min_a[0] < max_b[0] - 0.08) and (max_a[0] > min_b[0] + 0.08)
+            overlap_y = (min_a[1] < max_b[1] - 0.08) and (max_a[1] > min_b[1] + 0.08)
+
+            if overlap_x and overlap_y:
+                return True
+        return False
 
     def _extract_doors(self, room: Dict) -> List[Dict]:
         doors = []
         for wall in room.get("walls", []):
             for op in wall.get("openings", []):
                 if op.get("type") == "door":
-                    # Attach wall reference
                     op_copy = dict(op)
                     op_copy["wall_start"] = wall["start_point"]
                     op_copy["wall_end"] = wall["end_point"]
@@ -152,14 +200,23 @@ class MultiRoomStitcher:
     ) -> Tuple[List[List[float]], Dict]:
         """
         Computes 2D rigid transform aligning candidate door threshold with target door threshold.
+        Guarantees outward projection away from target room centroid (no interior intrusion).
         """
-        # Target portal center in world space
+        # Target portal center and direction in world space
         t_start = np.array(target_door.get("wall_start", [0.0, 0.0]))
         t_end = np.array(target_door.get("wall_end", [1.0, 0.0]))
         t_dir = (t_end - t_start)
         t_len = np.linalg.norm(t_dir)
         t_unit = t_dir / max(t_len, 1e-6)
+        
+        # Perpendicular normal
         t_normal = np.array([-t_unit[1], t_unit[0]])
+
+        # Verify outward parity relative to target centroid
+        t_centroid = np.mean(target_poly, axis=0)
+        target_center = (t_start + t_end) / 2.0
+        if np.dot(t_normal, target_center - t_centroid) < 0:
+            t_normal = -t_normal
 
         # Candidate portal in local space
         c_start = np.array(cand_door.get("wall_start", [0.0, 0.0]))
@@ -169,22 +226,21 @@ class MultiRoomStitcher:
         c_unit = c_dir / max(c_len, 1e-6)
         c_normal = np.array([-c_unit[1], c_unit[0]])
 
-        # Rotate candidate so candidate normal is anti-parallel to target normal
-        # i.e. facing outward into each other
+        # Verify candidate normal points away from candidate centroid
+        c_centroid = np.mean(poly, axis=0)
+        cand_center = (c_start + c_end) / 2.0
+        if np.dot(c_normal, cand_center - c_centroid) < 0:
+            c_normal = -c_normal
+
+        # Rotate candidate so candidate normal opposes target normal (facing each other across threshold)
         angle_target = np.arctan2(t_normal[1], t_normal[0])
         angle_cand = np.arctan2(c_normal[1], c_normal[0])
         rot_angle = (angle_target + np.pi) - angle_cand
 
-        # Normalize rotation
         cos_a, sin_a = np.cos(rot_angle), np.sin(rot_angle)
         R = np.array([[cos_a, -sin_a], [sin_a, cos_a]])
 
-        # Position offset: portal center + wall thickness
-        cand_center = (c_start + c_end) / 2.0
-        target_center = (t_start + t_end) / 2.0
-
         rotated_cand_center = R @ cand_center
-        # Doorway offset: step outward along target normal by wall thickness
         portal_contact = target_center + (t_normal * self.wall_thickness)
         translation = portal_contact - rotated_cand_center
 
@@ -208,16 +264,23 @@ class MultiRoomStitcher:
 
     def _detect_polygon_overlaps(self, rooms: List[Dict]) -> bool:
         """
-        Simple bounding box & centroid separation check to confirm no room interior collisions.
+        Precise bounding box & separation axis check to confirm no room interior collisions.
         """
         for i in range(len(rooms)):
             poly_a = np.array(rooms[i]["placed_polygon"])
-            c_a = np.mean(poly_a, axis=0)
+            min_a = np.min(poly_a, axis=0)
+            max_a = np.max(poly_a, axis=0)
+
             for j in range(i + 1, len(rooms)):
                 poly_b = np.array(rooms[j]["placed_polygon"])
-                c_b = np.mean(poly_b, axis=0)
-                # If centroids are nearly identical, overlap is detected
-                if np.linalg.norm(c_a - c_b) < 0.2:
+                min_b = np.min(poly_b, axis=0)
+                max_b = np.max(poly_b, axis=0)
+
+                # Check bounding box intersection with a tolerance margin of 0.05m
+                overlap_x = (min_a[0] < max_b[0] - 0.05) and (max_a[0] > min_b[0] + 0.05)
+                overlap_y = (min_a[1] < max_b[1] - 0.05) and (max_a[1] > min_b[1] + 0.05)
+
+                if overlap_x and overlap_y:
                     return True
         return False
 
