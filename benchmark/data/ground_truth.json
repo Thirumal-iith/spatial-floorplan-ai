@@ -133,8 +133,9 @@
       "staged_damages": [
         {
           "damage_id": "dmg_living_water_01",
+          "room_id": "room_living",
           "damage_class": "water_stain",
-          "wall_id": "living_w2",
+          "wall_id": "room_living_w2",
           "wall_index": 1,
           "extent_m2": 1.45,
           "location_on_surface": {
@@ -148,8 +149,9 @@
         },
         {
           "damage_id": "dmg_living_crack_01",
+          "room_id": "room_living",
           "damage_class": "drywall_crack",
-          "wall_id": "living_w4",
+          "wall_id": "room_living_w4",
           "wall_index": 3,
           "extent_m2": 0.35,
           "location_on_surface": {

@@ -73,8 +73,9 @@ def build_benchmark_dataset(base_dir: str = "benchmark/data"):
                 "staged_damages": [
                     {
                         "damage_id": "dmg_living_water_01",
+                        "room_id": "room_living",
                         "damage_class": "water_stain",
-                        "wall_id": "living_w2",
+                        "wall_id": "room_living_w2",
                         "wall_index": 1,
                         "extent_m2": 1.45,
                         "location_on_surface": {"u_min": 0.80, "u_max": 2.60, "v_min": 0.05, "v_max": 0.65},
@@ -83,8 +84,9 @@ def build_benchmark_dataset(base_dir: str = "benchmark/data"):
                     },
                     {
                         "damage_id": "dmg_living_crack_01",
+                        "room_id": "room_living",
                         "damage_class": "drywall_crack",
-                        "wall_id": "living_w4",
+                        "wall_id": "room_living_w4",
                         "wall_index": 3,
                         "extent_m2": 0.35,
                         "location_on_surface": {"u_min": 1.10, "u_max": 2.80, "v_min": 1.20, "v_max": 2.50},

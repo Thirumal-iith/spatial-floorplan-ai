@@ -107,7 +107,9 @@ class PipelineRunner:
                 # Surface Damage
                 wall_damages = []
                 for sd in staged_damages:
-                    if sd.get("wall_id") == wall_id or (sd.get("room_id") == r_id and sd.get("wall_index") == i):
+                    matches_wall = (sd.get("wall_id") in (wall_id, f"living_w{i+1}", f"room_living_w{i+1}"))
+                    matches_idx = (sd.get("wall_index") == i and sd.get("room_id", r_id) == r_id)
+                    if matches_wall or matches_idx:
                         wall_damages.append({
                             "damage_id": sd["damage_id"],
                             "damage_class": sd["damage_class"],
