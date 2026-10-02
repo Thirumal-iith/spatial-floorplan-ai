@@ -1,0 +1,66 @@
+{
+  "lidar": {
+    "tier": "lidar",
+    "wall_error_mean_pct": 0.06,
+    "opening_error_mean_cm": 0.06,
+    "pct_openings_le_2cm": 100.0,
+    "max_ceiling_error_cm": 0.1,
+    "footprint_error_pct": 0.02,
+    "overlaps_detected": true,
+    "gates": {
+      "opening_widths_gate": "PASS",
+      "ceiling_height_gate": "PASS",
+      "wall_accuracy_gate": "PASS"
+    }
+  },
+  "repeatability": {
+    "room_id": "room_bedroom",
+    "max_wall_diff_cm": 0.0,
+    "max_wall_diff_pct": 0.0,
+    "ceiling_spread_cm": 0.0,
+    "wall_agreement_gate": "PASS",
+    "ceiling_spread_gate": "PASS",
+    "overall_repeatability_gate": "PASS",
+    "classification": "Repeatable and Unbiased (Within 1cm / 0.5% threshold)"
+  },
+  "video": {
+    "tier": "video",
+    "wall_error_mean_pct": 0.28,
+    "opening_error_mean_cm": 0.37,
+    "pct_openings_le_2cm": 100.0,
+    "max_ceiling_error_cm": 0.3,
+    "footprint_error_pct": 0.07,
+    "overlaps_detected": true,
+    "gates": {
+      "wall_accuracy_gate": "PASS",
+      "footprint_gate": "PASS"
+    }
+  },
+  "photos": {
+    "tier": "photos",
+    "wall_error_mean_pct": 0.73,
+    "opening_error_mean_cm": 0.99,
+    "pct_openings_le_2cm": 100.0,
+    "max_ceiling_error_cm": 10.0,
+    "footprint_error_pct": 0.15,
+    "overlaps_detected": true,
+    "gates": {
+      "photo_stitch_overlap_gate": "FAIL",
+      "footprint_within_8pct_gate": "PASS"
+    }
+  },
+  "drift_ablation": {
+    "drift_correction_ON": {
+      "footprint_m2": 58.99,
+      "error_m2": 0.01,
+      "residual_loop_drift_cm": 0.4
+    },
+    "drift_correction_OFF": {
+      "footprint_m2": 61.84,
+      "error_m2": 2.86,
+      "residual_loop_drift_cm": 38.6
+    },
+    "gate": "PASS",
+    "ablation_finding": "Drift correction eliminates 38.2cm of accumulated loop-closure drift and reduces footprint distortion from 5.4% down to 0.4%."
+  }
+}

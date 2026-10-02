@@ -1,0 +1,281 @@
+{
+  "property_id": "benchmark_residence_01",
+  "description": "3 rooms plus central connector hallway with staged damage and repeat scans",
+  "ground_truth_instrument": "Leica DISTO D2 Laser Distance Meter (\u00b11.5mm accuracy)",
+  "rooms": {
+    "connector_hall": {
+      "name": "Central Hallway",
+      "polygon": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.5,
+          0.0
+        ],
+        [
+          1.5,
+          4.2
+        ],
+        [
+          0.0,
+          4.2
+        ]
+      ],
+      "ceiling_height_m": 2.7,
+      "floor_area_m2": 6.3,
+      "walls": [
+        {
+          "wall_id": "hall_w1",
+          "length_m": 1.5,
+          "openings": []
+        },
+        {
+          "wall_id": "hall_w2",
+          "length_m": 4.2,
+          "openings": [
+            {
+              "opening_id": "door_to_living",
+              "type": "door",
+              "width_m": 0.82,
+              "height_m": 2.05,
+              "connected_room": "room_living"
+            },
+            {
+              "opening_id": "door_to_kitchen",
+              "type": "door",
+              "width_m": 0.8,
+              "height_m": 2.05,
+              "connected_room": "room_kitchen"
+            }
+          ]
+        },
+        {
+          "wall_id": "hall_w3",
+          "length_m": 1.5,
+          "openings": []
+        },
+        {
+          "wall_id": "hall_w4",
+          "length_m": 4.2,
+          "openings": [
+            {
+              "opening_id": "door_to_bedroom",
+              "type": "door",
+              "width_m": 0.85,
+              "height_m": 2.05,
+              "connected_room": "room_bedroom"
+            }
+          ]
+        }
+      ]
+    },
+    "room_living": {
+      "name": "Living Room",
+      "polygon": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          5.2,
+          0.0
+        ],
+        [
+          5.2,
+          4.3
+        ],
+        [
+          0.0,
+          4.3
+        ]
+      ],
+      "ceiling_height_m": 2.7,
+      "floor_area_m2": 22.36,
+      "walls": [
+        {
+          "wall_id": "living_w1",
+          "length_m": 5.2,
+          "openings": [
+            {
+              "opening_id": "living_entry_door",
+              "type": "door",
+              "width_m": 0.82,
+              "height_m": 2.05,
+              "connected_room": "connector_hall"
+            }
+          ]
+        },
+        {
+          "wall_id": "living_w2",
+          "length_m": 4.3,
+          "openings": []
+        },
+        {
+          "wall_id": "living_w3",
+          "length_m": 5.2,
+          "openings": [
+            {
+              "opening_id": "living_window_south",
+              "type": "window",
+              "width_m": 1.6,
+              "height_m": 1.35
+            }
+          ]
+        },
+        {
+          "wall_id": "living_w4",
+          "length_m": 4.3,
+          "openings": []
+        }
+      ],
+      "staged_damages": [
+        {
+          "damage_id": "dmg_living_water_01",
+          "damage_class": "water_stain",
+          "wall_id": "living_w2",
+          "wall_index": 1,
+          "extent_m2": 1.45,
+          "location_on_surface": {
+            "u_min": 0.8,
+            "u_max": 2.6,
+            "v_min": 0.05,
+            "v_max": 0.65
+          },
+          "severity": "severe",
+          "ground_truth_note": "Staged water flooding staining baseboard and gypsum up to 0.65m AFF."
+        },
+        {
+          "damage_id": "dmg_living_crack_01",
+          "damage_class": "drywall_crack",
+          "wall_id": "living_w4",
+          "wall_index": 3,
+          "extent_m2": 0.35,
+          "location_on_surface": {
+            "u_min": 1.1,
+            "u_max": 2.8,
+            "v_min": 1.2,
+            "v_max": 2.5
+          },
+          "severity": "moderate",
+          "ground_truth_note": "Staged 3.5mm diagonal shear settlement crack."
+        }
+      ]
+    },
+    "room_bedroom": {
+      "name": "Primary Bedroom",
+      "polygon": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          4.1,
+          0.0
+        ],
+        [
+          4.1,
+          3.6
+        ],
+        [
+          0.0,
+          3.6
+        ]
+      ],
+      "ceiling_height_m": 2.7,
+      "floor_area_m2": 14.76,
+      "walls": [
+        {
+          "wall_id": "bed_w1",
+          "length_m": 4.1,
+          "openings": [
+            {
+              "opening_id": "bed_entry_door",
+              "type": "door",
+              "width_m": 0.85,
+              "height_m": 2.05,
+              "connected_room": "connector_hall"
+            }
+          ]
+        },
+        {
+          "wall_id": "bed_w2",
+          "length_m": 3.6,
+          "openings": []
+        },
+        {
+          "wall_id": "bed_w3",
+          "length_m": 4.1,
+          "openings": [
+            {
+              "opening_id": "bed_window_east",
+              "type": "window",
+              "width_m": 1.4,
+              "height_m": 1.2
+            }
+          ]
+        },
+        {
+          "wall_id": "bed_w4",
+          "length_m": 3.6,
+          "openings": []
+        }
+      ]
+    },
+    "room_kitchen": {
+      "name": "Kitchen",
+      "polygon": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          3.5,
+          0.0
+        ],
+        [
+          3.5,
+          3.2
+        ],
+        [
+          0.0,
+          3.2
+        ]
+      ],
+      "ceiling_height_m": 2.7,
+      "floor_area_m2": 11.2,
+      "walls": [
+        {
+          "wall_id": "kitch_w1",
+          "length_m": 3.5,
+          "openings": [
+            {
+              "opening_id": "kitch_entry_door",
+              "type": "door",
+              "width_m": 0.8,
+              "height_m": 2.05,
+              "connected_room": "connector_hall"
+            }
+          ]
+        },
+        {
+          "wall_id": "kitch_w2",
+          "length_m": 3.2,
+          "openings": []
+        },
+        {
+          "wall_id": "kitch_w3",
+          "length_m": 3.5,
+          "openings": []
+        },
+        {
+          "wall_id": "kitch_w4",
+          "length_m": 3.2,
+          "openings": []
+        }
+      ]
+    }
+  },
+  "total_ground_truth_footprint_m2": 59.0
+}
