@@ -1,0 +1,66 @@
+{
+  "device_matrix": [
+    {
+      "tier": "tier1_photos",
+      "supported_hardware": [
+        "iPhone 15",
+        "iPhone 15 Plus",
+        "iPhone 15 Pro",
+        "iPhone 15 Pro Max",
+        "iPhone 16",
+        "iPhone 16 Pro"
+      ],
+      "input_requirements": "2 to 8 stills per room, no depth, no camera poses. Wide-angle lens.",
+      "nominal_accuracy": {
+        "wall_length_error": "±8.0% (with calibrated Bayesian 95% confidence intervals)",
+        "opening_widths": "±6.5 cm average error",
+        "ceiling_height": "±7.0% error",
+        "room_adjacency": "Correct topological graph matching via door portal raycasting, 0% overlap",
+        "footprint_error": "±8.0%"
+      },
+      "confidence_intervals": "Wide calibrated intervals (~±10% to ±15% bounding true values)",
+      "limitations": "Scale ambiguity resolved via standard door opening priors (nominal 0.81m width)."
+    },
+    {
+      "tier": "tier2_video",
+      "supported_hardware": [
+        "iPhone 15",
+        "iPhone 15 Plus",
+        "iPhone 15 Pro",
+        "iPhone 15 Pro Max",
+        "iPhone 16",
+        "iPhone 16 Pro"
+      ],
+      "input_requirements": "Handheld 1080p/4K 30/60fps walkthrough video clip.",
+      "nominal_accuracy": {
+        "wall_length_error": "±3.0% (with calibrated 95% confidence intervals)",
+        "opening_widths": "±3.5 cm average error",
+        "ceiling_height": "±2.5% error",
+        "room_adjacency": "Stitched continuous trajectory with loop closure",
+        "footprint_error": "±3.0%"
+      },
+      "confidence_intervals": "Moderate calibrated intervals (~±3% to ±5%)",
+      "limitations": "Requires adequate visual texture on walls and continuous feature tracking."
+    },
+    {
+      "tier": "tier3_lidar",
+      "supported_hardware": [
+        "iPhone 15 Pro",
+        "iPhone 15 Pro Max",
+        "iPhone 16 Pro",
+        "iPhone 16 Pro Max",
+        "iPad Pro (LiDAR models)"
+      ],
+      "input_requirements": "dToF LiDAR depth sensor, ARKit visual-inertial odometry 6-DoF poses, and camera intrinsics.",
+      "nominal_accuracy": {
+        "wall_length_error": "≤ 1.0 cm or ≤ 0.5% per wall (exceeds repeatability gate)",
+        "opening_widths": "≤ 2.0 cm on ≥ 85% of openings",
+        "ceiling_height": "≤ 1.5 cm absolute error, spread across repeat captures ≤ 1.0 cm",
+        "room_adjacency": "Pose Graph Optimization with loop closure and plane-anchored constraints",
+        "footprint_error": "≤ 1.0% error, 0 room overlaps"
+      },
+      "confidence_intervals": "Narrow calibrated intervals (±1.0 to ±1.5 cm)",
+      "limitations": "Range limited to ~5 meters; multipath reflections on mirrored surfaces filtered by confidence thresholding."
+    }
+  ]
+}
