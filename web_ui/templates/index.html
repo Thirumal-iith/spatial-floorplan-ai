@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spatial AI Restoration & 3D Floor Plan Audit</title>
+  <title>Spatial AI Property Audit & 3D Reconstruction Engine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #090d16;
@@ -35,7 +35,7 @@
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
-      padding: 1rem 2rem;
+      padding: 0.85rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -53,69 +53,51 @@
       background: linear-gradient(135deg, var(--accent-indigo), var(--accent-blue));
       color: white;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       padding: 0.25rem 0.6rem;
       border-radius: 6px;
       letter-spacing: 0.05em;
     }
     .brand-title {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
 
-    .controls {
+    .top-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
-    .tier-selector {
+    .sample-pill-group {
       display: flex;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.25rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.2rem;
       border-radius: 8px;
       border: 1px solid var(--card-border);
+      gap: 0.2rem;
     }
-    .tier-btn {
+    .sample-pill {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 0.4rem 1rem;
-      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .tier-btn.active {
-      background: var(--accent-blue);
-      color: #0f172a;
-    }
-
-    .run-btn {
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
-      color: white;
-      border: none;
-      padding: 0.5rem 1.25rem;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
-      transition: transform 0.15s ease;
-    }
-    .run-btn:hover { transform: translateY(-1px); }
+    .sample-pill:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.08); }
+    .sample-pill.active { background: var(--accent-indigo); color: white; }
 
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 1.5rem;
-      padding: 1.5rem 2rem;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 1.25rem;
+      padding: 1.25rem 2rem;
     }
 
     .panel {
@@ -129,14 +111,15 @@
     }
 
     .panel-header {
-      padding: 1rem 1.25rem;
+      padding: 0.85rem 1.25rem;
       border-bottom: 1px solid var(--card-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255, 255, 255, 0.02);
     }
     .panel-title {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -148,7 +131,7 @@
 
     .viewport {
       flex: 1;
-      min-height: 580px;
+      min-height: 520px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -159,7 +142,7 @@
     .viewport svg {
       width: 100%;
       height: auto;
-      max-height: 600px;
+      max-height: 560px;
       border-radius: 8px;
       filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
     }
@@ -170,8 +153,8 @@
       background: rgba(255, 255, 255, 0.02);
     }
     .tab {
-      padding: 0.85rem 1.25rem;
-      font-size: 0.85rem;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
@@ -188,36 +171,105 @@
       padding: 1.25rem;
       flex: 1;
       overflow-y: auto;
-      max-height: 650px;
+      max-height: 620px;
     }
 
-    /* Cards & Lists */
+    /* Live Interactive Sandbox Controls */
+    .sandbox-box {
+      background: rgba(99, 102, 241, 0.07);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .sandbox-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .sandbox-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .ctrl-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+    .ctrl-slider {
+      width: 100%;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    /* Upload Dropzone */
+    .upload-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 1.2rem;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.25rem;
+    }
+    .upload-zone:hover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+      transition: transform 0.1s ease;
+    }
+    .btn-action:hover { transform: translateY(-1px); }
+
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
+      gap: 0.65rem;
+      margin-bottom: 1rem;
     }
     .metric-card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--card-border);
-      padding: 0.85rem;
+      padding: 0.75rem;
       border-radius: 8px;
     }
     .metric-lbl {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       font-weight: 600;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
     .metric-val {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--accent-blue);
       font-family: 'JetBrains Mono', monospace;
     }
     .metric-ci {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       margin-top: 0.2rem;
     }
@@ -225,20 +277,20 @@
     .damage-card {
       background: rgba(244, 63, 94, 0.08);
       border: 1px solid rgba(244, 63, 94, 0.3);
-      padding: 1rem;
+      padding: 0.85rem;
       border-radius: 8px;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.65rem;
     }
     .damage-title {
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--accent-rose);
       display: flex;
       justify-content: space-between;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
     }
     .damage-body {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #cbd5e1;
       line-height: 1.4;
     }
@@ -246,29 +298,29 @@
     .scope-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
     .scope-table th {
       text-align: left;
-      padding: 0.6rem 0.5rem;
+      padding: 0.5rem;
       color: var(--text-muted);
       border-bottom: 1px solid var(--card-border);
     }
     .scope-table td {
-      padding: 0.6rem 0.5rem;
+      padding: 0.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
     .scope-total {
       font-weight: 800;
       font-size: 0.95rem;
       color: var(--accent-emerald);
-      padding-top: 1rem;
+      padding-top: 0.85rem;
       text-align: right;
     }
 
     .badge {
       display: inline-block;
-      padding: 0.2rem 0.5rem;
+      padding: 0.2rem 0.45rem;
       border-radius: 4px;
       font-size: 0.7rem;
       font-weight: 700;
@@ -282,7 +334,7 @@
       font-family: 'JetBrains Mono', monospace;
       padding: 0.15rem 0.4rem;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
     }
   </style>
 </head>
@@ -294,17 +346,14 @@
       <h1 class="brand-title">Spatial AI Property Audit & Scoping Engine</h1>
     </div>
 
-    <div class="controls">
-      <div class="tier-selector">
-        <button class="tier-btn active" onclick="setTier('lidar', this)">LiDAR (Pro)</button>
-        <button class="tier-btn" onclick="setTier('video', this)">Video Clip</button>
-        <button class="tier-btn" onclick="setTier('photos', this)">Photos (2-8 stills)</button>
+    <div class="top-actions">
+      <!-- Quick Sample Loader -->
+      <div class="sample-pill-group">
+        <button class="sample-pill active" onclick="loadSample('lidar_living', this)">LiDAR Room (.PLY)</button>
+        <button class="sample-pill" onclick="loadSample('lidar_bedroom', this)">Bedroom (.PLY)</button>
+        <button class="sample-pill" onclick="loadSample('multi_room', this)">Multi-Room Apt</button>
+        <button class="sample-pill" onclick="loadSample('photo_damage', this)">Photo CV</button>
       </div>
-
-      <button class="run-btn" onclick="runPipeline()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        Execute Cold Scan
-      </button>
     </div>
   </header>
 
@@ -313,8 +362,8 @@
     <section class="panel">
       <div class="panel-header">
         <span class="panel-title">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/><path d="M14 4v16"/><path d="M4 10h16"/></svg>
-          Architectural Vector Floor Plan (Polycam / Magicplan Output)
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/><path d="M14 4v16"/><path d="M4 10h16"/></svg>
+          Architectural Floor Plan Output (Polycam / Magicplan Schema)
         </span>
         <span id="driftBadge" class="badge badge-pass">PGO LOOP CLOSURE: ACTIVE</span>
       </div>
@@ -326,7 +375,8 @@
     <!-- Right: Property Telemetry & AI Inspection -->
     <section class="panel">
       <div class="tabs">
-        <div class="tab active" onclick="switchTab('tabSpatial', this)">Spatial Metrics</div>
+        <div class="tab active" onclick="switchTab('tabSandbox', this)">Interactive Tester</div>
+        <div class="tab" onclick="switchTab('tabSpatial', this)">Spatial Metrics</div>
         <div class="tab" onclick="switchTab('tabConcealed', this)">Concealed Flags</div>
         <div class="tab" onclick="switchTab('tabScope', this)">Restoration Scope</div>
         <div class="tab" onclick="switchTab('tabGates', this)">Benchmark Gates</div>
@@ -339,50 +389,87 @@
   </main>
 
   <script>
-    let currentTier = "lidar";
+    let currentSample = "lidar_living";
     let planData = null;
     let benchData = null;
-    let activeTab = "tabSpatial";
+    let activeTab = "tabSandbox";
 
-    async function loadData() {
+    // Sandbox state
+    let sbWidth = 5.2;
+    let sbLength = 4.3;
+    let sbHeight = 2.7;
+    let sbWaterHeight = 0.65;
+    let sbHasDamage = true;
+
+    async function init() {
+      await loadSample('lidar_living', null);
+      fetchBenchmark();
+    }
+
+    async function fetchBenchmark() {
       try {
-        const [planRes, benchRes] = await Promise.all([
-          fetch(`/api/plan?tier=${currentTier}`),
-          fetch(`/api/benchmark`)
-        ]);
-        planData = await planRes.json();
-        benchData = await benchRes.json();
-        
-        // Load SVG floor plan
-        const svgRes = await fetch('/api/plan/svg');
-        const svgText = await svgRes.text();
-        document.getElementById('svgViewport').innerHTML = svgText;
+        const res = await fetch('/api/benchmark');
+        benchData = await res.json();
+      } catch (err) { console.error(err); }
+    }
 
-        renderCurrentTab();
-      } catch (err) {
-        console.error(err);
+    async function loadSample(sampleKey, btn) {
+      if (btn) {
+        document.querySelectorAll('.sample-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
       }
-    }
+      currentSample = sampleKey;
+      document.getElementById('svgViewport').innerHTML = '<p style="color: var(--text-muted)">Processing real 3D point cloud via RANSAC...</p>';
 
-    function setTier(tier, btn) {
-      document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTier = tier;
-      runPipeline();
-    }
-
-    async function runPipeline() {
-      document.getElementById('svgViewport').innerHTML = '<p style="color: var(--text-muted)">Executing 3D Plane Extraction & PGO Loop Closure...</p>';
-      const res = await fetch('/api/run-pipeline', {
+      const res = await fetch('/api/load-sample', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier: currentTier })
+        body: JSON.stringify({ sample: sampleKey })
       });
       planData = await res.json();
-      
-      const svgRes = await fetch('/api/plan/svg');
+      refreshSvg();
+      renderCurrentTab();
+    }
+
+    async function refreshSvg() {
+      const svgRes = await fetch('/api/plan/svg?t=' + Date.now());
       const svgText = await svgRes.text();
       document.getElementById('svgViewport').innerHTML = svgText;
+    }
+
+    async function runCustomSandbox() {
+      document.getElementById('svgViewport').innerHTML = '<p style="color: var(--text-muted)">Synthesizing 3D points & computing RANSAC planes...</p>';
+      const res = await fetch('/api/custom-sandbox', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          width_m: sbWidth,
+          length_m: sbLength,
+          height_m: sbHeight,
+          water_height_aff: sbWaterHeight,
+          has_damage: sbHasDamage
+        })
+      });
+      planData = await res.json();
+      refreshSvg();
+      renderCurrentTab();
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      document.getElementById('svgViewport').innerHTML = `<p style="color: var(--text-muted)">Uploading & parsing ${file.name}...</p>`;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('tier', file.name.endsWith('.ply') ? 'lidar' : 'photos');
+
+      const res = await fetch('/api/upload-file', {
+        method: 'POST',
+        body: formData
+      });
+      planData = await res.json();
+      refreshSvg();
       renderCurrentTab();
     }
 
@@ -396,11 +483,64 @@
     function renderCurrentTab() {
       const area = document.getElementById('tabContentArea');
       if (!planData) {
-        area.innerHTML = "<p>No data available</p>";
+        area.innerHTML = "<p>Loading data...</p>";
         return;
       }
 
-      if (activeTab === "tabSpatial") {
+      if (activeTab === "tabSandbox") {
+        area.innerHTML = `
+          <!-- Sandbox Controls -->
+          <div class="sandbox-box">
+            <div class="sandbox-title">
+              <span>LIVE ROOM SIMULATOR & PARAMETER TESTER</span>
+              <span style="font-size:0.75rem; color:#818cf8;">Dynamic 3D Synthesis</span>
+            </div>
+            
+            <div class="sandbox-row">
+              <div class="ctrl-group">
+                <div class="ctrl-lbl"><span>Width</span><span id="lblW">${sbWidth}m</span></div>
+                <input type="range" class="ctrl-slider" min="3.0" max="7.5" step="0.1" value="${sbWidth}" oninput="sbWidth=parseFloat(this.value); document.getElementById('lblW').innerText=this.value+'m';">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-lbl"><span>Length</span><span id="lblL">${sbLength}m</span></div>
+                <input type="range" class="ctrl-slider" min="3.0" max="7.0" step="0.1" value="${sbLength}" oninput="sbLength=parseFloat(this.value); document.getElementById('lblL').innerText=this.value+'m';">
+              </div>
+            </div>
+
+            <div class="sandbox-row">
+              <div class="ctrl-group">
+                <div class="ctrl-lbl"><span>Ceiling Height</span><span id="lblH">${sbHeight}m</span></div>
+                <input type="range" class="ctrl-slider" min="2.3" max="3.5" step="0.05" value="${sbHeight}" oninput="sbHeight=parseFloat(this.value); document.getElementById('lblH').innerText=this.value+'m';">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-lbl"><span>Water Stain Height AFF</span><span id="lblDmg">${sbWaterHeight}m</span></div>
+                <input type="range" class="ctrl-slider" min="0.1" max="1.2" step="0.05" value="${sbWaterHeight}" oninput="sbWaterHeight=parseFloat(this.value); document.getElementById('lblDmg').innerText=this.value+'m';">
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem;">
+              <label style="font-size:0.78rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+                <input type="checkbox" ${sbHasDamage ? 'checked' : ''} onchange="sbHasDamage=this.checked;"> Stage Water Contamination
+              </label>
+              <button class="btn-action" onclick="runCustomSandbox()">Simulate & Process Live</button>
+            </div>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom:0.4rem; color:var(--accent-blue);"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            <p style="font-size:0.85rem; font-weight:700;">Drop your own .PLY point cloud or photo here</p>
+            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">Supports Record3D / Scaniverse / Polycam LiDAR exports (.ply, .obj) & photos (.jpg, .png)</p>
+            <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)">
+          </div>
+
+          <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+            <strong>Test Pipeline Autonomously:</strong><br>
+            • Select any preset from top right (LiDAR .PLY, Bedroom .PLY, Multi-Room Apt, or Photo CV).<br>
+            • Or tune the room dimensions and water stain height above to watch the building code rules trigger live!
+          </div>
+        `;
+      } else if (activeTab === "tabSpatial") {
         let roomsHtml = planData.rooms.map(r => `
           <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 0.85rem; border-radius: 8px; margin-bottom: 0.75rem;">
             <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
@@ -408,7 +548,7 @@
               <span style="color: var(--accent-blue); font-family: monospace; font-weight:700;">${r.floor_area_m2.val} m² (CI: ${r.floor_area_m2.ci_95[0]} - ${r.floor_area_m2.ci_95[1]})</span>
             </div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">
-              Ceiling Height: <strong style="color: #f1f5f9;">${r.ceiling_height_m.val} m</strong> | Walls: ${r.walls.length} | Openings: ${r.walls.reduce((acc, w) => acc + w.openings.length, 0)}
+              Ceiling Height: <strong style="color: #f1f5f9;">${r.ceiling_height_m.val} m</strong> | Walls: ${r.walls.length} | Openings: ${r.walls.reduce((acc, w) => acc + (w.openings ? w.openings.length : 0), 0)}
             </div>
           </div>
         `).join('');
@@ -426,9 +566,9 @@
               <div class="metric-ci">Adjacency: Locked (0 Overlaps)</div>
             </div>
             <div class="metric-card">
-              <div class="metric-lbl">Processing Latency</div>
+              <div class="metric-lbl">Latency</div>
               <div class="metric-val">${planData.processing_time_seconds}s</div>
-              <div class="metric-ci">Cold Defense Execution</div>
+              <div class="metric-ci">Sub-second Processing</div>
             </div>
           </div>
           <h3 style="font-size: 0.85rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.6rem;">Dimensioned Room Geometry</h3>
@@ -502,7 +642,6 @@
         const rep = benchData.repeatability;
         const vid = benchData.video;
         const pho = benchData.photos;
-        const drift = benchData.drift_ablation;
 
         area.innerHTML = `
           <div style="font-size: 0.85rem; line-height: 1.6;">
@@ -539,7 +678,7 @@
       }
     }
 
-    loadData();
+    init();
   </script>
 </body>
 </html>

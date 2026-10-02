@@ -25,6 +25,9 @@ from pipeline.damage.concealed_engine import ConcealedDamageRuleEngine
 from pipeline.damage.scoping import RestorationScoper
 from pipeline.calibration.uncertainty import UncertaintyCalibrator
 from pipeline.rendering.plan_renderer import FloorPlanRenderer
+from pipeline.ingestion.ply_parser import PointCloudParser
+from pipeline.geometry.pointcloud_pipeline import PointCloudProcessor
+from pipeline.ingestion.image_cv import ImageCVProcessor
 
 
 class PipelineRunner:
@@ -39,6 +42,9 @@ class PipelineRunner:
         self.concealed_engine = ConcealedDamageRuleEngine()
         self.scoper = RestorationScoper()
         self.renderer = FloorPlanRenderer()
+        self.ply_parser = PointCloudParser()
+        self.pc_processor = PointCloudProcessor()
+        self.cv_processor = ImageCVProcessor()
 
     def process_capture(self, input_dir: str, tier: str = "lidar") -> Dict[str, Any]:
         """
@@ -73,60 +79,67 @@ class PipelineRunner:
         all_scope_items = []
 
         for r_raw in rooms_raw:
-            r_id = r_raw["room_id"]
+            r_id = r_raw.get("room_id", "room_01")
             name = r_raw.get("name", r_id)
             poly = r_raw.get("polygon", [[0,0], [4,0], [4,3], [0,3]])
-            nominal_height = r_raw.get("ceiling_height_m", 2.70)
+            raw_height = r_raw.get("ceiling_height_m", 2.70)
+            nominal_height = raw_height.get("val", 2.70) if isinstance(raw_height, dict) else float(raw_height)
             
             # Add synthetic depth noise if tier is photo or video without ground truth
             if tier == "photos":
                 nominal_height = round(nominal_height * 0.96, 2)
 
-            walls_processed = []
             n_pts = len(poly)
-            for i in range(n_pts):
-                p1 = poly[i]
-                p2 = poly[(i + 1) % n_pts]
-                w_len = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
-                wall_id = f"{r_id}_w{i+1}"
+            # If room already contains processed walls (e.g. from PointCloudProcessor), reuse them
+            if r_raw.get("walls"):
+                walls_processed = r_raw["walls"]
+            else:
+                walls_processed = []
+                for i in range(n_pts):
+                    p1 = poly[i]
+                    p2 = poly[(i + 1) % n_pts]
+                    w_len = ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5
+                    wall_id = f"{r_id}_w{i+1}"
 
-                # Openings on wall
-                wall_openings = []
-                for op in r_raw.get("openings", []):
-                    if op.get("wall_index") == i or op.get("wall_id") == wall_id:
-                        op_w = op.get("width_m", 0.82)
-                        wall_openings.append({
-                            "opening_id": op.get("opening_id", f"op_{wall_id}"),
-                            "type": op.get("type", "door"),
-                            "width_m": UncertaintyCalibrator.calibrate_opening_width(op_w, tier),
-                            "height_m": UncertaintyCalibrator.calibrate_ceiling_height(op.get("height_m", 2.05), tier),
-                            "offset_along_wall_m": round(w_len / 2.0, 2),
-                            "connected_room_id": op.get("connected_room_id")
-                        })
+                    # Openings on wall
+                    wall_openings = []
+                    for op in r_raw.get("openings", []):
+                        if op.get("wall_index") == i or op.get("wall_id") == wall_id:
+                            raw_op_w = op.get("width_m", 0.82)
+                            op_w = raw_op_w.get("val", 0.82) if isinstance(raw_op_w, dict) else float(raw_op_w)
+                            wall_openings.append({
+                                "opening_id": op.get("opening_id", f"op_{wall_id}"),
+                                "type": op.get("type", "door"),
+                                "width_m": UncertaintyCalibrator.calibrate_opening_width(op_w, tier),
+                                "height_m": UncertaintyCalibrator.calibrate_ceiling_height(op.get("height_m", 2.05), tier),
+                                "offset_along_wall_m": round(w_len / 2.0, 2),
+                                "connected_room_id": op.get("connected_room_id")
+                            })
 
-                # Surface Damage
-                wall_damages = []
-                for sd in staged_damages:
-                    matches_wall = (sd.get("wall_id") in (wall_id, f"living_w{i+1}", f"room_living_w{i+1}"))
-                    matches_idx = (sd.get("wall_index") == i and sd.get("room_id", r_id) == r_id)
-                    if matches_wall or matches_idx:
-                        wall_damages.append({
-                            "damage_id": sd["damage_id"],
-                            "damage_class": sd["damage_class"],
-                            "extent_m2": UncertaintyCalibrator.calibrate_area(sd["extent_m2"], tier),
-                            "location_on_surface": sd["location_on_surface"],
-                            "severity": sd.get("severity", "moderate")
-                        })
+                    # Surface Damage
+                    wall_damages = []
+                    for sd in staged_damages:
+                        matches_wall = (sd.get("wall_id") in (wall_id, f"living_w{i+1}", f"room_living_w{i+1}"))
+                        matches_idx = (sd.get("wall_index") == i and sd.get("room_id", r_id) == r_id)
+                        if matches_wall or matches_idx:
+                            ext_val = sd["extent_m2"].get("val", sd["extent_m2"]) if isinstance(sd["extent_m2"], dict) else float(sd["extent_m2"])
+                            wall_damages.append({
+                                "damage_id": sd["damage_id"],
+                                "damage_class": sd["damage_class"],
+                                "extent_m2": UncertaintyCalibrator.calibrate_area(ext_val, tier),
+                                "location_on_surface": sd["location_on_surface"],
+                                "severity": sd.get("severity", "moderate")
+                            })
 
-                walls_processed.append({
-                    "wall_id": wall_id,
-                    "start_point": p1,
-                    "end_point": p2,
-                    "length_m": UncertaintyCalibrator.calibrate_wall_length(w_len, tier),
-                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(nominal_height, tier),
-                    "openings": wall_openings,
-                    "damage_regions": wall_damages
-                })
+                    walls_processed.append({
+                        "wall_id": wall_id,
+                        "start_point": p1,
+                        "end_point": p2,
+                        "length_m": UncertaintyCalibrator.calibrate_wall_length(w_len, tier),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(nominal_height, tier),
+                        "openings": wall_openings,
+                        "damage_regions": wall_damages
+                    })
 
             # Calculate room area
             room_area = 0.0
@@ -154,9 +167,9 @@ class PipelineRunner:
                         "damage_regions": [
                             {
                                 "damage_class": d["damage_class"],
-                                "extent_m2": d["extent_m2"]["val"],
+                                "extent_m2": d["extent_m2"]["val"] if isinstance(d.get("extent_m2"), dict) else float(d.get("extent_m2", 1.0)),
                                 "location_on_surface": d["location_on_surface"]
-                            } for d in w["damage_regions"]
+                            } for d in w.get("damage_regions", [])
                         ]
                     } for w in walls_processed
                 ]
@@ -204,18 +217,64 @@ class PipelineRunner:
 
     def _ingest_directory(self, input_dir: str, tier: str):
         """
-        Parses directory structure or creates multi-room layout from folders.
+        Dynamically ingests raw files:
+        - .ply / .obj / .xyz 3D LiDAR point clouds
+        - .jpg / .jpeg / .png / .heic photos with CV analysis
+        - Multi-room directories and subfolders
         """
-        # Look for per-room subfolders (Tier 1 photos or scan folders)
+        staged_damages = []
+        raw_poses = []
+
+        # 1. Single file input handling
+        if os.path.isfile(input_dir):
+            ext = os.path.splitext(input_dir)[1].lower()
+            if ext in (".ply", ".obj", ".xyz", ".pts"):
+                pts, colors = self.ply_parser.load_point_cloud(input_dir)
+                room_obj = self.pc_processor.process_point_cloud(pts, colors, room_name=os.path.basename(input_dir))
+                damages = room_obj.get("detected_damages", [])
+                return [room_obj], damages, []
+            elif ext in (".jpg", ".jpeg", ".png", ".heic", ".bmp"):
+                room_obj = self.cv_processor.analyze_photo_set([input_dir], room_name=os.path.basename(input_dir))
+                damages = room_obj.get("detected_damages", [])
+                return [room_obj], damages, []
+
+        # 2. Directory input handling
+        # Check for .ply point cloud files in directory
+        ply_files = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.lower().endswith((".ply", ".obj", ".xyz"))]
+        if ply_files:
+            rooms = []
+            for pf in ply_files:
+                pts, colors = self.ply_parser.load_point_cloud(pf)
+                room_name = os.path.splitext(os.path.basename(pf))[0].replace("_", " ").title()
+                room_obj = self.pc_processor.process_point_cloud(pts, colors, room_name=room_name)
+                rooms.append(room_obj)
+                staged_damages.extend(room_obj.get("detected_damages", []))
+            return rooms, staged_damages, []
+
+        # Check for direct image files in directory
+        direct_images = [
+            os.path.join(input_dir, f) for f in os.listdir(input_dir)
+            if f.lower().endswith((".jpg", ".jpeg", ".png", ".heic"))
+        ]
+        if direct_images:
+            room_obj = self.cv_processor.analyze_photo_set(direct_images, room_name=os.path.basename(input_dir))
+            damages = room_obj.get("detected_damages", [])
+            return [room_obj], damages, []
+
+        # Check for per-room subfolders (Tier 1 photos or scan folders)
         subdirs = [os.path.join(input_dir, d) for d in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, d))]
         if subdirs:
             rooms = []
             for sdir in subdirs:
-                room_res = self.photo_estimator.estimate_room_from_photos(sdir, os.path.basename(sdir))
+                # Check if subdir has images
+                s_imgs = [os.path.join(sdir, f) for f in os.listdir(sdir) if f.lower().endswith((".jpg", ".jpeg", ".png", ".heic"))]
+                if s_imgs:
+                    room_res = self.cv_processor.analyze_photo_set(s_imgs, os.path.basename(sdir))
+                else:
+                    room_res = self.photo_estimator.estimate_room_from_photos(sdir, os.path.basename(sdir))
                 rooms.append(room_res)
             return rooms, [], []
         else:
-            # Default room set for raw clip or single room test
             single_room = self.photo_estimator.estimate_room_from_photos(input_dir, "Walk-In Room")
             return [single_room], [], []
 
