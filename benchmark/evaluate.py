@@ -10,9 +10,15 @@ Computes all 5 official evaluation gates:
 """
 
 import os
+import sys
 import json
 import numpy as np
 from typing import Dict, Any, List
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from pipeline.run import PipelineRunner
 
 

@@ -6,13 +6,18 @@ concealed-damage rule rationale, insurance restoration line items, and live benc
 """
 
 import os
+import sys
 import json
+
+# Ensure project root is in sys.path regardless of execution directory
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from flask import Flask, render_template, jsonify, request, send_file
 from pipeline.run import PipelineRunner
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 @app.route("/")
