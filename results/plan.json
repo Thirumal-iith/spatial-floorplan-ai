@@ -1,1507 +1,457 @@
 {
-  "property_id": "tier3_lidar",
-  "tier": "lidar",
-  "timestamp": "2026-10-03T00:02:27.693927",
-  "processing_time_seconds": 0.02,
+  "property_id": "water_damage_wall.jpg",
+  "tier": "photos",
+  "timestamp": "2026-10-03T14:35:48.911326",
+  "processing_time_seconds": 0.11,
   "drift_correction_applied": true,
-  "loop_closures_detected": 0,
+  "loop_closures_detected": 1,
   "total_footprint_m2": {
-    "val": 59.0,
+    "val": 21.87,
     "ci_95": [
-      58.29,
-      59.71
+      19.46,
+      24.28
     ],
     "unit": "m2"
   },
   "net_floor_area_m2": {
-    "val": 54.63,
+    "val": 20.12,
     "ci_95": [
-      53.97,
-      55.29
+      17.91,
+      22.33
     ],
     "unit": "m2"
   },
   "overlaps_detected": false,
   "rooms": [
     {
-      "room_id": "connector_hall",
-      "name": "Central Hallway",
+      "room_id": "cv_room_01",
+      "name": "water_damage_wall.jpg",
       "polygon": [
         [
-          -0.001,
-          -0.001
+          -2.7,
+          -2.025
         ],
         [
-          1.5,
-          -0.001
+          2.7,
+          -2.025
         ],
         [
-          1.5,
-          4.198
+          2.7,
+          2.025
         ],
         [
-          -0.001,
-          4.198
+          -2.7,
+          2.025
         ]
       ],
       "floor_area_m2": {
-        "val": 6.3,
+        "val": 21.87,
         "ci_95": [
-          6.2,
-          6.4
+          19.46,
+          24.28
         ],
         "unit": "m2"
       },
       "ceiling_height_m": {
-        "val": 2.701,
+        "val": 2.54,
         "ci_95": [
-          2.689,
-          2.713
+          2.42,
+          2.66
         ],
         "unit": "m"
       },
       "walls": [
         {
-          "wall_id": "connector_hall_w1",
+          "wall_id": "wall_south",
           "start_point": [
-            -0.001,
-            -0.001
+            -2.7,
+            -2.025
           ],
           "end_point": [
-            1.5,
-            -0.001
+            2.7,
+            -2.025
           ],
           "length_m": {
-            "val": 1.501,
+            "val": 5.4,
             "ci_95": [
-              1.493,
-              1.509
+              4.995,
+              5.805
             ],
             "unit": "m"
           },
           "height_m": {
-            "val": 2.701,
+            "val": 2.65,
             "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "connector_hall_w2",
-          "start_point": [
-            1.5,
-            -0.001
-          ],
-          "end_point": [
-            1.5,
-            4.198
-          ],
-          "length_m": {
-            "val": 4.199,
-            "ci_95": [
-              4.186,
-              4.212
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
+              2.53,
+              2.77
             ],
             "unit": "m"
           },
           "openings": [
             {
-              "opening_id": "door_to_living",
+              "opening_id": "op_door_01",
               "type": "door",
               "width_m": {
-                "val": 0.819,
+                "val": 0.82,
                 "ci_95": [
-                  0.804,
-                  0.834
+                  0.75,
+                  0.89
                 ],
                 "unit": "m"
               },
               "height_m": {
                 "val": 2.05,
                 "ci_95": [
-                  2.038,
-                  2.062
+                  1.93,
+                  2.17
                 ],
                 "unit": "m"
               },
-              "offset_along_wall_m": 2.1,
-              "connected_room_id": "room_living"
-            },
-            {
-              "opening_id": "door_to_kitchen",
-              "type": "door",
-              "width_m": {
-                "val": 0.801,
-                "ci_95": [
-                  0.786,
-                  0.816
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 2.05,
-                "ci_95": [
-                  2.038,
-                  2.062
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 2.1,
-              "connected_room_id": "room_kitchen"
+              "offset_along_wall_m": 2.7
             }
           ],
+          "damage_regions": []
+        },
+        {
+          "wall_id": "wall_east",
+          "start_point": [
+            2.7,
+            -2.025
+          ],
+          "end_point": [
+            2.7,
+            2.025
+          ],
+          "length_m": {
+            "val": 4.05,
+            "ci_95": [
+              3.746,
+              4.354
+            ],
+            "unit": "m"
+          },
+          "height_m": {
+            "val": 2.65,
+            "ci_95": [
+              2.53,
+              2.77
+            ],
+            "unit": "m"
+          },
+          "openings": [],
           "damage_regions": [
             {
-              "damage_id": "dmg_living_water_01",
+              "damage_id": "dmg_wall_east_wtr_01",
               "damage_class": "water_stain",
               "extent_m2": {
-                "val": 1.45,
+                "val": 2.12,
                 "ci_95": [
-                  1.35,
-                  1.55
+                  1.89,
+                  2.35
                 ],
                 "unit": "m2"
               },
+              "linear_extent_m": 4.05,
+              "confidence_pct": 82.0,
               "location_on_surface": {
-                "u_min": 0.8,
-                "u_max": 2.6,
-                "v_min": 0.05,
-                "v_max": 0.65
+                "u_min": 0.0,
+                "u_max": 4.05,
+                "v_min": 0.0,
+                "v_max": 0.994
               },
-              "severity": "severe"
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 0.99m AFF. Tide marks present.",
+              "wall_id": "wall_east"
             }
           ]
         },
         {
-          "wall_id": "connector_hall_w3",
+          "wall_id": "wall_north",
           "start_point": [
-            1.5,
-            4.198
+            2.7,
+            2.025
           ],
           "end_point": [
-            -0.001,
-            4.198
+            -2.7,
+            2.025
           ],
           "length_m": {
-            "val": 1.501,
+            "val": 5.4,
             "ci_95": [
-              1.493,
-              1.509
+              4.995,
+              5.805
             ],
             "unit": "m"
           },
           "height_m": {
-            "val": 2.701,
+            "val": 2.65,
             "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "connector_hall_w4",
-          "start_point": [
-            -0.001,
-            4.198
-          ],
-          "end_point": [
-            -0.001,
-            -0.001
-          ],
-          "length_m": {
-            "val": 4.199,
-            "ci_95": [
-              4.186,
-              4.212
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
+              2.53,
+              2.77
             ],
             "unit": "m"
           },
           "openings": [
             {
-              "opening_id": "door_to_bedroom",
-              "type": "door",
-              "width_m": {
-                "val": 0.851,
-                "ci_95": [
-                  0.836,
-                  0.866
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 2.05,
-                "ci_95": [
-                  2.038,
-                  2.062
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 2.1,
-              "connected_room_id": "room_bedroom"
-            }
-          ],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_crack_01",
-              "damage_class": "drywall_crack",
-              "extent_m2": {
-                "val": 0.35,
-                "ci_95": [
-                  0.25,
-                  0.45
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 1.1,
-                "u_max": 2.8,
-                "v_min": 1.2,
-                "v_max": 2.5
-              },
-              "severity": "moderate"
-            }
-          ]
-        }
-      ],
-      "placed_polygon": [
-        [
-          -0.001,
-          -0.001
-        ],
-        [
-          1.5,
-          -0.001
-        ],
-        [
-          1.5,
-          4.198
-        ],
-        [
-          -0.001,
-          4.198
-        ]
-      ],
-      "transform": {
-        "rot_deg": 0.0,
-        "trans": [
-          0.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "room_id": "room_living",
-      "name": "Living Room",
-      "polygon": [
-        [
-          -0.001,
-          -0.001
-        ],
-        [
-          5.197,
-          -0.001
-        ],
-        [
-          5.197,
-          4.301
-        ],
-        [
-          -0.001,
-          4.301
-        ]
-      ],
-      "floor_area_m2": {
-        "val": 22.36,
-        "ci_95": [
-          22.09,
-          22.63
-        ],
-        "unit": "m2"
-      },
-      "ceiling_height_m": {
-        "val": 2.701,
-        "ci_95": [
-          2.689,
-          2.713
-        ],
-        "unit": "m"
-      },
-      "walls": [
-        {
-          "wall_id": "room_living_w1",
-          "start_point": [
-            -0.001,
-            -0.001
-          ],
-          "end_point": [
-            5.197,
-            -0.001
-          ],
-          "length_m": {
-            "val": 5.198,
-            "ci_95": [
-              5.182,
-              5.214
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [
-            {
-              "opening_id": "living_entry_door",
-              "type": "door",
-              "width_m": {
-                "val": 0.821,
-                "ci_95": [
-                  0.806,
-                  0.836
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 2.05,
-                "ci_95": [
-                  2.038,
-                  2.062
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 2.6,
-              "connected_room_id": "connector_hall"
-            }
-          ],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "room_living_w2",
-          "start_point": [
-            5.197,
-            -0.001
-          ],
-          "end_point": [
-            5.197,
-            4.301
-          ],
-          "length_m": {
-            "val": 4.302,
-            "ci_95": [
-              4.289,
-              4.315
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_water_01",
-              "damage_class": "water_stain",
-              "extent_m2": {
-                "val": 1.45,
-                "ci_95": [
-                  1.35,
-                  1.55
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 0.8,
-                "u_max": 2.6,
-                "v_min": 0.05,
-                "v_max": 0.65
-              },
-              "severity": "severe"
-            }
-          ]
-        },
-        {
-          "wall_id": "room_living_w3",
-          "start_point": [
-            5.197,
-            4.301
-          ],
-          "end_point": [
-            -0.001,
-            4.301
-          ],
-          "length_m": {
-            "val": 5.198,
-            "ci_95": [
-              5.182,
-              5.214
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [
-            {
-              "opening_id": "living_window_south",
+              "opening_id": "op_win_01",
               "type": "window",
               "width_m": {
-                "val": 1.601,
-                "ci_95": [
-                  1.586,
-                  1.616
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 1.35,
-                "ci_95": [
-                  1.338,
-                  1.362
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 2.6,
-              "connected_room_id": null
-            }
-          ],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "room_living_w4",
-          "start_point": [
-            -0.001,
-            4.301
-          ],
-          "end_point": [
-            -0.001,
-            -0.001
-          ],
-          "length_m": {
-            "val": 4.302,
-            "ci_95": [
-              4.289,
-              4.315
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_crack_01",
-              "damage_class": "drywall_crack",
-              "extent_m2": {
-                "val": 0.35,
-                "ci_95": [
-                  0.25,
-                  0.45
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 1.1,
-                "u_max": 2.8,
-                "v_min": 1.2,
-                "v_max": 2.5
-              },
-              "severity": "moderate"
-            }
-          ]
-        }
-      ],
-      "placed_polygon": [
-        [
-          1.62,
-          4.698
-        ],
-        [
-          1.62,
-          -0.5
-        ],
-        [
-          5.922,
-          -0.501
-        ],
-        [
-          5.922,
-          4.698
-        ]
-      ],
-      "transform": {
-        "rot_deg": 270.0,
-        "trans": [
-          1.6210000000000007,
-          4.6965
-        ]
-      }
-    },
-    {
-      "room_id": "room_bedroom",
-      "name": "Primary Bedroom",
-      "polygon": [
-        [
-          -0.001,
-          -0.001
-        ],
-        [
-          4.097,
-          -0.001
-        ],
-        [
-          4.097,
-          3.6
-        ],
-        [
-          -0.001,
-          3.6
-        ]
-      ],
-      "floor_area_m2": {
-        "val": 14.76,
-        "ci_95": [
-          14.58,
-          14.93
-        ],
-        "unit": "m2"
-      },
-      "ceiling_height_m": {
-        "val": 2.701,
-        "ci_95": [
-          2.689,
-          2.713
-        ],
-        "unit": "m"
-      },
-      "walls": [
-        {
-          "wall_id": "room_bedroom_w1",
-          "start_point": [
-            -0.001,
-            -0.001
-          ],
-          "end_point": [
-            4.097,
-            -0.001
-          ],
-          "length_m": {
-            "val": 4.098,
-            "ci_95": [
-              4.086,
-              4.11
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [
-            {
-              "opening_id": "bed_entry_door",
-              "type": "door",
-              "width_m": {
-                "val": 0.849,
-                "ci_95": [
-                  0.834,
-                  0.864
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 2.05,
-                "ci_95": [
-                  2.038,
-                  2.062
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 2.05,
-              "connected_room_id": "connector_hall"
-            }
-          ],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "room_bedroom_w2",
-          "start_point": [
-            4.097,
-            -0.001
-          ],
-          "end_point": [
-            4.097,
-            3.6
-          ],
-          "length_m": {
-            "val": 3.601,
-            "ci_95": [
-              3.59,
-              3.612
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_water_01",
-              "damage_class": "water_stain",
-              "extent_m2": {
                 "val": 1.45,
                 "ci_95": [
-                  1.35,
-                  1.55
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 0.8,
-                "u_max": 2.6,
-                "v_min": 0.05,
-                "v_max": 0.65
-              },
-              "severity": "severe"
-            }
-          ]
-        },
-        {
-          "wall_id": "room_bedroom_w3",
-          "start_point": [
-            4.097,
-            3.6
-          ],
-          "end_point": [
-            -0.001,
-            3.6
-          ],
-          "length_m": {
-            "val": 4.098,
-            "ci_95": [
-              4.086,
-              4.11
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [
-            {
-              "opening_id": "bed_window_east",
-              "type": "window",
-              "width_m": {
-                "val": 1.398,
-                "ci_95": [
-                  1.383,
-                  1.413
+                  1.38,
+                  1.52
                 ],
                 "unit": "m"
               },
               "height_m": {
-                "val": 1.2,
+                "val": 1.25,
                 "ci_95": [
-                  1.188,
-                  1.212
+                  1.13,
+                  1.37
                 ],
                 "unit": "m"
               },
-              "offset_along_wall_m": 2.05,
-              "connected_room_id": null
+              "offset_along_wall_m": 2.7
             }
           ],
           "damage_regions": []
         },
         {
-          "wall_id": "room_bedroom_w4",
+          "wall_id": "wall_west",
           "start_point": [
-            -0.001,
-            3.6
+            -2.7,
+            2.025
           ],
           "end_point": [
-            -0.001,
-            -0.001
+            -2.7,
+            -2.025
           ],
           "length_m": {
-            "val": 3.601,
+            "val": 4.05,
             "ci_95": [
-              3.59,
-              3.612
+              3.746,
+              4.354
             ],
             "unit": "m"
           },
           "height_m": {
-            "val": 2.701,
+            "val": 2.65,
             "ci_95": [
-              2.689,
-              2.713
+              2.53,
+              2.77
             ],
             "unit": "m"
           },
           "openings": [],
           "damage_regions": [
             {
-              "damage_id": "dmg_living_crack_01",
+              "damage_id": "dmg_wall_east_crk_02",
               "damage_class": "drywall_crack",
               "extent_m2": {
-                "val": 0.35,
+                "val": 0.62,
                 "ci_95": [
-                  0.25,
-                  0.45
+                  0.52,
+                  0.72
                 ],
                 "unit": "m2"
               },
+              "linear_extent_m": 4.12,
+              "confidence_pct": 88.1,
               "location_on_surface": {
-                "u_min": 1.1,
-                "u_max": 2.8,
-                "v_min": 1.2,
-                "v_max": 2.5
+                "u_min": 0.0,
+                "u_max": 4.05,
+                "v_min": 0.232,
+                "v_max": 0.999
               },
-              "severity": "moderate"
+              "severity": "severe",
+              "notes": "Structural shear crack extending 4.12 linear meters.",
+              "wall_id": "wall_west"
             }
           ]
         }
       ],
-      "placed_polygon": [
-        [
-          -0.121,
-          0.049
-        ],
-        [
-          -0.121,
-          4.148
-        ],
-        [
-          -3.722,
-          4.148
-        ],
-        [
-          -3.722,
-          0.05
-        ]
-      ],
-      "transform": {
-        "rot_deg": 90.0,
-        "trans": [
-          -0.12200000000000012,
-          0.05049999999999999
-        ]
-      }
-    },
-    {
-      "room_id": "room_kitchen",
-      "name": "Kitchen",
-      "polygon": [
-        [
-          -0.001,
-          -0.001
-        ],
-        [
-          3.497,
-          -0.001
-        ],
-        [
-          3.497,
-          3.202
-        ],
-        [
-          -0.001,
-          3.202
-        ]
-      ],
-      "floor_area_m2": {
-        "val": 11.2,
-        "ci_95": [
-          11.07,
-          11.34
-        ],
-        "unit": "m2"
-      },
-      "ceiling_height_m": {
-        "val": 2.701,
-        "ci_95": [
-          2.689,
-          2.713
-        ],
-        "unit": "m"
-      },
-      "walls": [
+      "detected_damages": [
         {
-          "wall_id": "room_kitchen_w1",
-          "start_point": [
-            -0.001,
-            -0.001
-          ],
-          "end_point": [
-            3.497,
-            -0.001
-          ],
-          "length_m": {
-            "val": 3.498,
+          "damage_id": "dmg_wall_east_wtr_01",
+          "damage_class": "water_stain",
+          "extent_m2": {
+            "val": 2.12,
             "ci_95": [
-              3.488,
-              3.508
+              1.89,
+              2.35
             ],
-            "unit": "m"
+            "unit": "m2"
           },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
+          "linear_extent_m": 4.05,
+          "confidence_pct": 82.0,
+          "location_on_surface": {
+            "u_min": 0.0,
+            "u_max": 4.05,
+            "v_min": 0.0,
+            "v_max": 0.994
           },
-          "openings": [
-            {
-              "opening_id": "kitch_entry_door",
-              "type": "door",
-              "width_m": {
-                "val": 0.799,
-                "ci_95": [
-                  0.784,
-                  0.814
-                ],
-                "unit": "m"
-              },
-              "height_m": {
-                "val": 2.05,
-                "ci_95": [
-                  2.038,
-                  2.062
-                ],
-                "unit": "m"
-              },
-              "offset_along_wall_m": 1.75,
-              "connected_room_id": "connector_hall"
-            }
-          ],
-          "damage_regions": []
+          "severity": "severe",
+          "notes": "Moisture staining detected reaching 0.99m AFF. Tide marks present.",
+          "wall_id": "wall_east"
         },
         {
-          "wall_id": "room_kitchen_w2",
-          "start_point": [
-            3.497,
-            -0.001
-          ],
-          "end_point": [
-            3.497,
-            3.202
-          ],
-          "length_m": {
-            "val": 3.203,
+          "damage_id": "dmg_wall_east_crk_02",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.62,
             "ci_95": [
-              3.193,
-              3.213
+              0.52,
+              0.72
             ],
-            "unit": "m"
+            "unit": "m2"
           },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
+          "linear_extent_m": 4.12,
+          "confidence_pct": 88.1,
+          "location_on_surface": {
+            "u_min": 0.0,
+            "u_max": 4.05,
+            "v_min": 0.232,
+            "v_max": 0.999
           },
-          "openings": [],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_water_01",
-              "damage_class": "water_stain",
-              "extent_m2": {
-                "val": 1.45,
-                "ci_95": [
-                  1.35,
-                  1.55
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 0.8,
-                "u_max": 2.6,
-                "v_min": 0.05,
-                "v_max": 0.65
-              },
-              "severity": "severe"
-            }
-          ]
-        },
-        {
-          "wall_id": "room_kitchen_w3",
-          "start_point": [
-            3.497,
-            3.202
-          ],
-          "end_point": [
-            -0.001,
-            3.202
-          ],
-          "length_m": {
-            "val": 3.498,
-            "ci_95": [
-              3.488,
-              3.508
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": []
-        },
-        {
-          "wall_id": "room_kitchen_w4",
-          "start_point": [
-            -0.001,
-            3.202
-          ],
-          "end_point": [
-            -0.001,
-            -0.001
-          ],
-          "length_m": {
-            "val": 3.203,
-            "ci_95": [
-              3.193,
-              3.213
-            ],
-            "unit": "m"
-          },
-          "height_m": {
-            "val": 2.701,
-            "ci_95": [
-              2.689,
-              2.713
-            ],
-            "unit": "m"
-          },
-          "openings": [],
-          "damage_regions": [
-            {
-              "damage_id": "dmg_living_crack_01",
-              "damage_class": "drywall_crack",
-              "extent_m2": {
-                "val": 0.35,
-                "ci_95": [
-                  0.25,
-                  0.45
-                ],
-                "unit": "m2"
-              },
-              "location_on_surface": {
-                "u_min": 1.1,
-                "u_max": 2.8,
-                "v_min": 1.2,
-                "v_max": 2.5
-              },
-              "severity": "moderate"
-            }
-          ]
+          "severity": "severe",
+          "notes": "Structural shear crack extending 4.12 linear meters.",
+          "wall_id": "wall_west"
         }
       ],
+      "cv_telemetry": {
+        "total_edges": 6,
+        "vert_lines": 0,
+        "horiz_lines": 6,
+        "resolution": "640x480",
+        "aspect_ratio": 1.33,
+        "damage_zones_count": 2,
+        "mean_luminance": 212.0,
+        "width_m": 5.4,
+        "length_m": 4.05,
+        "floor_area_m2": 21.87
+      },
       "placed_polygon": [
         [
-          6.422,
-          -0.001
+          -2.7,
+          -2.025
         ],
         [
-          9.92,
-          -0.001
+          2.7,
+          -2.025
         ],
         [
-          9.92,
-          3.202
+          2.7,
+          2.025
         ],
         [
-          6.422,
-          3.202
+          -2.7,
+          2.025
         ]
-      ],
-      "transform": {
-        "rot_deg": 0.0,
-        "trans": [
-          0.0,
-          0.0
-        ]
-      }
+      ]
     }
   ],
   "concealed_damage_flags": [
     {
-      "flag_id": "FLAG_connector_hall_connector_hall_w2_WTR01",
-      "room_id": "connector_hall",
-      "surface_id": "connector_hall_w2",
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
       "rule_fired": "RULE_WTR_01",
-      "trigger_evidence": "Water stain reached 0.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
-      "recommended_action": "Execute 2-foot flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 0.99m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
       "severity": "high"
     },
     {
-      "flag_id": "FLAG_connector_hall_connector_hall_w2_ELEC01",
-      "room_id": "connector_hall",
-      "surface_id": "connector_hall_w2",
+      "flag_id": "FLAG_cv_room_01_wall_east_ELEC01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
       "rule_fired": "RULE_ELEC_01",
-      "trigger_evidence": "Water staining boundary (0.05m - 0.65m) intersects standard outlet elevation. In-wall junction box risk.",
+      "building_code_standard": "NFPA 70 NEC Art. 110.11",
+      "trigger_evidence": "Water staining boundary (0.00m - 0.99m AFF) intersects standard outlet elevation. In-wall junction box risk.",
       "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
       "severity": "high"
     },
     {
-      "flag_id": "FLAG_connector_hall_connector_hall_w4_CRK01",
-      "room_id": "connector_hall",
-      "surface_id": "connector_hall_w4",
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
       "rule_fired": "RULE_CRK_01",
-      "trigger_evidence": "Structural shear crack detected with surface extent 0.35m2.",
-      "recommended_action": "Install displacement crack monitoring gauge; evaluate foundation settlement.",
-      "severity": "medium"
-    },
-    {
-      "flag_id": "FLAG_room_living_room_living_w2_WTR01",
-      "room_id": "room_living",
-      "surface_id": "room_living_w2",
-      "rule_fired": "RULE_WTR_01",
-      "trigger_evidence": "Water stain reached 0.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
-      "recommended_action": "Execute 2-foot flood cut; extract wet fiberglass insulation; inspect bottom plate.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_living_room_living_w2_ELEC01",
-      "room_id": "room_living",
-      "surface_id": "room_living_w2",
-      "rule_fired": "RULE_ELEC_01",
-      "trigger_evidence": "Water staining boundary (0.05m - 0.65m) intersects standard outlet elevation. In-wall junction box risk.",
-      "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_living_room_living_w4_CRK01",
-      "room_id": "room_living",
-      "surface_id": "room_living_w4",
-      "rule_fired": "RULE_CRK_01",
-      "trigger_evidence": "Structural shear crack detected with surface extent 0.35m2.",
-      "recommended_action": "Install displacement crack monitoring gauge; evaluate foundation settlement.",
-      "severity": "medium"
-    },
-    {
-      "flag_id": "FLAG_room_bedroom_room_bedroom_w2_WTR01",
-      "room_id": "room_bedroom",
-      "surface_id": "room_bedroom_w2",
-      "rule_fired": "RULE_WTR_01",
-      "trigger_evidence": "Water stain reached 0.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
-      "recommended_action": "Execute 2-foot flood cut; extract wet fiberglass insulation; inspect bottom plate.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_bedroom_room_bedroom_w2_ELEC01",
-      "room_id": "room_bedroom",
-      "surface_id": "room_bedroom_w2",
-      "rule_fired": "RULE_ELEC_01",
-      "trigger_evidence": "Water staining boundary (0.05m - 0.65m) intersects standard outlet elevation. In-wall junction box risk.",
-      "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_bedroom_room_bedroom_w4_CRK01",
-      "room_id": "room_bedroom",
-      "surface_id": "room_bedroom_w4",
-      "rule_fired": "RULE_CRK_01",
-      "trigger_evidence": "Structural shear crack detected with surface extent 0.35m2.",
-      "recommended_action": "Install displacement crack monitoring gauge; evaluate foundation settlement.",
-      "severity": "medium"
-    },
-    {
-      "flag_id": "FLAG_room_kitchen_room_kitchen_w2_WTR01",
-      "room_id": "room_kitchen",
-      "surface_id": "room_kitchen_w2",
-      "rule_fired": "RULE_WTR_01",
-      "trigger_evidence": "Water stain reached 0.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
-      "recommended_action": "Execute 2-foot flood cut; extract wet fiberglass insulation; inspect bottom plate.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_kitchen_room_kitchen_w2_ELEC01",
-      "room_id": "room_kitchen",
-      "surface_id": "room_kitchen_w2",
-      "rule_fired": "RULE_ELEC_01",
-      "trigger_evidence": "Water staining boundary (0.05m - 0.65m) intersects standard outlet elevation. In-wall junction box risk.",
-      "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
-      "severity": "high"
-    },
-    {
-      "flag_id": "FLAG_room_kitchen_room_kitchen_w4_CRK01",
-      "room_id": "room_kitchen",
-      "surface_id": "room_kitchen_w4",
-      "rule_fired": "RULE_CRK_01",
-      "trigger_evidence": "Structural shear crack detected with surface extent 0.35m2.",
-      "recommended_action": "Install displacement crack monitoring gauge; evaluate foundation settlement.",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.62m\u00b2 (4.05m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
       "severity": "medium"
     }
   ],
   "scope_line_items": [
     {
-      "item_id": "SC_connector_hall_001",
-      "surface_ref": "connector_hall/connector_hall_w2",
+      "item_id": "SC_cv_room_01_001",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "WTR",
       "code": "WTR-DRY-CUT",
-      "description": "Tear out wet drywall up to 2-foot flood cut, bag & haul debris",
-      "quantity": 7.1,
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 9.8,
       "unit": "LF",
       "estimated_unit_cost": 18.5,
-      "total_cost": 131.35
+      "total_cost": 181.3
     },
     {
-      "item_id": "SC_connector_hall_002",
-      "surface_ref": "connector_hall/connector_hall_w2",
+      "item_id": "SC_cv_room_01_002",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "INS",
       "code": "INS-BAT-R13",
       "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
-      "quantity": 15.6,
+      "quantity": 22.8,
       "unit": "SF",
       "estimated_unit_cost": 2.85,
-      "total_cost": 44.46
+      "total_cost": 64.98
     },
     {
-      "item_id": "SC_connector_hall_003",
-      "surface_ref": "connector_hall/connector_hall_w2",
+      "item_id": "SC_cv_room_01_003",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "WTR",
       "code": "WTR-MOLD-MED",
       "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
-      "quantity": 15.6,
+      "quantity": 22.8,
       "unit": "SF",
       "estimated_unit_cost": 1.1,
-      "total_cost": 17.16
+      "total_cost": 25.08
     },
     {
-      "item_id": "SC_connector_hall_004",
-      "surface_ref": "connector_hall/connector_hall_w2",
+      "item_id": "SC_cv_room_01_004",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "DRY",
       "code": "DRY-HANG-F",
-      "description": "Hang, tape, float, sand and finish drywall",
-      "quantity": 15.6,
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 22.8,
       "unit": "SF",
       "estimated_unit_cost": 4.2,
-      "total_cost": 65.52
+      "total_cost": 95.76
     },
     {
-      "item_id": "SC_connector_hall_005",
-      "surface_ref": "connector_hall/connector_hall_w2",
+      "item_id": "SC_cv_room_01_005",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "PNT",
       "code": "PNT-PR-W",
       "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
-      "quantity": 15.6,
+      "quantity": 22.8,
       "unit": "SF",
       "estimated_unit_cost": 2.15,
-      "total_cost": 33.54
+      "total_cost": 49.02
     },
     {
-      "item_id": "SC_connector_hall_006",
-      "surface_ref": "connector_hall/connector_hall_w4",
+      "item_id": "SC_cv_room_01_006",
+      "surface_ref": "cv_room_01/wall_west",
       "category": "STR",
       "code": "MAS-CRK-REP",
       "description": "Stitch and inject structural epoxy into shear crack",
-      "quantity": 1.7,
+      "quantity": 13.3,
       "unit": "LF",
       "estimated_unit_cost": 45.0,
-      "total_cost": 76.5
+      "total_cost": 598.5
     },
     {
-      "item_id": "SC_connector_hall_007",
-      "surface_ref": "connector_hall/connector_hall_w2",
-      "category": "ELEC",
-      "code": "ELEC-SWT-R",
-      "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
-      "quantity": 1.0,
-      "unit": "EA",
-      "estimated_unit_cost": 65.0,
-      "total_cost": 65.0
-    },
-    {
-      "item_id": "SC_room_living_001",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "WTR",
-      "code": "WTR-DRY-CUT",
-      "description": "Tear out wet drywall up to 2-foot flood cut, bag & haul debris",
-      "quantity": 7.1,
-      "unit": "LF",
-      "estimated_unit_cost": 18.5,
-      "total_cost": 131.35
-    },
-    {
-      "item_id": "SC_room_living_002",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "INS",
-      "code": "INS-BAT-R13",
-      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.85,
-      "total_cost": 44.46
-    },
-    {
-      "item_id": "SC_room_living_003",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "WTR",
-      "code": "WTR-MOLD-MED",
-      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 1.1,
-      "total_cost": 17.16
-    },
-    {
-      "item_id": "SC_room_living_004",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "DRY",
-      "code": "DRY-HANG-F",
-      "description": "Hang, tape, float, sand and finish drywall",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 4.2,
-      "total_cost": 65.52
-    },
-    {
-      "item_id": "SC_room_living_005",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "PNT",
-      "code": "PNT-PR-W",
-      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.15,
-      "total_cost": 33.54
-    },
-    {
-      "item_id": "SC_room_living_006",
-      "surface_ref": "room_living/room_living_w4",
-      "category": "STR",
-      "code": "MAS-CRK-REP",
-      "description": "Stitch and inject structural epoxy into shear crack",
-      "quantity": 1.7,
-      "unit": "LF",
-      "estimated_unit_cost": 45.0,
-      "total_cost": 76.5
-    },
-    {
-      "item_id": "SC_room_living_007",
-      "surface_ref": "room_living/room_living_w2",
-      "category": "ELEC",
-      "code": "ELEC-SWT-R",
-      "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
-      "quantity": 1.0,
-      "unit": "EA",
-      "estimated_unit_cost": 65.0,
-      "total_cost": 65.0
-    },
-    {
-      "item_id": "SC_room_bedroom_001",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "WTR",
-      "code": "WTR-DRY-CUT",
-      "description": "Tear out wet drywall up to 2-foot flood cut, bag & haul debris",
-      "quantity": 7.1,
-      "unit": "LF",
-      "estimated_unit_cost": 18.5,
-      "total_cost": 131.35
-    },
-    {
-      "item_id": "SC_room_bedroom_002",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "INS",
-      "code": "INS-BAT-R13",
-      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.85,
-      "total_cost": 44.46
-    },
-    {
-      "item_id": "SC_room_bedroom_003",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "WTR",
-      "code": "WTR-MOLD-MED",
-      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 1.1,
-      "total_cost": 17.16
-    },
-    {
-      "item_id": "SC_room_bedroom_004",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "DRY",
-      "code": "DRY-HANG-F",
-      "description": "Hang, tape, float, sand and finish drywall",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 4.2,
-      "total_cost": 65.52
-    },
-    {
-      "item_id": "SC_room_bedroom_005",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "PNT",
-      "code": "PNT-PR-W",
-      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.15,
-      "total_cost": 33.54
-    },
-    {
-      "item_id": "SC_room_bedroom_006",
-      "surface_ref": "room_bedroom/room_bedroom_w4",
-      "category": "STR",
-      "code": "MAS-CRK-REP",
-      "description": "Stitch and inject structural epoxy into shear crack",
-      "quantity": 1.7,
-      "unit": "LF",
-      "estimated_unit_cost": 45.0,
-      "total_cost": 76.5
-    },
-    {
-      "item_id": "SC_room_bedroom_007",
-      "surface_ref": "room_bedroom/room_bedroom_w2",
-      "category": "ELEC",
-      "code": "ELEC-SWT-R",
-      "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
-      "quantity": 1.0,
-      "unit": "EA",
-      "estimated_unit_cost": 65.0,
-      "total_cost": 65.0
-    },
-    {
-      "item_id": "SC_room_kitchen_001",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
-      "category": "WTR",
-      "code": "WTR-DRY-CUT",
-      "description": "Tear out wet drywall up to 2-foot flood cut, bag & haul debris",
-      "quantity": 7.1,
-      "unit": "LF",
-      "estimated_unit_cost": 18.5,
-      "total_cost": 131.35
-    },
-    {
-      "item_id": "SC_room_kitchen_002",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
-      "category": "INS",
-      "code": "INS-BAT-R13",
-      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.85,
-      "total_cost": 44.46
-    },
-    {
-      "item_id": "SC_room_kitchen_003",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
-      "category": "WTR",
-      "code": "WTR-MOLD-MED",
-      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 1.1,
-      "total_cost": 17.16
-    },
-    {
-      "item_id": "SC_room_kitchen_004",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
-      "category": "DRY",
-      "code": "DRY-HANG-F",
-      "description": "Hang, tape, float, sand and finish drywall",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 4.2,
-      "total_cost": 65.52
-    },
-    {
-      "item_id": "SC_room_kitchen_005",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
-      "category": "PNT",
-      "code": "PNT-PR-W",
-      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
-      "quantity": 15.6,
-      "unit": "SF",
-      "estimated_unit_cost": 2.15,
-      "total_cost": 33.54
-    },
-    {
-      "item_id": "SC_room_kitchen_006",
-      "surface_ref": "room_kitchen/room_kitchen_w4",
-      "category": "STR",
-      "code": "MAS-CRK-REP",
-      "description": "Stitch and inject structural epoxy into shear crack",
-      "quantity": 1.7,
-      "unit": "LF",
-      "estimated_unit_cost": 45.0,
-      "total_cost": 76.5
-    },
-    {
-      "item_id": "SC_room_kitchen_007",
-      "surface_ref": "room_kitchen/room_kitchen_w2",
+      "item_id": "SC_cv_room_01_007",
+      "surface_ref": "cv_room_01/wall_east",
       "category": "ELEC",
       "code": "ELEC-SWT-R",
       "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
@@ -1511,9 +461,25 @@
       "total_cost": 65.0
     }
   ],
-  "total_estimated_restoration_cost": 1734.12,
+  "total_estimated_restoration_cost": 1079.64,
   "device_matrix_reference": {
-    "tier": "lidar",
+    "tier": "photos",
     "compliance_gate": "PASSED"
-  }
+  },
+  "cv_telemetry": {
+    "total_edges": 6,
+    "vert_lines": 0,
+    "horiz_lines": 6,
+    "resolution": "640x480",
+    "aspect_ratio": 1.33,
+    "damage_zones_count": 2,
+    "mean_luminance": 212.0,
+    "width_m": 5.4,
+    "length_m": 4.05,
+    "floor_area_m2": 21.87
+  },
+  "raw_image_url": "/static/raw_1791018348912.jpg",
+  "annotated_image_url": "/static/annotated_1791018348912.jpg",
+  "has_annotated_image": true,
+  "uploaded_filename": "water_damage_wall.jpg"
 }

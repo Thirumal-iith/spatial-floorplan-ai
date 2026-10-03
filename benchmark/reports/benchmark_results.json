@@ -73,8 +73,8 @@
     "calibration_gate": "PASS",
     "mean_extent_error_pct": 0.0,
     "rules_fired": [
-      "RULE_CRK_01",
       "RULE_WTR_01",
+      "RULE_CRK_01",
       "RULE_ELEC_01"
     ],
     "concealed_rules_gate": "PASS",
