@@ -844,38 +844,38 @@
       <button class="modal-close" onclick="closeQrModal()">&times;</button>
       <h2 style="font-size:1.15rem; font-weight:800; color:var(--text-main); margin-bottom:0.35rem; display:flex; align-items:center; gap:0.5rem;">
         <svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-        <span>Android Device Connection</span>
+        <span>Android Device Connection & Installation</span>
       </h2>
       <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem;">
-        Open the live app on your Android smartphone (same Wi-Fi network):
+        Connect your Android device via USB Cable or Local Wi-Fi:
       </p>
 
+      <div style="background:rgba(15,23,42,0.8); border:1px solid var(--card-border); padding:0.85rem; border-radius:10px; margin-bottom:0.85rem; font-size:0.78rem; color:#cbd5e1; line-height:1.5;">
+        <strong style="color:var(--accent-blue); font-size:0.85rem;">Option 1: USB Cable Connection (Direct)</strong><br/>
+        1. Plug your Android phone into this PC with your USB cable.<br/>
+        2. Enable <strong>USB Debugging</strong> in <em>Settings &gt; Developer Options</em>.<br/>
+        3. Port 5000 is mapped via ADB to your phone — open Chrome on phone and navigate to:
+        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:0.4rem; border-radius:6px; margin:0.3rem 0; font-family:'JetBrains Mono',monospace; color:var(--accent-blue); font-weight:700; text-align:center;">
+          http://localhost:5000
+        </div>
+        4. In Chrome menu (<strong>&vellip;</strong>), tap <strong>"Install app"</strong> to permanently install it on your phone!
+      </div>
+
+      <div style="background:rgba(15,23,42,0.8); border:1px solid var(--card-border); padding:0.85rem; border-radius:10px; margin-bottom:0.85rem; font-size:0.78rem; color:#cbd5e1; line-height:1.5;">
+        <strong style="color:var(--accent-emerald); font-size:0.85rem;">Option 2: Wi-Fi / QR Code Connection</strong><br/>
+        1. Ensure phone is on the same Wi-Fi.<br/>
+        2. Scan the QR code or go to <code>http://172.23.204.148:5000</code>.<br/>
+        3. Tap Chrome menu &gt; <strong>"Install app"</strong>.
+      </div>
+
       <div style="text-align:center; margin-bottom:0.85rem;">
-        <div style="background:white; padding:0.85rem; border-radius:10px; display:inline-block; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-          <img src="/static/qr_code.png" alt="Mobile QR Code" style="width:180px; height:180px; display:block;">
+        <div style="background:white; padding:0.6rem; border-radius:10px; display:inline-block; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+          <img src="/static/qr_code.png" alt="Mobile QR Code" style="width:140px; height:140px; display:block;">
         </div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.04); border:1px solid var(--card-border); padding:0.6rem; border-radius:8px; margin-bottom:0.85rem; font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--accent-blue); text-align:center;">
-        http://172.23.204.148:5000
-      </div>
-
-      <div style="font-size:0.75rem; color:#cbd5e1; line-height:1.45; margin-bottom:1rem; background:rgba(15,23,42,0.6); border:1px solid var(--card-border); padding:0.65rem; border-radius:8px;">
-        <strong style="color:var(--accent-emerald);">Option A — Native Android WebAPK (Fastest):</strong><br/>
-        1. Scan QR code or open the link in Android Chrome.<br/>
-        2. Tap Chrome menu (&vellip;) &gt; <strong>"Install app"</strong> or tap the banner <em>"Add to Home screen"</em>.<br/>
-        3. Android automatically compiles & installs the native WebAPK app to your app drawer!<br/><br/>
-        <strong style="color:var(--accent-amber);">Option B — Sideload Android APK Package:</strong><br/>
-        1. Download the <code>Spatial_AI_Property_Audit.apk</code> below directly on phone.<br/>
-        2. In Android <em>Settings &gt; Developer Options / Security</em>, allow <em>"Install unknown apps"</em>.<br/>
-        3. Tap to install and launch!
-      </div>
-
-      <div style="display:flex; gap:0.5rem;">
-        <a href="/api/download-apk" class="btn-action" style="flex:1; text-align:center; text-decoration:none; background:linear-gradient(135deg, #f59e0b, #d97706); padding:0.6rem; font-size:0.8rem;">
-          Download Android APK
-        </a>
-        <button class="btn-action" onclick="closeQrModal()" style="background:rgba(255,255,255,0.08); border:1px solid var(--card-border); padding:0.6rem; font-size:0.8rem;">
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn-action" onclick="closeQrModal()" style="background:rgba(255,255,255,0.08); border:1px solid var(--card-border); padding:0.5rem 1.25rem; font-size:0.8rem;">
           Close
         </button>
       </div>
