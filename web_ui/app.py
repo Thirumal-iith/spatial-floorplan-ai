@@ -135,6 +135,28 @@ def load_sample_api():
 
     results_dir = os.path.join(PROJECT_ROOT, "results")
     os.makedirs(results_dir, exist_ok=True)
+    static_dir = os.path.join(PROJECT_ROOT, "web_ui", "static")
+    os.makedirs(static_dir, exist_ok=True)
+    import time
+    import shutil
+    ts = int(time.time() * 1000)
+
+    if sample_key == "photo_damage":
+        raw_name = f"raw_{ts}.jpg"
+        annotated_name = f"annotated_{ts}.jpg"
+        shutil.copy2(target_path, os.path.join(static_dir, raw_name))
+        shutil.copy2(target_path, os.path.join(static_dir, "latest_raw.jpg"))
+        plan["raw_image_url"] = f"/static/{raw_name}"
+        
+        latest_annotated = os.path.join(static_dir, "latest_annotated.jpg")
+        if os.path.exists(latest_annotated):
+            shutil.copy2(latest_annotated, os.path.join(static_dir, annotated_name))
+            plan["annotated_image_url"] = f"/static/{annotated_name}"
+            plan["has_annotated_image"] = True
+        plan["uploaded_filename"] = "water_damage_wall.jpg"
+    else:
+        plan["has_annotated_image"] = False
+
     with open(os.path.join(results_dir, "plan.json"), "w") as f:
         json.dump(plan, f, indent=2)
 
@@ -162,24 +184,37 @@ def upload_file_api():
 
     upload_dir = os.path.join(PROJECT_ROOT, "uploads")
     os.makedirs(upload_dir, exist_ok=True)
-    save_path = os.path.join(upload_dir, file.filename)
+    import time
+    import shutil
+    ts = int(time.time() * 1000)
+    safe_name = f"up_{ts}_{file.filename}"
+    save_path = os.path.join(upload_dir, safe_name)
     file.save(save_path)
 
     runner = PipelineRunner(drift_correction=True)
     try:
         plan = runner.process_capture(save_path, tier=tier)
         results_dir = os.path.join(PROJECT_ROOT, "results")
+        static_dir = os.path.join(PROJECT_ROOT, "web_ui", "static")
         os.makedirs(results_dir, exist_ok=True)
-        import time
-        import shutil
-        annotated_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "latest_annotated.jpg")
-        raw_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "latest_raw.jpg")
-        if tier == "photos":
-            shutil.copy2(save_path, raw_path)
-            plan["raw_image_url"] = f"/static/latest_raw.jpg?t={int(time.time()*1000)}"
+        os.makedirs(static_dir, exist_ok=True)
 
-        plan["has_annotated_image"] = os.path.exists(annotated_path)
-        plan["annotated_image_url"] = f"/static/latest_annotated.jpg?t={int(time.time()*1000)}"
+        raw_name = f"raw_{ts}.jpg"
+        annotated_name = f"annotated_{ts}.jpg"
+
+        if tier == "photos":
+            shutil.copy2(save_path, os.path.join(static_dir, raw_name))
+            shutil.copy2(save_path, os.path.join(static_dir, "latest_raw.jpg"))
+            plan["raw_image_url"] = f"/static/{raw_name}"
+
+        latest_annotated = os.path.join(static_dir, "latest_annotated.jpg")
+        if os.path.exists(latest_annotated):
+            shutil.copy2(latest_annotated, os.path.join(static_dir, annotated_name))
+            plan["annotated_image_url"] = f"/static/{annotated_name}"
+            plan["has_annotated_image"] = True
+        else:
+            plan["has_annotated_image"] = False
+
         plan["uploaded_filename"] = file.filename
         plan["tier"] = tier
 

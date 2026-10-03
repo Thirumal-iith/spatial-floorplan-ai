@@ -151,6 +151,12 @@
       border-radius: 8px;
       filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
     }
+    #inlineSvgViewport svg, #spatialSvgContainer svg {
+      width: 100%;
+      height: auto;
+      max-height: 280px;
+      border-radius: 6px;
+    }
 
     .tabs {
       display: flex;
@@ -427,11 +433,11 @@
     <div class="top-actions">
       <!-- Quick Sample Loader -->
       <div class="sample-pill-group">
-        <button class="sample-pill active" onclick="loadSample('lidar_living', this)">LiDAR Room (.PLY)</button>
-        <button class="sample-pill" onclick="loadSample('lidar_bedroom', this)">Bedroom (.PLY)</button>
-        <button class="sample-pill" onclick="loadSample('video_walkthrough', this)">Video (.MP4)</button>
-        <button class="sample-pill" onclick="loadSample('multi_room', this)">Multi-Room Apt</button>
-        <button class="sample-pill" onclick="loadSample('photo_damage', this)">Photo CV</button>
+        <button class="sample-pill active" onclick="loadSample('lidar_living', this)">LiDAR Living (3D Scan)</button>
+        <button class="sample-pill" onclick="loadSample('lidar_bedroom', this)">LiDAR Bedroom (3D Scan)</button>
+        <button class="sample-pill" onclick="loadSample('video_walkthrough', this)">Video Walkthrough (MP4)</button>
+        <button class="sample-pill" onclick="loadSample('multi_room', this)">Multi-Room Apt (4 Rooms)</button>
+        <button class="sample-pill" onclick="loadSample('photo_damage', this)">Photo Damage CV</button>
       </div>
       <button onclick="openQrModal()" class="btn-action" style="background:linear-gradient(135deg, #10b981, #059669); text-decoration:none; display:inline-flex; align-items:center; gap:0.35rem; padding:0.35rem 0.75rem; font-size:0.78rem;">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -468,7 +474,7 @@
       <div class="tabs">
         <div class="tab active" onclick="switchTab('tabSandbox', this)">Interactive Tester</div>
         <div class="tab" id="tabPhotoBtn" onclick="switchTab('tabLivePhoto', this)" style="display:none; color:#38bdf8; font-weight:700;">📸 Live Photo CV</div>
-        <div class="tab" onclick="switchTab('tabSpatial', this)">Spatial Metrics</div>
+        <div class="tab" id="tabSpatialBtn" onclick="switchTab('tabSpatial', this)">Spatial Metrics (2D Plan)</div>
         <div class="tab" onclick="switchTab('tabConcealed', this)">Concealed Flags</div>
         <div class="tab" onclick="switchTab('tabScope', this)">Restoration Scope</div>
         <div class="tab" onclick="switchTab('tabGates', this)">Benchmark Gates</div>
@@ -480,12 +486,21 @@
     </section>
   </main>
 
-  <!-- Permanent Global Inputs for Camera and File Upload -->
-  <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
-  <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
-  <input type="file" id="fileInput" accept="*/*" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
+  <!-- Permanent Accessible Global Inputs for Camera and File Upload -->
+  <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;" onchange="handleFileUpload(event)">
+  <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;" onchange="handleFileUpload(event)">
+  <input type="file" id="fileInput" accept="*/*" style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;" onchange="handleFileUpload(event)">
 
   <script>
+    function handleDirectUpload(input) {
+      if (input && input.files && input.files.length > 0) {
+        const file = input.files[0];
+        console.log("Direct file uploaded:", file.name, file.size);
+        processUploadedFile(file);
+        input.value = '';
+      }
+    }
+
     function triggerCameraPhoto() {
       const el = document.getElementById('cameraPhotoInput');
       if (el) {
@@ -545,7 +560,7 @@
           const existingPlan = await planRes.json();
           if (existingPlan && (existingPlan.tier === 'photos' || existingPlan.has_annotated_image)) {
             planData = existingPlan;
-            refreshSvg();
+            await refreshSvg();
             const photoTabBtn = document.getElementById('tabPhotoBtn');
             if (photoTabBtn) {
               photoTabBtn.style.display = 'block';
@@ -584,7 +599,7 @@
         body: JSON.stringify({ sample: sampleKey })
       });
       planData = await res.json();
-      refreshSvg();
+      await refreshSvg();
       if (sampleKey === 'photo_damage') {
         const photoTabBtn = document.getElementById('tabPhotoBtn');
         if (photoTabBtn) {
@@ -592,14 +607,45 @@
           switchTab('tabLivePhoto', photoTabBtn);
           return;
         }
+      } else {
+        const spatialBtn = document.getElementById('tabSpatialBtn');
+        if (spatialBtn) {
+          switchTab('tabSpatial', spatialBtn);
+          return;
+        }
       }
       renderCurrentTab();
     }
 
+    let currentSvgString = "";
     async function refreshSvg() {
-      const svgRes = await fetch('/api/plan/svg?t=' + Date.now());
-      const svgText = await svgRes.text();
-      document.getElementById('svgViewport').innerHTML = svgText;
+      try {
+        const svgRes = await fetch('/api/plan/svg?t=' + Date.now());
+        if (svgRes.ok) {
+          const svgText = await svgRes.text();
+          currentSvgString = svgText;
+          const vp = document.getElementById('svgViewport');
+          if (vp) vp.innerHTML = svgText;
+          const inlineVp = document.getElementById('inlineSvgViewport');
+          if (inlineVp) inlineVp.innerHTML = svgText;
+          const spatialVp = document.getElementById('spatialSvgContainer');
+          if (spatialVp) spatialVp.innerHTML = svgText;
+        }
+      } catch (err) {
+        console.error("refreshSvg error:", err);
+      }
+    }
+
+    function scrollToFloorPlan() {
+      const vp = document.getElementById('svgViewport');
+      if (vp) {
+        vp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        vp.style.transition = 'box-shadow 0.3s ease';
+        vp.style.boxShadow = '0 0 35px rgba(56, 189, 248, 0.95)';
+        setTimeout(() => {
+          vp.style.boxShadow = '';
+        }, 2200);
+      }
     }
 
     async function runCustomSandbox() {
@@ -616,7 +662,12 @@
         })
       });
       planData = await res.json();
-      refreshSvg();
+      await refreshSvg();
+      const spatialBtn = document.getElementById('tabSpatialBtn');
+      if (spatialBtn) {
+        switchTab('tabSpatial', spatialBtn);
+        return;
+      }
       renderCurrentTab();
     }
 
@@ -676,7 +727,8 @@
           return;
         }
         planData = data;
-        refreshSvg();
+        photoViewMode = 'annotated';
+        await refreshSvg();
         const photoTabBtn = document.getElementById('tabPhotoBtn');
         if (photoTabBtn && (data.tier === 'photos' || data.has_annotated_image)) {
           photoTabBtn.style.display = 'block';
@@ -791,19 +843,41 @@
               </div>
             </div>
 
-            <!-- Quick Action Buttons -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:0.6rem;">
-              <button class="btn-action" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; color:#fff; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem; box-shadow:0 4px 14px rgba(56,189,248,0.35);" onclick="triggerCameraPhoto()">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                📸 Retake Photo (Camera)
-              </button>
-              <button class="btn-action" style="background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.5); color:#c7d2fe; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerCameraGallery()">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                🖼️ Choose from Gallery
-              </button>
+            <!-- Inline 2D Reconstructed Floor Plan Viewport -->
+            <div style="background:#0b1120; border-radius:10px; border:1px solid rgba(56,189,248,0.3); overflow:hidden; margin-bottom:0.85rem; padding:0.6rem; text-align:center;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; padding:0 0.25rem;">
+                <span style="font-size:0.75rem; color:#38bdf8; font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/><path d="M14 4v16"/><path d="M4 10h16"/></svg>
+                  RECONSTRUCTED 2D ARCHITECTURAL FLOOR PLAN
+                </span>
+                <button onclick="scrollToFloorPlan()" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:0.7rem; font-weight:700; border-radius:4px; padding:0.2rem 0.5rem; cursor:pointer;">
+                  🔍 Focus Top Canvas
+                </button>
+              </div>
+              <div id="inlineSvgViewport" style="max-height:260px; overflow:auto; display:flex; align-items:center; justify-content:center;">
+                ${currentSvgString || '<p style="color:#64748b; font-size:0.75rem;">Rendering floor plan SVG...</p>'}
+              </div>
+              <div style="font-size:0.72rem; color:#94a3b8; font-family:'JetBrains Mono',monospace; margin-top:0.35rem; display:flex; justify-content:space-between; padding:0 0.25rem;">
+                <span>Footprint: <strong>${areaVal} m²</strong></span>
+                <span>Walls: <strong>${wallsCount} Outer Walls</strong></span>
+              </div>
             </div>
-            <button class="btn-action" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); font-size:0.82rem; padding:0.6rem; display:flex; align-items:center; justify-content:center;" onclick="switchTab('tabSpatial', document.querySelectorAll('.tab')[1])">
-              📐 View Reconstructed 2D Floor Plan &rarr;
+
+            <!-- Quick Action Buttons using native label triggers -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:0.6rem;">
+              <label class="btn-action" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; color:#fff; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem; box-shadow:0 4px 14px rgba(56,189,248,0.35); cursor:pointer; text-align:center;">
+                <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleDirectUpload(this)">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>📸 Retake Photo (Camera)</span>
+              </label>
+              <label class="btn-action" style="background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.5); color:#c7d2fe; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem; cursor:pointer; text-align:center;">
+                <input type="file" accept="image/*" style="display:none;" onchange="handleDirectUpload(this)">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>🖼️ Choose from Gallery</span>
+              </label>
+            </div>
+            <button class="btn-action" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); font-size:0.85rem; padding:0.65rem; font-weight:800; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="scrollToFloorPlan()">
+              📐 Scroll to Full 2D Floor Plan Canvas &uarr;
             </button>
           </div>
         `;
@@ -849,24 +923,27 @@
             </div>
           </div>
 
-          <!-- Mobile Direct Camera Actions -->
+          <!-- Mobile Direct Camera Actions using native label triggers -->
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:0.75rem;">
-            <button class="btn-action" style="background:rgba(56, 189, 248, 0.12); border:1px solid rgba(56, 189, 248, 0.4); color:var(--accent-blue); padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="triggerCameraPhoto()">
+            <label class="btn-action" style="background:rgba(56, 189, 248, 0.12); border:1px solid rgba(56, 189, 248, 0.4); color:var(--accent-blue); padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; text-align:center;">
+              <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleDirectUpload(this)">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-              Camera (Photo)
-            </button>
-            <button class="btn-action" style="background:rgba(99, 102, 241, 0.12); border:1px solid rgba(99, 102, 241, 0.4); color:#a5b4fc; padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="triggerCameraVideo()">
+              <span>Camera (Photo)</span>
+            </label>
+            <label class="btn-action" style="background:rgba(99, 102, 241, 0.12); border:1px solid rgba(99, 102, 241, 0.4); color:#a5b4fc; padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; text-align:center;">
+              <input type="file" accept="video/*" capture="environment" style="display:none;" onchange="handleDirectUpload(this)">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              Camera (Video)
-            </button>
+              <span>Camera (Video)</span>
+            </label>
           </div>
 
-          <!-- File Upload Zone -->
-          <div class="upload-zone" onclick="triggerFileUpload()" ondragover="onDragOverZone(event)" ondragleave="onDragLeaveZone(event)" ondrop="onDropZone(event)">
+          <!-- File Upload Zone using native label trigger -->
+          <label class="upload-zone" style="display:block; cursor:pointer;" ondragover="onDragOverZone(event)" ondragleave="onDragLeaveZone(event)" ondrop="onDropZone(event)">
+            <input type="file" accept="*/*" style="display:none;" onchange="handleDirectUpload(this)">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom:0.4rem; color:var(--accent-blue);"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <p style="font-size:0.85rem; font-weight:700;">Drop your recorded video (.mp4), photo (.jpg), or point cloud (.ply) here</p>
             <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">Live processing of real video clips, smartphone photos, or LiDAR point clouds (.ply, .obj, .mp4, .jpg)</p>
-          </div>
+          </label>
 
           <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
             <strong>Test Pipeline on Live Captured Data:</strong><br>
@@ -889,6 +966,22 @@
         `).join('');
 
         area.innerHTML = `
+          <!-- Visual Floor Plan inside Spatial Tab -->
+          <div style="background:#0b1120; border-radius:10px; border:1px solid rgba(56,189,248,0.3); overflow:hidden; margin-bottom:1rem; padding:0.6rem; text-align:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; padding:0 0.25rem;">
+              <span style="font-size:0.75rem; color:#38bdf8; font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/><path d="M14 4v16"/><path d="M4 10h16"/></svg>
+                ARCHITECTURAL 2D FLOOR PLAN DRAWING
+              </span>
+              <button onclick="scrollToFloorPlan()" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:0.7rem; font-weight:700; border-radius:4px; padding:0.2rem 0.5rem; cursor:pointer;">
+                🔍 Focus Top Canvas
+              </button>
+            </div>
+            <div id="spatialSvgContainer" style="max-height:280px; overflow:auto; display:flex; align-items:center; justify-content:center;">
+              ${currentSvgString || '<p style="color:#64748b; font-size:0.75rem;">Rendering floor plan SVG...</p>'}
+            </div>
+          </div>
+
           <div class="metric-grid">
             <div class="metric-card">
               <div class="metric-lbl">Total Footprint</div>
@@ -1010,6 +1103,14 @@
             </div>
           </div>
         `;
+      }
+
+      // Post-render SVG injection ensuring immediate rendering if SVG already fetched
+      if (currentSvgString) {
+        const inlineVp = document.getElementById('inlineSvgViewport');
+        if (inlineVp && !inlineVp.querySelector('svg')) inlineVp.innerHTML = currentSvgString;
+        const spatialVp = document.getElementById('spatialSvgContainer');
+        if (spatialVp && !spatialVp.querySelector('svg')) spatialVp.innerHTML = currentSvgString;
       }
     }
 
