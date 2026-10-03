@@ -154,6 +154,7 @@ class PipelineRunner:
             room_dict = {
                 "room_id": r_id,
                 "name": name,
+                "room_type": r_raw.get("room_type", "living" if "living" in name.lower() else ("bedroom" if "bed" in name.lower() else ("kitchen" if "kitchen" in name.lower() else ("bathroom" if "bath" in name.lower() else "hallway")))),
                 "polygon": poly,
                 "floor_area_m2": UncertaintyCalibrator.calibrate_area(room_area, tier),
                 "ceiling_height_m": UncertaintyCalibrator.calibrate_ceiling_height(nominal_height, tier),

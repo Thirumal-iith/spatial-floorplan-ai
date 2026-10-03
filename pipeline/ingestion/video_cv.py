@@ -154,50 +154,57 @@ class VideoProcessor:
             r_frame_paths = frame_paths[sf:ef]
             r_traj = trajectory[sf:ef] if len(trajectory) >= ef else trajectory
 
-            # Semantic Room Typology Classification
-            # First room entered in a property inspection is typically the Main Living Area
-            if r_idx == 0:
+            # Semantic Room Typology Classification via Computer Vision
+            from pipeline.ingestion.room_classifier import RoomTypologyClassifier
+            room_classifier = RoomTypologyClassifier()
+            mid_frame = r_frames[len(r_frames) // 2] if r_frames else None
+            if mid_frame is not None:
+                c_res = room_classifier.classify_image(mid_frame, filename=f"room_{r_idx+1}")
+                c_type = c_res["room_type"]
+                c_name = c_res["room_name"]
+            else:
+                c_type = "living" if r_idx == 0 else "bedroom"
+                c_name = "Living Area" if r_idx == 0 else f"Bedroom {r_idx}"
+
+            h_energies, v_energies, variances, saturations = [], [], [], []
+            for rf in r_frames:
+                gray = cv2.cvtColor(rf, cv2.COLOR_BGR2GRAY)
+                hsv = cv2.cvtColor(rf, cv2.COLOR_BGR2HSV)
+                sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+                sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+                h_energies.append(np.mean(np.abs(sobely)))
+                v_energies.append(np.mean(np.abs(sobelx)))
+                variances.append(float(np.var(gray)))
+                saturations.append(float(np.mean(hsv[:, :, 1])))
+
+            mean_h = np.mean(h_energies) if h_energies else 1.0
+            mean_v = np.mean(v_energies) if v_energies else 1.0
+            edge_ratio = mean_h / max(mean_v, 1e-3)
+            avg_var = np.mean(variances) if variances else 1000.0
+            avg_sat = np.mean(saturations) if saturations else 60.0
+
+            # Architectural circulation prior: Room 1 is primary circulation node (Living Area)
+            if r_idx == 0 and "living" not in assigned_types:
                 r_name = "Living Area"
                 r_type = "living"
+            elif c_type not in assigned_types and c_type != "living":
+                r_type = c_type
+                r_name = c_name
+            elif edge_ratio > 1.12 and "kitchen" not in assigned_types:
+                r_name = "Kitchen Area"
+                r_type = "kitchen"
+            elif (avg_var > 1700.0 or avg_sat < 42.0) and "bathroom" not in assigned_types and num_rooms >= 4:
+                r_name = "Bathroom"
+                r_type = "bathroom"
+            elif "bedroom_primary" not in assigned_types:
+                r_name = "Primary Bedroom"
+                r_type = "bedroom_primary"
+            elif "bathroom" not in assigned_types:
+                r_name = "Bathroom"
+                r_type = "bathroom"
             else:
-                # Analyze visual features of this room segment
-                h_energies = []
-                v_energies = []
-                variances = []
-                saturations = []
-                for rf in r_frames:
-                    gray = cv2.cvtColor(rf, cv2.COLOR_BGR2GRAY)
-                    hsv = cv2.cvtColor(rf, cv2.COLOR_BGR2HSV)
-                    sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-                    sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-                    h_energies.append(np.mean(np.abs(sobely)))
-                    v_energies.append(np.mean(np.abs(sobelx)))
-                    variances.append(float(np.var(gray)))
-                    saturations.append(float(np.mean(hsv[:, :, 1])))
-
-                mean_h = np.mean(h_energies) if h_energies else 1.0
-                mean_v = np.mean(v_energies) if v_energies else 1.0
-                edge_ratio = mean_h / max(mean_v, 1e-3)
-                avg_var = np.mean(variances) if variances else 1000.0
-                avg_sat = np.mean(saturations) if saturations else 60.0
-
-                # Kitchen has dense horizontal countertop, backsplash, cabinet lines (edge_ratio > 1.15)
-                if edge_ratio > 1.15 and "kitchen" not in assigned_types:
-                    r_name = "Kitchen Area"
-                    r_type = "kitchen"
-                # Bathroom has compact scale and high specular tile/porcelain reflectance (high variance, low sat)
-                elif (avg_var > 1700.0 or avg_sat < 42.0) and "bathroom" not in assigned_types and num_rooms >= 4:
-                    r_name = "Bathroom"
-                    r_type = "bathroom"
-                elif "bedroom_primary" not in assigned_types:
-                    r_name = "Primary Bedroom"
-                    r_type = "bedroom_primary"
-                elif "bathroom" not in assigned_types:
-                    r_name = "Bathroom"
-                    r_type = "bathroom"
-                else:
-                    r_name = f"Bedroom {r_idx + 1}"
-                    r_type = f"bedroom_{r_idx + 1}"
+                r_name = f"Bedroom {r_idx + 1}"
+                r_type = f"bedroom_{r_idx + 1}"
 
             assigned_types.add(r_type)
             r_id = f"video_room_{r_idx + 1:02d}"
