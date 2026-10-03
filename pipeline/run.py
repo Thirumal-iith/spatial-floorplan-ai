@@ -196,6 +196,34 @@ class PipelineRunner:
         # Calculate total restoration cost
         total_scope_cost = sum(item["total_cost"] for item in all_scope_items)
 
+        # Architectural Room Inventory Breakdown (Surveyor Discovery)
+        living_count = sum(1 for r in placed_rooms if "living" in r.get("name", "").lower() or r.get("room_type") == "living")
+        kitchen_count = sum(1 for r in placed_rooms if "kitchen" in r.get("name", "").lower() or r.get("room_type") == "kitchen")
+        bedroom_count = sum(1 for r in placed_rooms if "bed" in r.get("name", "").lower() or "bedroom" in str(r.get("room_type", "")))
+        bathroom_count = sum(1 for r in placed_rooms if "bath" in r.get("name", "").lower() or r.get("room_type") == "bathroom")
+        other_count = max(0, len(placed_rooms) - (living_count + kitchen_count + bedroom_count + bathroom_count))
+
+        if len(placed_rooms) == 1:
+            inv_summary = f"1 Room ({placed_rooms[0].get('name', 'Main Room')})"
+        else:
+            parts = []
+            if living_count > 0: parts.append(f"{living_count} Living")
+            if kitchen_count > 0: parts.append(f"{kitchen_count} Kitchen")
+            if bedroom_count > 0: parts.append(f"{bedroom_count} Bed")
+            if bathroom_count > 0: parts.append(f"{bathroom_count} Bath")
+            if other_count > 0: parts.append(f"{other_count} Other")
+            inv_summary = ", ".join(parts) if parts else f"{len(placed_rooms)} Rooms"
+
+        room_inventory = {
+            "total_rooms": len(placed_rooms),
+            "living_areas": living_count,
+            "kitchens": kitchen_count,
+            "bedrooms": bedroom_count,
+            "bathrooms": bathroom_count,
+            "other_rooms": other_count,
+            "summary": inv_summary
+        }
+
         elapsed_time = round(time.time() - start_time, 2)
 
         output_contract = {
@@ -208,6 +236,7 @@ class PipelineRunner:
             "total_footprint_m2": UncertaintyCalibrator.calibrate_area(total_fp, tier),
             "net_floor_area_m2": UncertaintyCalibrator.calibrate_area(stitched.get("net_floor_area_m2", total_fp * 0.92), tier),
             "overlaps_detected": stitched.get("overlaps_detected", False),
+            "room_inventory": room_inventory,
             "rooms": placed_rooms,
             "concealed_damage_flags": all_concealed_flags,
             "scope_line_items": all_scope_items,
@@ -271,11 +300,13 @@ class PipelineRunner:
             all_damages = []
             all_poses = []
             for vf in video_files:
-                room_obj = self.video_processor.process_video_file(vf)
-                rooms.append(room_obj)
-                all_damages.extend(room_obj.get("detected_damages", []))
-                for p in room_obj.get("poses", []):
-                    all_poses.append(np.array(p))
+                res = self.video_processor.process_video_file(vf)
+                v_rooms = res if isinstance(res, list) else [res]
+                for r in v_rooms:
+                    rooms.append(r)
+                    all_damages.extend(r.get("detected_damages", []))
+                    for p in r.get("poses", []):
+                        all_poses.append(np.array(p))
             return rooms, all_damages, all_poses
 
         # Check for .ply point cloud files in directory

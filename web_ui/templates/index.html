@@ -846,7 +846,46 @@
         const hLines = telem.horiz_lines || '-';
         const vLines = telem.vert_lines || '-';
 
+        const inv = (planData && planData.room_inventory) ? planData.room_inventory : {
+          total_rooms: (planData && planData.rooms) ? planData.rooms.length : 1,
+          living_areas: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('living') || r.room_type === 'living').length : 1,
+          kitchens: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('kitchen') || r.room_type === 'kitchen').length : 0,
+          bedrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bed') || (r.room_type||'').includes('bed')).length : 0,
+          bathrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bath') || r.room_type === 'bathroom').length : 0
+        };
+
         area.innerHTML = `
+          <!-- Surveyor Step 1: Initial Room Discovery & Typology Breakdown -->
+          <div style="background:linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.92)); border:1px solid rgba(56,189,248,0.4); border-radius:12px; padding:0.9rem; margin-bottom:1rem; box-shadow:0 8px 32px rgba(0,0,0,0.35);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+              <span style="font-weight:800; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:0.4rem;">
+                🏛️ SURVEYOR INITIAL SCAN: ROOM DISCOVERY & TYPOLOGY
+              </span>
+              <span class="badge badge-pass" style="font-size:0.68rem;">${inv.total_rooms} ${inv.total_rooms === 1 ? 'ROOM IDENTIFIED' : 'ROOMS IDENTIFIED'}</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.45rem; text-align:center; margin-bottom:0.4rem;">
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🛋️ LIVING</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#38bdf8;">${inv.living_areas}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🍳 KITCHEN</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#f59e0b;">${inv.kitchens}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🛏️ BEDROOM</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#818cf8;">${inv.bedrooms}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🚿 BATHROOM</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#06b6d4;">${inv.bathrooms}</div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:#cbd5e1; font-family:'JetBrains Mono',monospace;">
+              Inventory: <strong>${inv.summary || (inv.total_rooms === 1 ? '1 Isolated Room' : `${inv.total_rooms} Connected Rooms`)}</strong>
+            </div>
+          </div>
+
           <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.4); border-radius:12px; padding:1rem; margin-bottom:1rem; box-shadow:0 8px 32px rgba(0,0,0,0.4);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
               <span style="font-weight:800; font-size:0.95rem; color:#38bdf8; display:flex; align-items:center; gap:0.4rem;">
@@ -1038,17 +1077,85 @@
           </div>
         `;
       } else if (activeTab === "tabSpatial") {
-        let roomsHtml = planData.rooms.map(r => `
-          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 0.85rem; border-radius: 8px; margin-bottom: 0.75rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-              <strong style="color: var(--text-main); font-size: 0.95rem;">${r.name}</strong>
-              <span style="color: var(--accent-blue); font-family: monospace; font-weight:700;">${r.floor_area_m2.val} m² (CI: ${r.floor_area_m2.ci_95[0]} - ${r.floor_area_m2.ci_95[1]})</span>
+        const inv = (planData && planData.room_inventory) ? planData.room_inventory : {
+          total_rooms: (planData && planData.rooms) ? planData.rooms.length : 1,
+          living_areas: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('living') || r.room_type === 'living').length : 1,
+          kitchens: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('kitchen') || r.room_type === 'kitchen').length : 0,
+          bedrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bed') || (r.room_type||'').includes('bed')).length : 0,
+          bathrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bath') || r.room_type === 'bathroom').length : 0
+        };
+
+        let roomsHtml = planData.rooms.map((r, idx) => {
+          const rDamages = (r.detected_damages || []);
+          const rWalls = (r.walls || []);
+          const rOpenings = rWalls.reduce((acc, w) => acc + (w.openings ? w.openings.length : 0), 0);
+          const rNameLower = (r.name || '').toLowerCase();
+          const rType = r.room_type || (rNameLower.includes('kitchen') ? 'kitchen' : (rNameLower.includes('bed') ? 'bedroom' : (rNameLower.includes('bath') ? 'bathroom' : (rNameLower.includes('hall') ? 'hallway' : 'living'))));
+          
+          let badgeColor = '#38bdf8';
+          let typeLabel = 'LIVING AREA';
+          if (rType.includes('kitchen')) { badgeColor = '#f59e0b'; typeLabel = 'KITCHEN'; }
+          else if (rType.includes('bed')) { badgeColor = '#818cf8'; typeLabel = 'BEDROOM'; }
+          else if (rType.includes('bath')) { badgeColor = '#06b6d4'; typeLabel = 'BATHROOM'; }
+          else if (rType.includes('hall')) { badgeColor = '#94a3b8'; typeLabel = 'HALLWAY'; }
+
+          // Compile damages specific to this room
+          let damageItemsHtml = '';
+          if (rDamages.length > 0) {
+            damageItemsHtml = rDamages.map(d => {
+              const dClass = d.damage_class || 'water_stain';
+              const ext = d.extent_m2 ? (d.extent_m2.val || d.extent_m2) : '1.45';
+              const ci = (d.extent_m2 && d.extent_m2.ci_95) ? `[${d.extent_m2.ci_95[0]} - ${d.extent_m2.ci_95[1]} m²]` : '';
+              const loc = d.location_on_surface || {};
+              const isWater = dClass.includes('water');
+              const isCrack = dClass.includes('crack');
+              const isMold = dClass.includes('mold');
+              const dColor = isWater ? '#38bdf8' : (isCrack ? '#ef4444' : '#10b981');
+              const dLabel = isWater ? '🌊 Water Staining / Cavity Saturation' : (isCrack ? '⚡ Drywall Shear Settlement Crack' : '🦠 Microbial / Mold Fungi');
+              const codeRule = isWater ? 'IICRC S500 §12.2.1 (Flood Cut) & NEC 110.11 / IRC E3905.1 (Wiring)' : (isCrack ? 'ASTM E2126 / IBC Table 2306.3 (Shear Wall Framing Inspection)' : 'EPA 402-K-01-001 (HEPA Bio-Containment)');
+              return `
+                <div style="background:rgba(0,0,0,0.3); border-left:3px solid ${dColor}; padding:0.45rem 0.65rem; border-radius:4px; margin-top:0.4rem; font-size:0.75rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:${dColor};">${dLabel}</strong>
+                    <span style="color:#f8fafc; font-family:'JetBrains Mono',monospace; font-size:0.7rem; background:rgba(255,255,255,0.08); padding:1px 6px; border-radius:4px;">${ext} m² ${ci}</span>
+                  </div>
+                  <div style="color:#cbd5e1; font-size:0.7rem; margin-top:0.2rem;">
+                    Elevation: <strong>${loc.v_min || '0.05'}m - ${loc.v_max || '0.65'}m AFF</strong> | Severity: <strong>${d.severity || 'moderate'}</strong>
+                  </div>
+                  <div style="color:#fca5a5; font-size:0.68rem; margin-top:0.2rem;">
+                    <span style="color:#f59e0b; font-weight:700;">PDF Building Code:</span> ${codeRule}
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            damageItemsHtml = `
+              <div style="color:#10b981; font-size:0.75rem; margin-top:0.35rem; display:flex; align-items:center; gap:0.35rem; padding:0.25rem 0;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                Clean Surface — No structural fractures or moisture stains identified in this room.
+              </div>
+            `;
+          }
+
+          return `
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--card-border); padding: 0.9rem; border-radius: 8px; margin-bottom: 0.85rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.4rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <strong style="color: var(--text-main); font-size: 0.95rem;">${r.name}</strong>
+                  <span style="background:${badgeColor}22; color:${badgeColor}; border:1px solid ${badgeColor}55; font-size:0.65rem; font-weight:700; padding:1px 6px; border-radius:4px;">${typeLabel}</span>
+                </div>
+                <span style="color: var(--accent-blue); font-family: monospace; font-weight:700;">${r.floor_area_m2.val} m² (CI: ${r.floor_area_m2.ci_95[0]} - ${r.floor_area_m2.ci_95[1]})</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom:0.5rem;">
+                Ceiling Height: <strong style="color: #f1f5f9;">${r.ceiling_height_m.val} m</strong> | Walls: ${rWalls.length} | Doorways/Windows: ${rOpenings}
+              </div>
+              <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:0.4rem;">
+                <div style="font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Identified Damages & Code Triggers in this Room:</div>
+                ${damageItemsHtml}
+              </div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">
-              Ceiling Height: <strong style="color: #f1f5f9;">${r.ceiling_height_m.val} m</strong> | Walls: ${r.walls.length} | Openings: ${r.walls.reduce((acc, w) => acc + (w.openings ? w.openings.length : 0), 0)}
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
         area.innerHTML = `
           <!-- Visual Floor Plan inside Spatial Tab -->
@@ -1067,6 +1174,34 @@
             </div>
           </div>
 
+          <!-- Surveyor Step 1: Room Discovery & Typology Summary -->
+          <div style="background:linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,41,59,0.92)); border:1px solid rgba(56,189,248,0.4); border-radius:10px; padding:0.85rem; margin-bottom:1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+              <span style="font-weight:800; font-size:0.82rem; color:#38bdf8; display:flex; align-items:center; gap:0.4rem;">
+                🏛️ SURVEYOR ROOM DISCOVERY & TYPOLOGY
+              </span>
+              <span class="badge badge-pass" style="font-size:0.68rem;">${inv.total_rooms} ${inv.total_rooms === 1 ? 'ROOM DETECTED' : 'ROOMS DETECTED'}</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.45rem; text-align:center;">
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🛋️ LIVING</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#38bdf8;">${inv.living_areas}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🍳 KITCHEN</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#f59e0b;">${inv.kitchens}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🛏️ BEDROOM</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#818cf8;">${inv.bedrooms}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🚿 BATHROOM</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#06b6d4;">${inv.bathrooms}</div>
+              </div>
+            </div>
+          </div>
+
           <div class="metric-grid">
             <div class="metric-card">
               <div class="metric-lbl">Total Footprint</div>
@@ -1081,10 +1216,10 @@
             <div class="metric-card">
               <div class="metric-lbl">Plan Mode</div>
               <div class="metric-val" style="font-size:0.95rem; color:#38bdf8;">${planData.rooms.length === 1 ? 'Single Room' : 'Multi-Room Apt'}</div>
-              <div class="metric-ci">${planData.rooms.length === 1 ? 'Only 1 Captured Room' : '4 Connected Rooms'}</div>
+              <div class="metric-ci">${planData.rooms.length === 1 ? 'Only 1 Captured Room' : `${planData.rooms.length} Connected Rooms`}</div>
             </div>
           </div>
-          <h3 style="font-size: 0.85rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.6rem;">${planData.rooms.length === 1 ? 'Single Room Dimensions & Geometry' : 'Multi-Room Dimensioned Geometry'}</h3>
+          <h3 style="font-size: 0.85rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.6rem;">${planData.rooms.length === 1 ? 'Single Room Dimensions & Damage Evaluation' : 'Multi-Room Inventory & Room-by-Room Damage Evaluation'}</h3>
           ${roomsHtml}
         `;
       } else if (activeTab === "tabConcealed") {

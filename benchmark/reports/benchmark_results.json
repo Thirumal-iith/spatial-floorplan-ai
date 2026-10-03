@@ -65,8 +65,8 @@
   },
   "damage_evaluation": {
     "classes_detected": [
-      "drywall_crack",
-      "water_stain"
+      "water_stain",
+      "drywall_crack"
     ],
     "multi_class_spanning_gate": "PASS",
     "ci_95_calibration_coverage_pct": 100.0,
