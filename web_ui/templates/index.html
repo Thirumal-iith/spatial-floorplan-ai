@@ -855,6 +855,8 @@
           connectors: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('hall') || (r.name||'').toLowerCase().includes('connect') || (r.name||'').toLowerCase().includes('corridor')).length : 0
         };
 
+        const firstRoom = (planData && planData.rooms && planData.rooms.length > 0) ? planData.rooms[0] : {};
+        const rName = firstRoom.name || 'Living Area';
         const roomType = firstRoom.room_type || (rName.toLowerCase().includes('kitchen') ? 'kitchen' : (rName.toLowerCase().includes('bed') ? 'bedroom' : (rName.toLowerCase().includes('bath') ? 'bathroom' : (rName.toLowerCase().includes('hall') ? 'hallway' : 'living'))));
         let typeBadgeCol = '#38bdf8';
         let typeIcon = '🛋️';

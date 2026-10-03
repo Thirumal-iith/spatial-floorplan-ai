@@ -109,6 +109,33 @@ class ConcealedDamageRuleEngine:
                         "severity": "medium"
                     })
 
+                # RULE_BREACH_01 Check: structural drywall cavity breach exposing studs (IBC §2508 / IRC R702.3.5)
+                notes_lower = dmg.get("notes", "").lower()
+                if "breach" in notes_lower or "framing" in notes_lower or "stud" in notes_lower or extent > 2.5:
+                    flags.append({
+                        "flag_id": f"FLAG_{room_id}_{wall_id}_BREACH01",
+                        "room_id": room_id,
+                        "surface_id": wall_id,
+                        "rule_fired": "RULE_BREACH_01",
+                        "building_code_standard": "IBC §2508 / IRC R702.3.5 (Gypsum Board & Framing Cavity)",
+                        "trigger_evidence": f"Drywall cavity breach exposing structural timber studs ({extent:.2f}m²). Framing displacement risk.",
+                        "recommended_action": "Inspect 2x4 framing stud plumb and fastener withdrawal; install fire-blocking backing; hang 5/8\" Type X drywall.",
+                        "severity": "critical"
+                    })
+
+                # RULE_CEIL_01 Check: ceiling collapse / upper wall joist damage (IRC §R802)
+                if v_max >= 2.20 and ("water" in d_class or "breach" in notes_lower):
+                    flags.append({
+                        "flag_id": f"FLAG_{room_id}_{wall_id}_CEIL01",
+                        "room_id": room_id,
+                        "surface_id": wall_id,
+                        "rule_fired": "RULE_CEIL_01",
+                        "building_code_standard": "IRC §R802 (Ceiling Joist & Rafter Integrity)",
+                        "trigger_evidence": f"Damage reached ceiling juncture ({v_max:.2f}m AFF). Overhead joist moisture deflection risk.",
+                        "recommended_action": "Perform pinless moisture scan of overhead joists; remove compromised gypsum ceiling panels.",
+                        "severity": "high"
+                    })
+
                 # RULE_MOLD_01 Check: microbial fungal colonies (EPA / IICRC S520)
                 if "mold" in d_class or "microbial" in d_class:
                     flags.append({
