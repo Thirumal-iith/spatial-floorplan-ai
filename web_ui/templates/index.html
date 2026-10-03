@@ -824,6 +824,11 @@
       document.getElementById('qrModal').style.display = 'flex';
     }
 
+    function openQrModal() {
+      const modal = document.getElementById('qrModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
     function closeQrModal(event) {
       if (!event || event.target.id === 'qrModal' || event.target.classList.contains('modal-close') || event.target.tagName === 'BUTTON') {
         document.getElementById('qrModal').style.display = 'none';
@@ -844,33 +849,35 @@
       <button class="modal-close" onclick="closeQrModal()">&times;</button>
       <h2 style="font-size:1.15rem; font-weight:800; color:var(--text-main); margin-bottom:0.35rem; display:flex; align-items:center; gap:0.5rem;">
         <svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-        <span>Android Device Connection & Installation</span>
+        <span>Android Device Connection & APK Download</span>
       </h2>
       <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.85rem;">
-        Connect your Android device via USB Cable or Local Wi-Fi:
+        Download the native APK or access wirelessly via your phone:
       </p>
 
-      <div style="background:rgba(15,23,42,0.8); border:1px solid var(--card-border); padding:0.85rem; border-radius:10px; margin-bottom:0.85rem; font-size:0.78rem; color:#cbd5e1; line-height:1.5;">
-        <strong style="color:var(--accent-blue); font-size:0.85rem;">Option 1: USB Cable Connection (Direct)</strong><br/>
-        1. Plug your Android phone into this PC with your USB cable.<br/>
-        2. Enable <strong>USB Debugging</strong> in <em>Settings &gt; Developer Options</em>.<br/>
-        3. Port 5000 is mapped via ADB to your phone — open Chrome on phone and navigate to:
-        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); padding:0.4rem; border-radius:6px; margin:0.3rem 0; font-family:'JetBrains Mono',monospace; color:var(--accent-blue); font-weight:700; text-align:center;">
-          http://localhost:5000
+      <!-- Direct APK Download Banner -->
+      <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.35); padding:0.85rem; border-radius:10px; margin-bottom:0.85rem; text-align:center;">
+        <strong style="color:#f59e0b; font-size:0.88rem; display:block; margin-bottom:0.35rem;">Option 1: Direct Android APK</strong>
+        <a href="/api/download-apk" style="display:inline-flex; align-items:center; gap:0.4rem; background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; font-weight:700; padding:0.6rem 1.25rem; border-radius:8px; text-decoration:none; font-size:0.85rem; box-shadow:0 4px 12px rgba(245,158,11,0.3);">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Download spatial_app.apk
+        </a>
+        <div style="font-size:0.73rem; color:#94a3b8; margin-top:0.4rem;">
+          Once downloaded: Tap file &rarr; <em>Settings</em> &rarr; <em>Allow from this source</em> &rarr; <em>Install</em>.
         </div>
-        4. In Chrome menu (<strong>&vellip;</strong>), tap <strong>"Install app"</strong> to permanently install it on your phone!
       </div>
 
+      <!-- Browser / Add to Home screen -->
       <div style="background:rgba(15,23,42,0.8); border:1px solid var(--card-border); padding:0.85rem; border-radius:10px; margin-bottom:0.85rem; font-size:0.78rem; color:#cbd5e1; line-height:1.5;">
-        <strong style="color:var(--accent-emerald); font-size:0.85rem;">Option 2: Wi-Fi / QR Code Connection</strong><br/>
-        1. Ensure phone is on the same Wi-Fi.<br/>
-        2. Scan the QR code or go to <code>http://172.23.204.148:5000</code>.<br/>
-        3. Tap Chrome menu &gt; <strong>"Install app"</strong>.
+        <strong style="color:var(--accent-emerald); font-size:0.85rem;">Option 2: Direct Phone Browser / Home Screen Icon</strong><br/>
+        1. Open <code>http://172.23.204.148:5000</code> or scan QR code below.<br/>
+        2. In Chrome menu (<strong>&vellip;</strong>), tap <strong>"Add to Home screen"</strong>.<br/>
+        3. Instantly adds the Spatial AI icon to your phone launcher in full-screen standalone mode!
       </div>
 
       <div style="text-align:center; margin-bottom:0.85rem;">
         <div style="background:white; padding:0.6rem; border-radius:10px; display:inline-block; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-          <img src="/static/qr_code.png" alt="Mobile QR Code" style="width:140px; height:140px; display:block;">
+          <img src="/static/qr_code.png" alt="Mobile QR Code" style="width:130px; height:130px; display:block;">
         </div>
       </div>
 

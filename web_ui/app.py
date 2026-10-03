@@ -54,13 +54,13 @@ def download_report():
 
 @app.route("/api/download-apk")
 def download_apk():
-    apk_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "downloads", "spatial_ai_android.apk")
+    apk_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "downloads", "spatial_app.apk")
     if os.path.exists(apk_path):
         return send_file(
             apk_path,
             mimetype="application/vnd.android.package-archive",
             as_attachment=True,
-            download_name="Spatial_AI_Property_Audit.apk"
+            download_name="spatial_app.apk"
         )
     return "APK not found", 404
 
