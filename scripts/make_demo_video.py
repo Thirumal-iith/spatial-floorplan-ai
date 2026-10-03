@@ -206,7 +206,8 @@ def postprocess():
             break
         if i % 6 == 0:
             f = cv2.resize(f, (640, 360), interpolation=cv2.INTER_AREA)
-            frames.append(Image.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)).quantize(64))
+            frames.append(Image.fromarray(
+                cv2.cvtColor(f, cv2.COLOR_BGR2RGB)).quantize(64))
         i += 1
     if frames:
         frames[0].save("docs/demo.gif", save_all=True, append_images=frames[1:],

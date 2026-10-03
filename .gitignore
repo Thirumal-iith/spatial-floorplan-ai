@@ -22,3 +22,23 @@ android_build/
 benchmark/data/tier3_lidar_raw*/
 eval_out.txt
 repro_out.txt
+
+# generated / local-only
+web_ui/static/annotated_*
+web_ui/static/downloads/
+results/test_*
+results/latest_annotated.jpg
+results/rgb_sampled/
+results_photo/
+results_ply/
+android_tools/
+*.apk
+phone_screen.png
+clean_pdf_text.txt
+extracted_pdf_requirements.txt
+__pycache__/
+*.pyc
+
+web_ui/static/raw_*
+web_ui/static/latest_*
+web_ui/static/qr_code.png
