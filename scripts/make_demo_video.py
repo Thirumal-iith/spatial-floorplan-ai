@@ -23,7 +23,8 @@ def canvas():
 
 
 def text(img, s, y, scale=0.8, color=(235, 235, 235), x=60, th=2):
-    cv2.putText(img, s, (x, y), cv2.FONT_HERSHEY_SIMPLEX, scale, color, th, cv2.LINE_AA)
+    cv2.putText(img, s, (x, y), cv2.FONT_HERSHEY_SIMPLEX,
+                scale, color, th, cv2.LINE_AA)
 
 
 def slide(title, lines, sub=None):
@@ -68,17 +69,21 @@ def draw_plan(plan, gt=None):
         cv2.polylines(img, [P], True, (240, 240, 240), 3, cv2.LINE_AA)
         c = P.mean(0).astype(int)
         name = r.get("name") or r["room_id"]
-        text(img, str(name)[:16], int(c[1]), 0.6, (255, 255, 255), int(c[0]) - 60)
+        text(img, str(name)[:16], int(c[1]), 0.6,
+             (255, 255, 255), int(c[0]) - 60)
     x0, y = W - 400, 140
     text(img, "Per-room (val +/- 95% CI)", y, 0.7, ACC, x=x0)
     for r in rooms:
         y += 40
         ch = r.get("ceiling_height_m")
         ch = ch["val"] if isinstance(ch, dict) else ch
-        text(img, f"{r['room_id'][:16]}: ceil {float(ch):.2f} m", y, 0.55, x=x0)
-        lens = [w["length_m"]["val"] if isinstance(w["length_m"], dict) else w["length_m"] for w in r["walls"]]
+        text(img, f"{r['room_id'][:16]}: ceil {float(ch):.2f} m",
+             y, 0.55, x=x0)
+        lens = [w["length_m"]["val"] if isinstance(
+            w["length_m"], dict) else w["length_m"] for w in r["walls"]]
         y += 26
-        text(img, "  walls " + ", ".join(f"{v:.2f}" for v in lens[:4]), y, 0.5, (190, 190, 190), x=x0)
+        text(img, "  walls " +
+             ", ".join(f"{v:.2f}" for v in lens[:4]), y, 0.5, (190, 190, 190), x=x0)
     return img
 
 
@@ -121,7 +126,8 @@ def main():
         y0, x0 = 90, (W - im.shape[1]) // 2
         img[y0:y0 + im.shape[0], x0:x0 + im.shape[1]] = im
         text(img, "INPUT (video tier): handheld walkthrough, RGB only", 60, 0.9, ACC)
-        vw.write(caption(img, os.path.basename(f) + "  -> floor/wall/ceiling labelling + pseudo-depth"))
+        vw.write(caption(img, os.path.basename(f) +
+                 "  -> floor/wall/ceiling labelling + pseudo-depth"))
 
     # Input: photo folders
     for rd in sorted(glob.glob("benchmark/data/tier1_photos_raw/*"))[:4]:
@@ -133,7 +139,8 @@ def main():
             t = fit(im, 560, 270)
             x, y = 80 + (i % 2) * 580, 100 + (i // 2) * 285
             img[y:y + t.shape[0], x:x + t.shape[1]] = t
-        text(img, f"INPUT (photo tier): {os.path.basename(rd)} - stills, no depth/poses", 60, 0.8, ACC)
+        text(
+            img, f"INPUT (photo tier): {os.path.basename(rd)} - stills, no depth/poses", 60, 0.8, ACC)
         hold(caption(img, "SIFT yaw chain + vanishing-point gravity -> room layout"), 2.5)
 
     hold(slide("Pipeline",
@@ -165,13 +172,45 @@ def main():
                   f"{ph['mean_wall_err_pct']}% max {ph['max_wall_err_pct']}% (hallway fails)"]
     lines += ["Drift ablation: ON 2.6 cm centroid err  vs  OFF 60.4 cm",
               "Benchmark is SYNTHETIC (rendered); labelled in every output."]
-    hold(slide("Measured results", lines, "benchmark/reports/*.json  -  regenerate with reproduce_all.py"), 9)
+    hold(slide("Measured results", lines,
+         "benchmark/reports/*.json  -  regenerate with reproduce_all.py"), 9)
 
     hold(slide("Thanks!",
                ["Code, benchmark, reports and this video are reproducible offline.",
                 "See README.md for the full guide, results and known limitations."]), 4)
     vw.release()
-    print("written", OUT)
+    postprocess()
+    print("written", OUT, "and docs/demo.gif")
+
+
+def postprocess():
+    """Re-encode to browser-playable H.264 (GitHub inline player) and build a GIF preview."""
+    import subprocess
+    from PIL import Image
+    try:
+        import imageio_ffmpeg
+        exe = imageio_ffmpeg.get_ffmpeg_exe()
+        tmp = OUT.replace(".mp4", "_tmp.mp4")
+        r = subprocess.run([exe, "-y", "-i", OUT, "-c:v", "libx264", "-preset", "slow", "-crf", "28",
+                            "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", tmp],
+                           capture_output=True)
+        if r.returncode == 0:
+            os.replace(tmp, OUT)
+    except ImportError:
+        print("imageio-ffmpeg not installed: MP4 left as mpeg4 (may not play in browsers)")
+    cap = cv2.VideoCapture(OUT)
+    frames, i = [], 0
+    while True:
+        ok, f = cap.read()
+        if not ok:
+            break
+        if i % 6 == 0:
+            f = cv2.resize(f, (640, 360), interpolation=cv2.INTER_AREA)
+            frames.append(Image.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)).quantize(64))
+        i += 1
+    if frames:
+        frames[0].save("docs/demo.gif", save_all=True, append_images=frames[1:],
+                       duration=250, loop=0, optimize=True)
 
 
 if __name__ == "__main__":

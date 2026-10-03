@@ -29,7 +29,8 @@ def score(rooms, tol_pct):
     used, rows = set(), []
     for r in rooms:
         d = dims(r["polygon"])
-        cand = [(sum(abs(a - b) for a, b in zip(d, g)), k) for k, g in gt_dims.items() if k not in used]
+        cand = [(sum(abs(a - b) for a, b in zip(d, g)), k)
+                for k, g in gt_dims.items() if k not in used]
         if not cand:
             continue
         _, k = min(cand)
@@ -68,7 +69,8 @@ def main():
     rooms, tel = PL.reconstruct_property("benchmark/data/tier1_photos_raw")
     res["photos"] = score(rooms, 8.0)
     res["photos"]["runtime_s"] = round(time.time() - t, 1)
-    res["photos"]["failed_rooms"] = {k: v["error"] for k, v in tel.items() if "error" in v}
+    res["photos"]["failed_rooms"] = {k: v["error"]
+                                     for k, v in tel.items() if "error" in v}
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump(res, open(OUT, "w"), indent=2)

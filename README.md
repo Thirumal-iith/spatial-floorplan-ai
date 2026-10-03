@@ -2,7 +2,15 @@
 
 Turn a handheld phone capture of a property (photos, video or LiDAR) into dimensioned, stitched floor plans with damage scope, and attach a **95% confidence interval to every number**.
 
-🎬 **Demo video:** [docs/demo.mp4](docs/demo.mp4). It runs about 60 s, shows how to run the pipeline and walks through how it works. Regenerate it with `python scripts/make_demo_video.py`.
+## 🎬 Demo
+
+[![Demo: capture → floor plan → results](docs/demo.gif)](docs/demo.mp4)
+
+▶️ **[Watch the full demo video (60 s, MP4)](docs/demo.mp4)**. It covers the problem, how to run the pipeline, the input captures, the stitched plan and the measured results. Regenerate it with `python scripts/make_demo_video.py`.
+
+<!-- To get an inline video player: edit this README on github.com, drag docs/demo.mp4 into the editor,
+     and paste the generated https://github.com/user-attachments/assets/... URL on its own line here. -->
+
 
 ---
 
