@@ -1,0 +1,14 @@
+{
+ "source": "synthetic_renderer (benchmark/synth_scene.py)",
+ "label": "video walkthrough",
+ "seed": 21,
+ "frames": 233,
+ "odometry_model": {
+  "yaw_bias_per_m": 0.008,
+  "yaw_scale_err": 0.012,
+  "trans_scale_err": 0.02,
+  "yaw_noise": 0.0015,
+  "trans_noise": 0.006
+ },
+ "layout": "RGB + ARKit pose export (no depth)"
+}

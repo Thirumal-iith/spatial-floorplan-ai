@@ -1,0 +1,169 @@
+{
+  "data_provenance": "SYNTHETIC_RENDERED_RGB",
+  "evidence": "perceived",
+  "video": {
+    "rooms_reconstructed": 4,
+    "rooms_gt": 4,
+    "mean_wall_err_pct": 0.82,
+    "max_wall_err_pct": 2.33,
+    "wall_gate_tol_pct": 3.0,
+    "wall_gate": "PASS",
+    "rooms": [
+      {
+        "gt_room": "room_living",
+        "est_dims_m": [
+          5.219,
+          4.222
+        ],
+        "gt_dims_m": [
+          5.2,
+          4.2
+        ],
+        "wall_err_pct": [
+          0.36,
+          0.52
+        ],
+        "ceiling_est_m": 2.717,
+        "ceiling_err_cm": 2.3,
+        "openings_detected": 2,
+        "openings_gt": 2,
+        "convex_rectangle": true
+      },
+      {
+        "gt_room": "room_bedroom",
+        "est_dims_m": [
+          4.103,
+          3.606
+        ],
+        "gt_dims_m": [
+          4.1,
+          3.6
+        ],
+        "wall_err_pct": [
+          0.07,
+          0.17
+        ],
+        "ceiling_est_m": 2.762,
+        "ceiling_err_cm": 8.2,
+        "openings_detected": 2,
+        "openings_gt": 2,
+        "convex_rectangle": true
+      },
+      {
+        "gt_room": "room_kitchen",
+        "est_dims_m": [
+          3.5,
+          3.125
+        ],
+        "gt_dims_m": [
+          3.5,
+          3.2
+        ],
+        "wall_err_pct": [
+          0.01,
+          2.33
+        ],
+        "ceiling_est_m": 2.735,
+        "ceiling_err_cm": 2.5,
+        "openings_detected": 1,
+        "openings_gt": 2,
+        "convex_rectangle": true
+      },
+      {
+        "gt_room": "connector_hall",
+        "est_dims_m": [
+          4.127,
+          1.521
+        ],
+        "gt_dims_m": [
+          4.2,
+          1.5
+        ],
+        "wall_err_pct": [
+          1.74,
+          1.38
+        ],
+        "ceiling_est_m": 2.77,
+        "ceiling_err_cm": 7.0,
+        "openings_detected": 0,
+        "openings_gt": 3,
+        "convex_rectangle": true
+      }
+    ],
+    "runtime_s": 4.9
+  },
+  "photos": {
+    "rooms_reconstructed": 3,
+    "rooms_gt": 4,
+    "mean_wall_err_pct": 0.73,
+    "max_wall_err_pct": 1.45,
+    "wall_gate_tol_pct": 8.0,
+    "wall_gate": "FAIL",
+    "rooms": [
+      {
+        "gt_room": "room_bedroom",
+        "est_dims_m": [
+          4.101,
+          3.602
+        ],
+        "gt_dims_m": [
+          4.1,
+          3.6
+        ],
+        "wall_err_pct": [
+          0.02,
+          0.07
+        ],
+        "ceiling_est_m": 2.682,
+        "ceiling_err_cm": 0.2,
+        "openings_detected": 1,
+        "openings_gt": 2,
+        "convex_rectangle": true
+      },
+      {
+        "gt_room": "room_kitchen",
+        "est_dims_m": [
+          3.472,
+          3.18
+        ],
+        "gt_dims_m": [
+          3.5,
+          3.2
+        ],
+        "wall_err_pct": [
+          0.79,
+          0.62
+        ],
+        "ceiling_est_m": 2.691,
+        "ceiling_err_cm": 1.9,
+        "openings_detected": 0,
+        "openings_gt": 2,
+        "convex_rectangle": false
+      },
+      {
+        "gt_room": "room_living",
+        "est_dims_m": [
+          5.125,
+          4.141
+        ],
+        "gt_dims_m": [
+          5.2,
+          4.2
+        ],
+        "wall_err_pct": [
+          1.45,
+          1.41
+        ],
+        "ceiling_est_m": 2.702,
+        "ceiling_err_cm": 3.8,
+        "openings_detected": 1,
+        "openings_gt": 2,
+        "convex_rectangle": true
+      }
+    ],
+    "runtime_s": 40.9,
+    "failed_rooms": {
+      "connector_hall": "no room region"
+    }
+  }
+}

@@ -101,25 +101,48 @@ class PoseGraphOptimizer:
         theta, xy = _to_se2(raw_poses)
         dtheta = np.diff(theta)
         # odometry translation expressed in the frame of pose i
-        dt_local = np.array([self._rot(-theta[i]) @ (xy[i + 1] - xy[i]) for i in range(n - 1)])
+        dt_local = np.array(
+            [self._rot(-theta[i]) @ (xy[i + 1] - xy[i]) for i in range(n - 1)])
 
         # ---- 1. yaw: odometry + Manhattan anchors. The Manhattan frame is defined by the
         # earliest anchor (least drift), so no assumption about the world axes is needed.
         anchors = []
         quarter = np.pi / 2
         ref = None
-        for k, local_angle in sorted(manhattan_anchors or []):
-            if 0 <= k < n:
-                a = theta[k] + local_angle
-                if ref is None:
-                    ref = a
-                snapped = ref + np.round((a - ref) / quarter) * quarter
-                anchors.append((k, theta[k] + (snapped - a)))
+        srt = sorted(a for a in (manhattan_anchors or []) if 0 <= a[0] < n)
+        if srt:
+            # Manhattan reference = the earliest anchor (least drift; keeps the start heading as the
+            # world gauge), unless it disagrees with the next two by > 1.5 deg - then it is a
+            # mis-detection and the mod-90 median of the first three is used.
+            first = np.array([theta[k] + la for k, la in srt[:3]])
+            def wrapq(x): return (x + np.pi / 4) % (np.pi / 2) - np.pi / 4
+            ref = float(first[0])
+            if len(first) == 3 and np.all(np.abs(wrapq(first[1:] - first[0])) > np.radians(1.5)):
+                cost = [np.abs(wrapq(first - f)).sum() for f in first]
+                ref = float(first[int(np.argmin(cost))])
+        for k, local_angle in srt:
+            a = theta[k] + local_angle
+            snapped = ref + np.round((a - ref) / quarter) * quarter
+            anchors.append((k, theta[k] + (snapped - a)))
+        # Robustness: the yaw correction (target - raw yaw) changes slowly because drift accumulates
+        # gradually. An anchor whose correction disagrees with its neighbours' median by > 1.5 deg
+        # is a mis-detected wall direction and is dropped before solving.
+        n_rejected = 0
+        if len(anchors) >= 5:
+            corr = np.array([tgt - theta[k] for k, tgt in anchors])
+            keep = np.ones(len(anchors), bool)
+            for i in range(len(anchors)):
+                nb = np.r_[corr[max(0, i - 5):i], corr[i + 1:i + 6]]
+                if len(nb) >= 3 and abs(corr[i] - np.median(nb)) > np.radians(1.5):
+                    keep[i] = False
+            n_rejected = int((~keep).sum())
+            anchors = [a for a, ok in zip(anchors, keep) if ok]
         theta_c = self._solve_yaw(theta, dtheta, anchors)
 
         # ---- 2. re-integrate with corrected yaw, detect loop closures
         xy_pred = self._integrate(xy[0], theta_c, dt_local)
-        closures = list(loop_closure_hints or []) or self._detect_closures(xy_pred)
+        closures = list(loop_closure_hints or []
+                        ) or self._detect_closures(xy_pred)
 
         # ---- 3. translation: odometry + closures
         xy_c = self._solve_xy(xy[0], theta_c, dt_local, closures)
@@ -131,6 +154,7 @@ class PoseGraphOptimizer:
             "loop_closures_found": len(closures),
             "loop_closure_pairs": [list(map(int, c)) for c in closures],
             "manhattan_anchors_used": len(anchors),
+            "manhattan_anchors_rejected": n_rejected,
             "max_yaw_correction_deg": float(np.degrees(np.max(np.abs(theta_c - theta)))) if n else 0.0,
             "initial_drift_m": closure_err_raw,
             "residual_drift_m": self._closure_error(corrected),
@@ -141,14 +165,20 @@ class PoseGraphOptimizer:
         n = len(theta)
         rows, rhs = [], []
         for i, d in enumerate(dtheta):
-            r = np.zeros(n); r[i + 1], r[i] = self.w_odom, -self.w_odom
-            rows.append(r); rhs.append(self.w_odom * d)
+            r = np.zeros(n)
+            r[i + 1], r[i] = self.w_odom, -self.w_odom
+            rows.append(r)
+            rhs.append(self.w_odom * d)
         gauge_w = 1e-3 if anchors else 1e3
-        r = np.zeros(n); r[0] = gauge_w
-        rows.append(r); rhs.append(gauge_w * theta[0])
+        r = np.zeros(n)
+        r[0] = gauge_w
+        rows.append(r)
+        rhs.append(gauge_w * theta[0])
         for k, target in anchors:
-            r = np.zeros(n); r[k] = self.w_anchor
-            rows.append(r); rhs.append(self.w_anchor * target)
+            r = np.zeros(n)
+            r[k] = self.w_anchor
+            rows.append(r)
+            rhs.append(self.w_anchor * target)
         return np.linalg.lstsq(np.array(rows), np.array(rhs), rcond=None)[0]
 
     def _solve_xy(self, p0, theta, dt_local, closures):
@@ -156,13 +186,19 @@ class PoseGraphOptimizer:
         rows, rhs = [], []
         for i in range(n - 1):
             d = self._rot(theta[i]) @ dt_local[i]
-            r = np.zeros(n); r[i + 1], r[i] = self.w_odom, -self.w_odom
-            rows.append(r); rhs.append(self.w_odom * d)
-        r = np.zeros(n); r[0] = 1e3
-        rows.append(r); rhs.append(1e3 * np.asarray(p0))
+            r = np.zeros(n)
+            r[i + 1], r[i] = self.w_odom, -self.w_odom
+            rows.append(r)
+            rhs.append(self.w_odom * d)
+        r = np.zeros(n)
+        r[0] = 1e3
+        rows.append(r)
+        rhs.append(1e3 * np.asarray(p0))
         for i, j in closures:
-            r = np.zeros(n); r[j], r[i] = self.w_loop, -self.w_loop
-            rows.append(r); rhs.append(np.zeros(2))
+            r = np.zeros(n)
+            r[j], r[i] = self.w_loop, -self.w_loop
+            rows.append(r)
+            rhs.append(np.zeros(2))
         return np.linalg.lstsq(np.array(rows), np.array(rhs), rcond=None)[0]
 
     def _detect_closures(self, xy):

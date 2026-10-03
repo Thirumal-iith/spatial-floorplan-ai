@@ -39,7 +39,8 @@ def _collect_dimensions(gt_room: Dict, inc_room: Dict, our_room: Dict) -> List[D
     def add(name, gt, inc, ours, unit="m"):
         if gt is None or inc is None or ours is None:
             return
-        dims.append({"dim": name, "gt": float(gt), "inc": float(inc), "ours": float(ours), "unit": unit})
+        dims.append({"dim": name, "gt": float(gt), "inc": float(
+            inc), "ours": float(ours), "unit": unit})
 
     add("Ceiling height", gt_room.get("ceiling_height_m"), inc_room.get("ceiling_height_m"),
         our_room["ceiling_height_m"]["val"])
@@ -50,9 +51,11 @@ def _collect_dimensions(gt_room: Dict, inc_room: Dict, our_room: Dict) -> List[D
     for i, gw in enumerate(gt_room.get("walls", [])):
         inc_w = inc_room.get("walls_m", [])
         if i < len(inc_w) and i < len(our_walls):
-            add(f"Wall {i+1}", gw["length_m"], inc_w[i], our_walls[i]["length_m"]["val"])
+            add(f"Wall {i+1}", gw["length_m"], inc_w[i],
+                our_walls[i]["length_m"]["val"])
 
-    our_ops = {o["opening_id"]: o for w in our_walls for o in w.get("openings", [])}
+    our_ops = {o["opening_id"]
+        : o for w in our_walls for o in w.get("openings", [])}
     for gw in gt_room.get("walls", []):
         for gop in gw.get("openings", []):
             oid = gop.get("opening_id")
@@ -100,14 +103,16 @@ def run_head_to_head_comparison(our_plan_path: str) -> Optional[float]:
     ]
     for r in rows:
         e_inc, e_our = abs(r["inc"] - r["gt"]), abs(r["ours"] - r["gt"])
-        res = "BEAT" if e_our < e_inc else ("TIE" if e_our == e_inc else "LOSS")
+        res = "BEAT" if e_our < e_inc else (
+            "TIE" if e_our == e_inc else "LOSS")
         wins += res != "LOSS"
         scale, u = (100.0, "cm") if r["unit"] == "m" else (1.0, "m2")
         lines.append(f"| {r['room']} | {r['dim']} | {r['gt']:.3f} | {r['inc']:.3f} | {e_inc*scale:.2f} {u} "
                      f"| {r['ours']:.3f} | {e_our*scale:.2f} {u} | {res} |")
     rate = wins / len(rows) * 100.0
     gate = "PASS" if rate >= 70.0 else "FAIL"
-    lines.insert(2, f"**Beat or tie:** {wins}/{len(rows)} ({rate:.1f}%) - threshold 70% - **{gate}**")
+    lines.insert(
+        2, f"**Beat or tie:** {wins}/{len(rows)} ({rate:.1f}%) - threshold 70% - **{gate}**")
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     print(f"[HEAD-TO-HEAD] {wins}/{len(rows)} ({rate:.1f}%) -> {gate}")
@@ -116,5 +121,6 @@ def run_head_to_head_comparison(our_plan_path: str) -> Optional[float]:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", default="results/plan.json", help="Our LiDAR-tier plan.json")
+    ap.add_argument("--plan", default="results/plan.json",
+                    help="Our LiDAR-tier plan.json")
     run_head_to_head_comparison(ap.parse_args().plan)

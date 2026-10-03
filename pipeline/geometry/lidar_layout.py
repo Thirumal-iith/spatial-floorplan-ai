@@ -54,14 +54,76 @@ class LidarReconstructor:
     FACE_TOL = 0.03
     OPEN_GRID = 0.03
 
-    def __init__(self):
+    def __init__(self, tier: str = "lidar", align_output: bool = False, scan_refine: bool = False):
         self.pgo = PoseGraphOptimizer()
+        self.tier = tier
+        # True: keep the Manhattan-aligned frame (photo tier)
+        self.align_output = align_output
+        # True: scan-to-map xy refinement after the pose graph
+        self.scan_refine = scan_refine
+        if tier != "lidar":
+            # pseudo depth from mono layout is noisier than LiDAR: wider face slab, coarser grid
+            self.FACE_TOL = 0.08
+            self.OPEN_GRID = 0.05
+
+    # ------------------------------------------------------------- scan-to-map refinement
+    def _scan_refine(self, frames, poses, floor_z, ceil_min, search_m: float = 0.12):
+        """Sequential 2D scan-to-map alignment of wall points (classic laser-scan matching on a grid).
+        Corrects the slowly varying translation error (VIO scale/yaw residue) the hub loop closures
+        cannot see inside rooms. Each frame inherits the previous offset and searches +-12 cm."""
+        g = 0.02
+        scans = []
+        for f, P in zip(frames, poses):
+            p = backproject(f, P, stride=3)
+            p = p[(p[:, 2] > floor_z + 0.05) &
+                  (p[:, 2] < ceil_min - 0.05)][:, :2]
+            scans.append(p)
+        allp = np.vstack([s for s in scans if len(s)])
+        mn = allp.min(axis=0) - 1.5
+        W, H = (np.ceil((allp.max(axis=0) + 1.5 - mn) / g)).astype(int) + 1
+        grid = np.zeros((H, W), np.float32)
+        r = int(round(search_m / g))
+        off = np.zeros(2)
+        out, shifts, matched = [], [], 0
+        for s, P in zip(scans, poses):
+            Q = P.copy()
+            Q[:2, 3] += off
+            if len(s) >= 150 and grid.sum() > 3000:
+                q = np.floor((s + off - mn) / g).astype(int)
+                x0, y0 = q.min(axis=0)
+                x1, y1 = q.max(axis=0) + 1
+                tmpl = np.zeros((y1 - y0, x1 - x0), np.float32)
+                np.add.at(tmpl, (q[:, 1] - y0, q[:, 0] - x0), 1.0)
+                tmpl = cv2.GaussianBlur(tmpl, (5, 5), 1.0)
+                ya, yb, xa, xb = y0 - r, y1 + r, x0 - r, x1 + r
+                if ya >= 0 and xa >= 0 and yb <= H and xb <= W:
+                    crop = cv2.GaussianBlur(np.minimum(
+                        grid[ya:yb, xa:xb], 5.0), (5, 5), 1.0)
+                    res = cv2.matchTemplate(crop, tmpl, cv2.TM_CCORR)
+                    j, i = np.unravel_index(int(np.argmax(res)), res.shape)
+                    centre = res[r, r]
+                    if res[j, i] > 1.05 * centre and res[j, i] > 0 and (tmpl * crop[r:r + tmpl.shape[0], r:r + tmpl.shape[1]] > 0).mean() > 0.002:
+                        d = np.array([(i - r) * g, (j - r) * g])
+                        off = off + d
+                        Q[:2, 3] += d
+                        matched += 1
+            q = np.floor((s + (Q[:2, 3] - P[:2, 3]) - mn) / g).astype(int)
+            ok = (q[:, 0] >= 0) & (q[:, 0] < W) & (
+                q[:, 1] >= 0) & (q[:, 1] < H)
+            np.add.at(grid, (q[ok, 1], q[ok, 0]), 1.0)
+            shifts.append(float(np.linalg.norm(Q[:2, 3] - P[:2, 3])))
+            out.append(Q)
+        return out, {"method": "sequential 2D scan-to-map grid correlation (wall points)",
+                     "frames_shifted": matched, "max_total_shift_m": round(max(shifts), 3)}
 
     # ------------------------------------------------------------------ main
     def reconstruct(self, path: str, drift_correction: bool = True) -> Tuple[List[Dict], Dict, Dict]:
-        frames = load_capture(path)
-        if len(frames) < 3:
-            raise ValueError(f"LiDAR capture at {path} has only {len(frames)} usable frames")
+        return self.reconstruct_frames(load_capture(path), drift_correction)
+
+    def reconstruct_frames(self, frames: List[Dict], drift_correction: bool = True,
+                           anchors: Optional[List[Tuple[int, float]]] = None) -> Tuple[List[Dict], Dict, Dict]:
+        if len(frames) < 1:
+            raise ValueError("capture has no usable frames")
         raw = [f["pose"] for f in frames]
 
         sample = np.vstack([backproject(f, stride=8) for f in frames])
@@ -70,23 +132,29 @@ class LidarReconstructor:
 
         # --- drift: Manhattan yaw anchors from individual keyframes (raw poses)
         theta, _ = _to_se2(raw)
-        anchors = []
-        for k in range(0, len(frames), 2):
-            p = backproject(frames[k], stride=4)
-            p = p[(p[:, 2] > floor_z + 0.3) & (p[:, 2] < ceil_min - 0.15)]
-            if len(p) >= 300:
-                a = dominant_angle(p[:, :2])
-                if a is not None:
-                    anchors.append((k, a - theta[k]))
+        if anchors is None:
+            anchors = []
+            for k in range(0, len(frames), 2):
+                p = backproject(frames[k], stride=4)
+                p = p[(p[:, 2] > floor_z + 0.3) & (p[:, 2] < ceil_min - 0.15)]
+                if len(p) >= 300:
+                    a = dominant_angle(p[:, :2])
+                    if a is not None:
+                        anchors.append((k, a - theta[k]))
         poses, drift_meta = self.pgo.optimize_trajectory(
             raw, apply_drift_correction=drift_correction, manhattan_anchors=anchors)
+        if drift_correction and self.scan_refine:
+            poses, refine_meta = self._scan_refine(
+                frames, poses, floor_z, ceil_min)
+            drift_meta["scan_to_map_refinement"] = refine_meta
 
         # --- fused cloud
         pts_l, cam_l = [], []
         for f, P in zip(frames, poses):
             p = backproject(f, P, stride=2)
             pts_l.append(p)
-            cam_l.append(np.broadcast_to(P[:2, 3].astype(np.float32), (len(p), 2)))
+            cam_l.append(np.broadcast_to(
+                P[:2, 3].astype(np.float32), (len(p), 2)))
         pts = np.vstack(pts_l)
         cams = np.vstack(cam_l)
         z = pts[:, 2]
@@ -104,22 +172,31 @@ class LidarReconstructor:
 
         rooms_px, labels, mn = self._segment(xy, z, band_m, floor_z, ceil_min)
         lab = self._lookup(labels, mn, xy)
+        # which room each observing camera stood in: walls/openings of a room are measured only from
+        # frames taken inside it (short time window -> least relative drift, no views through doors)
+        cam_lab = self._lookup(labels, mn, cam)
 
         rooms, polys = [], {}
         wall_z = (z > floor_z + 0.2) & (z < ceil_min - 0.1)
         for idx, (lbl, area_px) in enumerate(rooms_px):
-            V = self._room_polygon(labels == lbl, mn, xy, cam, wall_z)
+            inside = cam_lab == lbl
+            if inside.sum() < 500:
+                inside = np.ones(len(cam), bool)
+            V = self._room_polygon(labels == lbl, mn, xy, cam, wall_z & inside)
             if V is None:
                 continue
             rid = f"room_{idx + 1:02d}"
             zr = z[lab == lbl]
-            f_r = _peak_refine(zr[zr < floor_z + 0.15], 0.005, 0.015) or floor_z
-            c_r = _peak_refine(zr[zr > floor_z + 1.9], 0.005, 0.015) or ceil_min
-            rooms.append({"rid": rid, "lbl": lbl, "V": V, "floor": f_r, "ceil": c_r})
+            f_r = _peak_refine(zr[zr < floor_z + 0.15],
+                               0.005, 0.015) or floor_z
+            c_r = _peak_refine(zr[zr > floor_z + 1.9],
+                               0.005, 0.015) or ceil_min
+            rooms.append({"rid": rid, "lbl": lbl, "V": V, "floor": f_r,
+                         "ceil": c_r, "inside": (xy[inside], z[inside], cam[inside])})
             polys[lbl] = rid
 
         out = []
-        Rb = _rot(ang)
+        Rb = np.eye(2) if self.align_output else _rot(ang)
         for r in rooms:
             V, f_r, c_r = r["V"], r["floor"], r["ceil"]
             h = c_r - f_r
@@ -131,14 +208,16 @@ class LidarReconstructor:
                 if L < 0.05:
                     continue
                 wid = f"{r['rid']}_w{len(walls) + 1}"
-                ops = self._openings(a, b, V, xy, z, cam, f_r, c_r, labels, mn, polys, wid)
+                sx, sz, sc = r["inside"]
+                ops = self._openings(a, b, V, sx, sz, sc,
+                                     f_r, c_r, labels, mn, polys, wid)
                 aw, bw = Rb @ a, Rb @ b
                 walls.append({
                     "wall_id": wid,
                     "start_point": [round(float(aw[0]), 4), round(float(aw[1]), 4)],
                     "end_point": [round(float(bw[0]), 4), round(float(bw[1]), 4)],
-                    "length_m": UC.calibrate_wall_length(L, "lidar"),
-                    "height_m": UC.calibrate_ceiling_height(h, "lidar"),
+                    "length_m": UC.calibrate_wall_length(L, self.tier),
+                    "height_m": UC.calibrate_ceiling_height(h, self.tier),
                     "openings": ops,
                     "damage_regions": [],
                 })
@@ -177,7 +256,8 @@ class LidarReconstructor:
         bins = np.arange(floor_z, floor_z + 4.0, 0.01)
         h, e = np.histogram(z, bins=bins)
         centers = (e[:-1] + e[1:]) / 2
-        ref = np.median(h[(centers > floor_z + 0.5) & (centers < floor_z + 1.8)]) + 1
+        ref = np.median(h[(centers > floor_z + 0.5) &
+                        (centers < floor_z + 1.8)]) + 1
         cand = np.where((centers > floor_z + 1.9) & (h > 4 * ref))[0]
         if len(cand) == 0:
             return float(np.percentile(z, 99))
@@ -192,19 +272,24 @@ class LidarReconstructor:
 
         def raster(mask, min_count):
             q = np.floor((xy[mask] - mn) / g).astype(np.int64)
-            cnt = np.bincount(q[:, 1] * W + q[:, 0], minlength=W * H).reshape(H, W)
+            cnt = np.bincount(q[:, 1] * W + q[:, 0],
+                              minlength=W * H).reshape(H, W)
             return (cnt >= min_count).astype(np.uint8)
 
         wall = raster(band_m, 2)
         obs = raster((np.abs(z - floor_z) < 0.04) | (z > ceil_min - 0.04), 1)
-        ell = lambda r: cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * r + 1, 2 * r + 1))
-        obs = cv2.morphologyEx(obs, cv2.MORPH_CLOSE, ell(self.OBS_CLOSE_PX // 2))
+        def ell(r): return cv2.getStructuringElement(
+            cv2.MORPH_ELLIPSE, (2 * r + 1, 2 * r + 1))
+        obs = cv2.morphologyEx(obs, cv2.MORPH_CLOSE,
+                               ell(self.OBS_CLOSE_PX // 2))
         wall_d = cv2.dilate(wall, ell(self.WALL_DILATE_PX))
         free = (obs & (1 - wall_d)).astype(np.uint8)
         free = cv2.morphologyEx(free, cv2.MORPH_OPEN, ell(1))
-        n, labels, stats, _ = cv2.connectedComponentsWithStats(free, connectivity=4)
+        n, labels, stats, _ = cv2.connectedComponentsWithStats(
+            free, connectivity=4)
         min_px = self.MIN_ROOM_M2 / g ** 2
-        rooms = [(i, int(stats[i, cv2.CC_STAT_AREA])) for i in range(1, n) if stats[i, cv2.CC_STAT_AREA] >= min_px]
+        rooms = [(i, int(stats[i, cv2.CC_STAT_AREA]))
+                 for i in range(1, n) if stats[i, cv2.CC_STAT_AREA] >= min_px]
         rooms.sort(key=lambda t: -t[1])
         return rooms, labels, mn
 
@@ -219,11 +304,13 @@ class LidarReconstructor:
     # ------------------------------------------------------------ polygon
     def _room_polygon(self, mask, mn, xy, cam, wall_z) -> Optional[np.ndarray]:
         g = self.GRID
-        cnts, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        cnts, _ = cv2.findContours(mask.astype(
+            np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         if not cnts:
             return None
         c = max(cnts, key=cv2.contourArea)
-        approx = cv2.approxPolyDP(c, 0.10 / g, True).reshape(-1, 2).astype(float)
+        approx = cv2.approxPolyDP(
+            c, (0.10 if self.tier == "lidar" else 0.22) / g, True).reshape(-1, 2).astype(float)
         P = (approx + 0.5) * g + mn
         edges = self._rectilinear(P)
         if len(edges) < 4 or len(edges) % 2:
@@ -246,7 +333,8 @@ class LidarReconstructor:
             L = float(np.hypot(*d))
             if L < 1e-6:
                 continue
-            edges.append(["h", (a[1] + b[1]) / 2, L] if abs(d[0]) >= abs(d[1]) else ["v", (a[0] + b[0]) / 2, L])
+            edges.append(["h", (a[1] + b[1]) / 2, L] if abs(d[0])
+                         >= abs(d[1]) else ["v", (a[0] + b[0]) / 2, L])
         changed = True
         while changed and len(edges) > 1:
             changed = False
@@ -254,7 +342,8 @@ class LidarReconstructor:
                 j = (i + 1) % len(edges)
                 if i != j and edges[i][0] == edges[j][0]:
                     w = edges[i][2] + edges[j][2]
-                    edges[i] = [edges[i][0], (edges[i][1] * edges[i][2] + edges[j][1] * edges[j][2]) / w, w]
+                    edges[i] = [
+                        edges[i][0], (edges[i][1] * edges[i][2] + edges[j][1] * edges[j][2]) / w, w]
                     del edges[j]
                     changed = True
                     break
@@ -305,7 +394,8 @@ class LidarReconstructor:
         d, n = self._outward(a, b, V)
         rel = xy - a
         s = rel @ n
-        m = (np.abs(s) < self.FACE_TOL) & (z > f_r + 0.04) & (z < c_r - 0.04) & (((cam - a) @ n) < -0.05)
+        m = (np.abs(s) < self.FACE_TOL) & (
+            z > f_r + 0.04) & (z < c_r - 0.04) & (((cam - a) @ n) < -0.05)
         u = (rel[m] @ d)
         v = z[m] - f_r
         k = (u >= 0) & (u <= L)
@@ -317,9 +407,12 @@ class LidarReconstructor:
         qj = np.clip((v / g).astype(int), 0, nv - 1)
         occ = np.zeros((nv, nu), dtype=np.uint8)
         occ[qj, qi] = 1
-        occ = cv2.morphologyEx(occ, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+        k_close = 3 if self.tier == "lidar" else 5
+        occ = cv2.morphologyEx(occ, cv2.MORPH_CLOSE,
+                               np.ones((k_close, k_close), np.uint8))
         empty = (1 - occ).astype(np.uint8)
-        cnt, _, stats, _ = cv2.connectedComponentsWithStats(empty, connectivity=4)
+        cnt, _, stats, _ = cv2.connectedComponentsWithStats(
+            empty, connectivity=4)
         ops = []
         for i in range(1, cnt):
             x, y, w, hh, area = stats[i]
@@ -334,7 +427,8 @@ class LidarReconstructor:
             rc = u[vb & (u > uc) & (u < u1 + 0.25)]
             if len(lc) < 10 or len(rc) < 10:
                 continue
-            left, right = float(np.percentile(lc, 99)), float(np.percentile(rc, 1))
+            left, right = float(np.percentile(lc, 99)), float(
+                np.percentile(rc, 1))
             col = (u > left + 0.05) & (u < right - 0.05)
             tc, bc = v[col & (v > vc)], v[col & (v < vc)]
             top = float(np.percentile(tc, 1)) if len(tc) >= 10 else v1
@@ -356,8 +450,8 @@ class LidarReconstructor:
             ops.append({
                 "opening_id": f"{wid}_op{len(ops) + 1}",
                 "type": kind,
-                "width_m": UC.calibrate_opening_width(right - left, "lidar"),
-                "height_m": UC.calibrate_ceiling_height(top - bottom, "lidar"),
+                "width_m": UC.calibrate_opening_width(right - left, self.tier),
+                "height_m": UC.calibrate_ceiling_height(top - bottom, self.tier),
                 "sill_m": round(bottom, 3),
                 "offset_along_wall_m": round((left + right) / 2, 3),
                 "connected_room_id": other if kind == "door" else None,

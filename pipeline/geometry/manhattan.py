@@ -25,7 +25,8 @@ def dominant_angle(xy: np.ndarray, res: float = 0.02, max_pts: int = 30000, seed
     if len(xy) < 50:
         return None
     if len(xy) > max_pts:
-        xy = xy[np.random.default_rng(seed).choice(len(xy), max_pts, replace=False)]
+        xy = xy[np.random.default_rng(seed).choice(
+            len(xy), max_pts, replace=False)]
     xy = xy - xy.mean(axis=0)
     coarse = np.radians(np.arange(0.0, 90.0, 0.5))
     a0 = coarse[int(np.argmax([_score(xy, a, res) for a in coarse]))]

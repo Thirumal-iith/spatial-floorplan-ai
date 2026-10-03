@@ -58,7 +58,8 @@ class PipelineRunner:
         """
         start_time = time.time()
         tier = tier.lower()
-        prop_id = os.path.basename(os.path.normpath(input_dir)) or "scan_property"
+        prop_id = os.path.basename(
+            os.path.normpath(input_dir)) or "scan_property"
 
         # Check for pre-loaded benchmark scenario or real sensor data
         scenario_file = os.path.join(input_dir, "scenario.json")
@@ -74,11 +75,13 @@ class PipelineRunner:
                 scenario_data = json.load(f)
             rooms_raw = scenario_data.get("rooms", [])
             staged_damages = scenario_data.get("staged_damages", [])
-            raw_poses = [np.array(p) for p in scenario_data.get("poses", [])] if "poses" in scenario_data else []
+            raw_poses = [np.array(p) for p in scenario_data.get(
+                "poses", [])] if "poses" in scenario_data else []
             data_provenance = "scenario_json_passthrough (synthetic; geometry read from file, not perceived)"
         else:
             # Generate or reconstruct from subfolders
-            rooms_raw, staged_damages, raw_poses = self._ingest_directory(input_dir, tier)
+            rooms_raw, staged_damages, raw_poses = self._ingest_directory(
+                input_dir, tier)
             data_provenance = "raw_sensor_ingestion"
 
         # 1. Apply Drift Correction if poses exist
@@ -101,7 +104,8 @@ class PipelineRunner:
                 if k is None or k >= len(used_poses):
                     continue
                 R2, t2 = se2_of(used_poses[k])
-                r["polygon"] = [[round(float(v), 4) for v in (R2 @ np.asarray(p) + t2)] for p in r["polygon"]]
+                r["polygon"] = [[round(float(v), 4) for v in (
+                    R2 @ np.asarray(p) + t2)] for p in r["polygon"]]
                 r["pose_placed"] = True
 
         # 2. Geometric Reconstruction per room
@@ -112,9 +116,10 @@ class PipelineRunner:
         for r_raw in rooms_raw:
             r_id = r_raw.get("room_id", "room_01")
             name = r_raw.get("name", r_id)
-            poly = r_raw.get("polygon", [[0,0], [4,0], [4,3], [0,3]])
+            poly = r_raw.get("polygon", [[0, 0], [4, 0], [4, 3], [0, 3]])
             raw_height = r_raw.get("ceiling_height_m", 2.70)
-            nominal_height = raw_height.get("val", 2.70) if isinstance(raw_height, dict) else float(raw_height)
+            nominal_height = raw_height.get("val", 2.70) if isinstance(
+                raw_height, dict) else float(raw_height)
 
             n_pts = len(poly)
             # If room already contains processed walls (e.g. from PointCloudProcessor), reuse them
@@ -133,7 +138,8 @@ class PipelineRunner:
                     for op in r_raw.get("openings", []):
                         if op.get("wall_index") == i or op.get("wall_id") == wall_id:
                             raw_op_w = op.get("width_m", 0.82)
-                            op_w = raw_op_w.get("val", 0.82) if isinstance(raw_op_w, dict) else float(raw_op_w)
+                            op_w = raw_op_w.get("val", 0.82) if isinstance(
+                                raw_op_w, dict) else float(raw_op_w)
                             wall_openings.append({
                                 "opening_id": op.get("opening_id", f"op_{wall_id}"),
                                 "type": op.get("type", "door"),
@@ -146,10 +152,13 @@ class PipelineRunner:
                     # Surface Damage
                     wall_damages = []
                     for sd in staged_damages:
-                        matches_wall = (sd.get("wall_id") in (wall_id, f"living_w{i+1}", f"room_living_w{i+1}"))
-                        matches_idx = (sd.get("wall_index") == i and sd.get("room_id", r_id) == r_id)
+                        matches_wall = (sd.get("wall_id") in (
+                            wall_id, f"living_w{i+1}", f"room_living_w{i+1}"))
+                        matches_idx = (sd.get("wall_index") ==
+                                       i and sd.get("room_id", r_id) == r_id)
                         if matches_wall or matches_idx:
-                            ext_val = sd["extent_m2"].get("val", sd["extent_m2"]) if isinstance(sd["extent_m2"], dict) else float(sd["extent_m2"])
+                            ext_val = sd["extent_m2"].get("val", sd["extent_m2"]) if isinstance(
+                                sd["extent_m2"], dict) else float(sd["extent_m2"])
                             dmg_entry = {
                                 "damage_id": sd["damage_id"],
                                 "damage_class": sd["damage_class"],
@@ -212,7 +221,8 @@ class PipelineRunner:
                     } for w in walls_processed
                 ]
             }
-            c_flags = self.concealed_engine.evaluate_concealed_damage(eval_room)
+            c_flags = self.concealed_engine.evaluate_concealed_damage(
+                eval_room)
             all_concealed_flags.extend(c_flags)
 
             # 4. Scoping Engine
@@ -230,24 +240,38 @@ class PipelineRunner:
         total_scope_cost = sum(item["total_cost"] for item in all_scope_items)
 
         # Architectural Room Inventory Breakdown (Surveyor Discovery)
-        living_count = sum(1 for r in placed_rooms if "living" in r.get("name", "").lower() or r.get("room_type") == "living")
-        kitchen_count = sum(1 for r in placed_rooms if "kitchen" in r.get("name", "").lower() or r.get("room_type") == "kitchen")
-        bedroom_count = sum(1 for r in placed_rooms if "bed" in r.get("name", "").lower() or "bedroom" in str(r.get("room_type", "")))
-        bathroom_count = sum(1 for r in placed_rooms if "bath" in r.get("name", "").lower() or r.get("room_type") == "bathroom")
-        connector_count = sum(1 for r in placed_rooms if "hall" in r.get("name", "").lower() or "connect" in r.get("name", "").lower() or "corridor" in r.get("name", "").lower())
-        other_count = max(0, len(placed_rooms) - (living_count + kitchen_count + bedroom_count + bathroom_count + connector_count))
+        living_count = sum(1 for r in placed_rooms if "living" in r.get(
+            "name", "").lower() or r.get("room_type") == "living")
+        kitchen_count = sum(1 for r in placed_rooms if "kitchen" in r.get(
+            "name", "").lower() or r.get("room_type") == "kitchen")
+        bedroom_count = sum(1 for r in placed_rooms if "bed" in r.get(
+            "name", "").lower() or "bedroom" in str(r.get("room_type", "")))
+        bathroom_count = sum(1 for r in placed_rooms if "bath" in r.get(
+            "name", "").lower() or r.get("room_type") == "bathroom")
+        connector_count = sum(1 for r in placed_rooms if "hall" in r.get("name", "").lower(
+        ) or "connect" in r.get("name", "").lower() or "corridor" in r.get("name", "").lower())
+        other_count = max(0, len(placed_rooms) - (living_count +
+                          kitchen_count + bedroom_count + bathroom_count + connector_count))
 
         if len(placed_rooms) == 1:
             inv_summary = f"1 Room ({placed_rooms[0].get('name', 'Main Room')})"
         else:
             parts = []
-            if connector_count > 0: parts.append(f"{connector_count} Connector{'s' if connector_count > 1 else ''}")
-            if living_count > 0: parts.append(f"{living_count} Living")
-            if kitchen_count > 0: parts.append(f"{kitchen_count} Kitchen")
-            if bedroom_count > 0: parts.append(f"{bedroom_count} Bed")
-            if bathroom_count > 0: parts.append(f"{bathroom_count} Bath")
-            if other_count > 0: parts.append(f"{other_count} Other")
-            inv_summary = ", ".join(parts) if parts else f"{len(placed_rooms)} Rooms"
+            if connector_count > 0:
+                parts.append(
+                    f"{connector_count} Connector{'s' if connector_count > 1 else ''}")
+            if living_count > 0:
+                parts.append(f"{living_count} Living")
+            if kitchen_count > 0:
+                parts.append(f"{kitchen_count} Kitchen")
+            if bedroom_count > 0:
+                parts.append(f"{bedroom_count} Bed")
+            if bathroom_count > 0:
+                parts.append(f"{bathroom_count} Bath")
+            if other_count > 0:
+                parts.append(f"{other_count} Other")
+            inv_summary = ", ".join(
+                parts) if parts else f"{len(placed_rooms)} Rooms"
 
         room_inventory = {
             "total_rooms": len(placed_rooms),
@@ -306,11 +330,13 @@ class PipelineRunner:
             ext = os.path.splitext(input_dir)[1].lower()
             if ext in (".ply", ".obj", ".xyz", ".pts"):
                 pts, colors = self.ply_parser.load_point_cloud(input_dir)
-                room_obj = self.pc_processor.process_point_cloud(pts, colors, room_name=os.path.basename(input_dir))
+                room_obj = self.pc_processor.process_point_cloud(
+                    pts, colors, room_name=os.path.basename(input_dir))
                 damages = room_obj.get("detected_damages", [])
                 return [room_obj], damages, []
             elif ext in (".jpg", ".jpeg", ".png", ".heic", ".bmp"):
-                room_obj = self.cv_processor.analyze_photo_set([input_dir], room_name=os.path.basename(input_dir))
+                room_obj = self.cv_processor.analyze_photo_set(
+                    [input_dir], room_name=os.path.basename(input_dir))
                 damages = room_obj.get("detected_damages", [])
                 return [room_obj], damages, []
             elif ext in (".mp4", ".mov", ".avi", ".mkv", ".webm"):
@@ -351,13 +377,16 @@ class PipelineRunner:
             return rooms, all_damages, all_poses
 
         # Check for .ply point cloud files in directory
-        ply_files = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.lower().endswith((".ply", ".obj", ".xyz"))]
+        ply_files = [os.path.join(input_dir, f) for f in os.listdir(
+            input_dir) if f.lower().endswith((".ply", ".obj", ".xyz"))]
         if ply_files:
             rooms = []
             for pf in ply_files:
                 pts, colors = self.ply_parser.load_point_cloud(pf)
-                room_name = os.path.splitext(os.path.basename(pf))[0].replace("_", " ").title()
-                room_obj = self.pc_processor.process_point_cloud(pts, colors, room_name=room_name)
+                room_name = os.path.splitext(os.path.basename(pf))[
+                    0].replace("_", " ").title()
+                room_obj = self.pc_processor.process_point_cloud(
+                    pts, colors, room_name=room_name)
                 rooms.append(room_obj)
                 staged_damages.extend(room_obj.get("detected_damages", []))
             return rooms, staged_damages, []
@@ -368,42 +397,55 @@ class PipelineRunner:
             if f.lower().endswith((".jpg", ".jpeg", ".png", ".heic"))
         ]
         if direct_images:
-            room_obj = self.cv_processor.analyze_photo_set(direct_images, room_name=os.path.basename(input_dir))
+            room_obj = self.cv_processor.analyze_photo_set(
+                direct_images, room_name=os.path.basename(input_dir))
             damages = room_obj.get("detected_damages", [])
             return [room_obj], damages, []
 
         # Check for per-room subfolders (Tier 1 photos or scan folders)
-        subdirs = [os.path.join(input_dir, d) for d in os.listdir(input_dir) if os.path.isdir(os.path.join(input_dir, d))]
+        subdirs = [os.path.join(input_dir, d) for d in os.listdir(
+            input_dir) if os.path.isdir(os.path.join(input_dir, d))]
         if subdirs:
             rooms = []
             for sdir in subdirs:
                 # Check if subdir has images
-                s_imgs = [os.path.join(sdir, f) for f in os.listdir(sdir) if f.lower().endswith((".jpg", ".jpeg", ".png", ".heic"))]
+                s_imgs = [os.path.join(sdir, f) for f in os.listdir(
+                    sdir) if f.lower().endswith((".jpg", ".jpeg", ".png", ".heic"))]
                 if s_imgs:
-                    room_res = self.cv_processor.analyze_photo_set(s_imgs, os.path.basename(sdir))
+                    room_res = self.cv_processor.analyze_photo_set(
+                        s_imgs, os.path.basename(sdir))
                 else:
-                    room_res = self.photo_estimator.estimate_room_from_photos(sdir, os.path.basename(sdir))
+                    room_res = self.photo_estimator.estimate_room_from_photos(
+                        sdir, os.path.basename(sdir))
                 rooms.append(room_res)
             return rooms, [], []
         else:
-            single_room = self.photo_estimator.estimate_room_from_photos(input_dir, "Walk-In Room")
+            single_room = self.photo_estimator.estimate_room_from_photos(
+                input_dir, "Walk-In Room")
             return [single_room], [], []
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Spatial AI Floor Plan & Damage Inspection Pipeline")
-    parser.add_argument("--input", required=True, help="Path to capture directory")
-    parser.add_argument("--tier", default="lidar", choices=["photos", "video", "lidar"], help="Input capture tier")
-    parser.add_argument("--output", default="./results", help="Directory to save output artifacts")
-    parser.add_argument("--no-drift-correction", action="store_true", help="Disable drift correction for ablation testing")
+    parser = argparse.ArgumentParser(
+        description="Spatial AI Floor Plan & Damage Inspection Pipeline")
+    parser.add_argument("--input", required=True,
+                        help="Path to capture directory")
+    parser.add_argument("--tier", default="lidar",
+                        choices=["photos", "video", "lidar"], help="Input capture tier")
+    parser.add_argument("--output", default="./results",
+                        help="Directory to save output artifacts")
+    parser.add_argument("--no-drift-correction", action="store_true",
+                        help="Disable drift correction for ablation testing")
 
     args = parser.parse_args()
 
     os.makedirs(args.output, exist_ok=True)
     runner = PipelineRunner(drift_correction=not args.no_drift_correction)
 
-    print(f"\n[PIPELINE] Ingesting capture: {args.input} (Tier: {args.tier.upper()})")
-    print(f"[PIPELINE] Drift Correction: {'DISABLED (Ablation)' if args.no_drift_correction else 'ENABLED'}")
+    print(
+        f"\n[PIPELINE] Ingesting capture: {args.input} (Tier: {args.tier.upper()})")
+    print(
+        f"[PIPELINE] Drift Correction: {'DISABLED (Ablation)' if args.no_drift_correction else 'ENABLED'}")
 
     contract = runner.process_capture(args.input, tier=args.tier)
 
@@ -420,10 +462,12 @@ def main():
 
     print("\n--- Summary ---")
     print(f"Rooms Stitched: {len(contract['rooms'])}")
-    print(f"Total Footprint: {contract['total_footprint_m2']['val']} m2 (CI: {contract['total_footprint_m2']['ci_95']})")
+    print(
+        f"Total Footprint: {contract['total_footprint_m2']['val']} m2 (CI: {contract['total_footprint_m2']['ci_95']})")
     print(f"Concealed Flags Fired: {len(contract['concealed_damage_flags'])}")
     print(f"Restoration Scope Items: {len(contract['scope_line_items'])}")
-    print(f"Total Restoration Cost: ${contract['total_estimated_restoration_cost']:,.2f}")
+    print(
+        f"Total Restoration Cost: ${contract['total_estimated_restoration_cost']:,.2f}")
     print(f"Processing Time: {contract['processing_time_seconds']}s\n")
 
 

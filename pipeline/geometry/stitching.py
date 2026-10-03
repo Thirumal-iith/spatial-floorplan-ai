@@ -23,11 +23,13 @@ class MultiRoomStitcher:
             return 0.0, 0.0
         allp = np.vstack([np.asarray(p, dtype=float) for p in polys])
         mn = allp.min(axis=0) - 0.05
-        size = np.ceil((allp.max(axis=0) + 0.05 - mn) / self.RASTER_RES_M).astype(int) + 1
+        size = np.ceil((allp.max(axis=0) + 0.05 - mn) /
+                       self.RASTER_RES_M).astype(int) + 1
         count = np.zeros((size[1], size[0]), dtype=np.uint8)
         for p in polys:
             m = np.zeros_like(count)
-            pix = np.round((np.asarray(p, dtype=float) - mn) / self.RASTER_RES_M).astype(np.int32)
+            pix = np.round((np.asarray(p, dtype=float) - mn) /
+                           self.RASTER_RES_M).astype(np.int32)
             cv2.fillPoly(m, [pix], 1)
             count += m
         cell = self.RASTER_RES_M ** 2
@@ -57,8 +59,10 @@ class MultiRoomStitcher:
                 for w in r.get("walls", []):
                     w["placed_start_point"] = w.get("start_point")
                     w["placed_end_point"] = w.get("end_point")
-            union, overlap = self.union_and_overlap([r["placed_polygon"] for r in room_data_list])
-            net = sum(self._calculate_polygon_area(r["placed_polygon"]) for r in room_data_list)
+            union, overlap = self.union_and_overlap(
+                [r["placed_polygon"] for r in room_data_list])
+            net = sum(self._calculate_polygon_area(
+                r["placed_polygon"]) for r in room_data_list)
             return {
                 "rooms": room_data_list,
                 "total_footprint_m2": float(round(union, 3)),
@@ -117,11 +121,12 @@ class MultiRoomStitcher:
 
             for pending_id, pending_room in list(pending_rooms.items()):
                 # Find connection between pending_room and any already placed_room
-                matched = self._find_door_match(pending_room, placed_rooms, used_portals)
+                matched = self._find_door_match(
+                    pending_room, placed_rooms, used_portals)
                 if matched:
                     target_id, p_door, t_door, aligned_poly, transform = matched
                     used_portals.add((target_id, t_door.get("opening_id", "")))
-                    
+
                     pending_room["placed_polygon"] = aligned_poly
                     pending_room["transform"] = transform
 
@@ -132,11 +137,14 @@ class MultiRoomStitcher:
                     cos_r, sin_r = np.cos(rad), np.sin(rad)
                     R_mat = np.array([[cos_r, -sin_r], [sin_r, cos_r]])
                     for w in pending_room.get("walls", []):
-                        p1 = R_mat @ np.array(w["start_point"]) + np.array(trans)
+                        p1 = R_mat @ np.array(w["start_point"]
+                                              ) + np.array(trans)
                         p2 = R_mat @ np.array(w["end_point"]) + np.array(trans)
-                        w["placed_start_point"] = [float(round(p1[0], 3)), float(round(p1[1], 3))]
-                        w["placed_end_point"] = [float(round(p2[0], 3)), float(round(p2[1], 3))]
-                    
+                        w["placed_start_point"] = [
+                            float(round(p1[0], 3)), float(round(p1[1], 3))]
+                        w["placed_end_point"] = [
+                            float(round(p2[0], 3)), float(round(p2[1], 3))]
+
                     placed_rooms[pending_id] = pending_room
                     del pending_rooms[pending_id]
 
@@ -153,9 +161,11 @@ class MultiRoomStitcher:
             if not room_placed_this_round and pending_rooms:
                 # Fallback: place remaining room adjacent to boundary without overlap
                 orphan_id, orphan_room = pending_rooms.popitem()
-                placed_poly = self._place_non_overlapping_fallback(orphan_room["polygon"], list(placed_rooms.values()))
+                placed_poly = self._place_non_overlapping_fallback(
+                    orphan_room["polygon"], list(placed_rooms.values()))
                 orphan_room["placed_polygon"] = placed_poly
-                orphan_room["transform"] = {"rot_deg": 0.0, "trans": [0.0, 0.0]}
+                orphan_room["transform"] = {
+                    "rot_deg": 0.0, "trans": [0.0, 0.0]}
                 placed_rooms[orphan_id] = orphan_room
 
         # Step 3: exact overlap + union footprint (no partition-wall fudge factor)
@@ -206,8 +216,10 @@ class MultiRoomStitcher:
                         continue
 
                     # Dimension check (within 10cm)
-                    w_cd = cd["width_m"]["val"] if isinstance(cd.get("width_m"), dict) else cd.get("width_m", 0.8)
-                    w_td = td["width_m"]["val"] if isinstance(td.get("width_m"), dict) else td.get("width_m", 0.8)
+                    w_cd = cd["width_m"]["val"] if isinstance(
+                        cd.get("width_m"), dict) else cd.get("width_m", 0.8)
+                    w_td = td["width_m"]["val"] if isinstance(
+                        td.get("width_m"), dict) else td.get("width_m", 0.8)
                     if abs(w_cd - w_td) > 0.10:
                         continue
 
@@ -234,8 +246,10 @@ class MultiRoomStitcher:
             max_b = np.max(poly_b, axis=0)
 
             # Check overlap margin
-            overlap_x = (min_a[0] < max_b[0] - 0.08) and (max_a[0] > min_b[0] + 0.08)
-            overlap_y = (min_a[1] < max_b[1] - 0.08) and (max_a[1] > min_b[1] + 0.08)
+            overlap_x = (min_a[0] < max_b[0] -
+                         0.08) and (max_a[0] > min_b[0] + 0.08)
+            overlap_y = (min_a[1] < max_b[1] -
+                         0.08) and (max_a[1] > min_b[1] + 0.08)
 
             if overlap_x and overlap_y:
                 return True
@@ -247,8 +261,10 @@ class MultiRoomStitcher:
             for op in wall.get("openings", []):
                 if op.get("type") == "door":
                     op_copy = dict(op)
-                    op_copy["wall_start"] = wall.get("placed_start_point", wall["start_point"])
-                    op_copy["wall_end"] = wall.get("placed_end_point", wall["end_point"])
+                    op_copy["wall_start"] = wall.get(
+                        "placed_start_point", wall["start_point"])
+                    op_copy["wall_end"] = wall.get(
+                        "placed_end_point", wall["end_point"])
                     doors.append(op_copy)
         return doors
 
@@ -269,7 +285,7 @@ class MultiRoomStitcher:
         t_dir = (t_end - t_start)
         t_len = np.linalg.norm(t_dir)
         t_unit = t_dir / max(t_len, 1e-6)
-        
+
         # Perpendicular normal
         t_normal = np.array([-t_unit[1], t_unit[0]])
 
@@ -309,7 +325,8 @@ class MultiRoomStitcher:
         aligned_poly = []
         for pt in poly:
             p_rot = R @ np.array(pt) + translation
-            aligned_poly.append([float(round(p_rot[0], 3)), float(round(p_rot[1], 3))])
+            aligned_poly.append(
+                [float(round(p_rot[0], 3)), float(round(p_rot[1], 3))])
 
         return aligned_poly, {
             "rot_deg": float(np.degrees(rot_angle)),
@@ -318,7 +335,8 @@ class MultiRoomStitcher:
 
     def _place_non_overlapping_fallback(self, poly: List[List[float]], placed_rooms: List[Dict]) -> List[List[float]]:
         # Shift along X axis past max X of all placed rooms + 0.5m
-        max_x = max(max(pt[0] for pt in r["placed_polygon"]) for r in placed_rooms)
+        max_x = max(max(pt[0] for pt in r["placed_polygon"])
+                    for r in placed_rooms)
         min_curr_x = min(pt[0] for pt in poly)
         shift_x = (max_x - min_curr_x) + 0.5
         return [[float(pt[0] + shift_x), float(pt[1])] for pt in poly]
@@ -338,8 +356,10 @@ class MultiRoomStitcher:
                 max_b = np.max(poly_b, axis=0)
 
                 # Check bounding box intersection with a tolerance margin of 0.05m
-                overlap_x = (min_a[0] < max_b[0] - 0.05) and (max_a[0] > min_b[0] + 0.05)
-                overlap_y = (min_a[1] < max_b[1] - 0.05) and (max_a[1] > min_b[1] + 0.05)
+                overlap_x = (min_a[0] < max_b[0] -
+                             0.05) and (max_a[0] > min_b[0] + 0.05)
+                overlap_y = (min_a[1] < max_b[1] -
+                             0.05) and (max_a[1] > min_b[1] + 0.05)
 
                 if overlap_x and overlap_y:
                     return True

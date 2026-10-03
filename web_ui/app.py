@@ -5,6 +5,8 @@ Provides a modern web UI for inspecting floor plans, damage overlays,
 concealed-damage rule rationale, insurance restoration line items, and live benchmark gates.
 """
 
+from pipeline.run import PipelineRunner
+from flask import Flask, render_template, jsonify, request, send_file
 import os
 import sys
 import json
@@ -14,8 +16,6 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from flask import Flask, render_template, jsonify, request, send_file
-from pipeline.run import PipelineRunner
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
@@ -46,7 +46,8 @@ def get_plan_svg():
 
 @app.route("/api/download-report")
 def download_report():
-    pdf_path = os.path.join(PROJECT_ROOT, "reports", "spatial_ai_engineering_report.pdf")
+    pdf_path = os.path.join(PROJECT_ROOT, "reports",
+                            "spatial_ai_engineering_report.pdf")
     if os.path.exists(pdf_path):
         return send_file(pdf_path, mimetype="application/pdf", as_attachment=False)
     return "PDF Report not found", 404
@@ -54,7 +55,8 @@ def download_report():
 
 @app.route("/api/download-apk")
 def download_apk():
-    apk_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "downloads", "spatial_app.apk")
+    apk_path = os.path.join(PROJECT_ROOT, "web_ui",
+                            "static", "downloads", "spatial_app.apk")
     if os.path.exists(apk_path):
         return send_file(
             apk_path,
@@ -77,7 +79,8 @@ def service_worker():
 
 @app.route("/api/benchmark")
 def get_benchmark():
-    bench_path = os.path.join(PROJECT_ROOT, "benchmark", "reports", "benchmark_results.json")
+    bench_path = os.path.join(
+        PROJECT_ROOT, "benchmark", "reports", "benchmark_results.json")
     if os.path.exists(bench_path):
         with open(bench_path, "r") as f:
             data = json.load(f)
@@ -87,7 +90,8 @@ def get_benchmark():
 
 @app.route("/api/head-to-head")
 def get_head_to_head():
-    h2h_path = os.path.join(PROJECT_ROOT, "benchmark", "head_to_head", "head_to_head_report.md")
+    h2h_path = os.path.join(PROJECT_ROOT, "benchmark",
+                            "head_to_head", "head_to_head_report.md")
     if os.path.exists(h2h_path):
         with open(h2h_path, "r") as f:
             content = f.read()
@@ -99,17 +103,19 @@ def get_head_to_head():
 def run_pipeline_api():
     req = request.get_json() or {}
     tier = req.get("tier", "lidar")
-    input_folder = os.path.join(PROJECT_ROOT, "benchmark", "data", f"tier{3 if tier=='lidar' else (2 if tier=='video' else 1)}_{tier}")
+    input_folder = os.path.join(PROJECT_ROOT, "benchmark", "data",
+                                f"tier{3 if tier == 'lidar' else (2 if tier == 'video' else 1)}_{tier}")
     runner = PipelineRunner(drift_correction=True)
     plan = runner.process_capture(input_folder, tier=tier)
-    
+
     # Save results
     results_dir = os.path.join(PROJECT_ROOT, "results")
     os.makedirs(results_dir, exist_ok=True)
     with open(os.path.join(results_dir, "plan.json"), "w") as f:
         json.dump(plan, f, indent=2)
-    
-    runner.renderer.render_svg(plan, os.path.join(results_dir, "floor_plan.svg"))
+
+    runner.renderer.render_svg(
+        plan, os.path.join(results_dir, "floor_plan.svg"))
     return jsonify(plan)
 
 
@@ -117,7 +123,8 @@ def run_pipeline_api():
 def load_sample_api():
     req = request.get_json() or {}
     sample_key = req.get("sample", "lidar_living")
-    print(f"DEBUG: /api/load-sample called with sample_key='{sample_key}' from {request.remote_addr}")
+    print(
+        f"DEBUG: /api/load-sample called with sample_key='{sample_key}' from {request.remote_addr}")
 
     samples_map = {
         "lidar_living": (os.path.join(PROJECT_ROOT, "sample_captures", "living_room_lidar.ply"), "lidar"),
@@ -148,10 +155,11 @@ def load_sample_api():
         shutil.copy2(target_path, os.path.join(static_dir, raw_name))
         shutil.copy2(target_path, os.path.join(static_dir, "latest_raw.jpg"))
         plan["raw_image_url"] = f"/static/{raw_name}"
-        
+
         latest_annotated = os.path.join(static_dir, "latest_annotated.jpg")
         if os.path.exists(latest_annotated):
-            shutil.copy2(latest_annotated, os.path.join(static_dir, annotated_name))
+            shutil.copy2(latest_annotated, os.path.join(
+                static_dir, annotated_name))
             plan["annotated_image_url"] = f"/static/{annotated_name}"
             plan["has_annotated_image"] = True
         plan["uploaded_filename"] = "water_damage_wall.jpg"
@@ -161,7 +169,8 @@ def load_sample_api():
     with open(os.path.join(results_dir, "plan.json"), "w") as f:
         json.dump(plan, f, indent=2)
 
-    runner.renderer.render_svg(plan, os.path.join(results_dir, "floor_plan.svg"))
+    runner.renderer.render_svg(
+        plan, os.path.join(results_dir, "floor_plan.svg"))
     return jsonify(plan)
 
 
@@ -210,7 +219,8 @@ def upload_file_api():
 
         latest_annotated = os.path.join(static_dir, "latest_annotated.jpg")
         if os.path.exists(latest_annotated):
-            shutil.copy2(latest_annotated, os.path.join(static_dir, annotated_name))
+            shutil.copy2(latest_annotated, os.path.join(
+                static_dir, annotated_name))
             plan["annotated_image_url"] = f"/static/{annotated_name}"
             plan["has_annotated_image"] = True
         else:
@@ -223,7 +233,8 @@ def upload_file_api():
         with open(os.path.join(results_dir, "plan.json"), "w") as f:
             json.dump(plan, f, indent=2)
 
-        runner.renderer.render_svg(plan, os.path.join(results_dir, "floor_plan.svg"))
+        runner.renderer.render_svg(
+            plan, os.path.join(results_dir, "floor_plan.svg"))
         return jsonify(plan)
     except Exception as e:
         return jsonify({"error": f"Processing error: {str(e)}"}), 500
@@ -247,7 +258,8 @@ def custom_sandbox_api():
     sandbox_ply = os.path.join(PROJECT_ROOT, "uploads", "sandbox_custom.ply")
     os.makedirs(os.path.dirname(sandbox_ply), exist_ok=True)
 
-    generate_sample_ply_room(sandbox_ply, width_m=w, length_m=l, height_m=h, has_door=True, has_damage=has_damage)
+    generate_sample_ply_room(sandbox_ply, width_m=w, length_m=l,
+                             height_m=h, has_door=True, has_damage=has_damage)
 
     runner = PipelineRunner(drift_correction=True)
     plan = runner.process_capture(sandbox_ply, tier="lidar")
@@ -257,10 +269,10 @@ def custom_sandbox_api():
     with open(os.path.join(results_dir, "plan.json"), "w") as f:
         json.dump(plan, f, indent=2)
 
-    runner.renderer.render_svg(plan, os.path.join(results_dir, "floor_plan.svg"))
+    runner.renderer.render_svg(
+        plan, os.path.join(results_dir, "floor_plan.svg"))
     return jsonify(plan)
 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-

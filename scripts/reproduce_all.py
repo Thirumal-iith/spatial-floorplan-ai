@@ -15,7 +15,8 @@ import time
 def run_command(cmd, desc):
     print(f"\n>>> [REPRODUCTION] {desc}...")
     start = time.time()
-    res = subprocess.run([sys.executable] + cmd, capture_output=True, text=True)
+    res = subprocess.run([sys.executable] + cmd,
+                         capture_output=True, text=True)
     dur = round(time.time() - start, 2)
     if res.returncode != 0:
         print(f"FAILED (code {res.returncode}):\n{res.stderr}")

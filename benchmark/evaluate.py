@@ -57,23 +57,29 @@ class BenchmarkEvaluator:
     def evaluate_all_tiers(self, data_dir: str = DATA) -> Dict[str, Any]:
         on = PipelineRunner(drift_correction=True)
         off = PipelineRunner(drift_correction=False)
-        results: Dict[str, Any] = {"ground_truth_provenance": self.gt.get("data_provenance", "unknown")}
+        results: Dict[str, Any] = {
+            "ground_truth_provenance": self.gt.get("data_provenance", "unknown")}
 
         lidar_dir = os.path.join(data_dir, "tier3_lidar_raw")
         lidar = on.process_capture(lidar_dir, tier="lidar")
         results["lidar"] = self._score_tier(lidar, "lidar")
 
-        repeat = on.process_capture(os.path.join(data_dir, "tier3_lidar_raw_bedroom_repeat"), tier="lidar")
-        results["repeatability"] = self._score_repeatability(lidar, repeat, "room_bedroom")
+        repeat = on.process_capture(os.path.join(
+            data_dir, "tier3_lidar_raw_bedroom_repeat"), tier="lidar")
+        results["repeatability"] = self._score_repeatability(
+            lidar, repeat, "room_bedroom")
 
-        video = on.process_capture(os.path.join(data_dir, "tier2_video"), tier="video")
+        video = on.process_capture(os.path.join(
+            data_dir, "tier2_video"), tier="video")
         results["video"] = self._score_tier(video, "video")
 
-        photos = on.process_capture(os.path.join(data_dir, "tier1_photos"), tier="photos")
+        photos = on.process_capture(os.path.join(
+            data_dir, "tier1_photos"), tier="photos")
         results["photos"] = self._score_tier(photos, "photos")
 
         lidar_off = off.process_capture(lidar_dir, tier="lidar")
-        results["drift_ablation"] = self._score_drift_ablation(lidar, lidar_off)
+        results["drift_ablation"] = self._score_drift_ablation(
+            lidar, lidar_off)
 
         results["damage_evaluation"] = self._score_damage_evaluation(video)
         results["timing_s"] = {"lidar": lidar["processing_time_seconds"], "video": video["processing_time_seconds"],
@@ -87,14 +93,16 @@ class BenchmarkEvaluator:
 
     def _match_rooms(self, plan) -> Dict[str, Dict]:
         preds = plan.get("rooms", [])
-        by_id = {p["room_id"]: p for p in preds if p["room_id"] in self.gt["rooms"]}
+        by_id = {p["room_id"]: p for p in preds if p["room_id"]
+                 in self.gt["rooms"]}
         if by_id:
             return by_id
         mapping = {}
         for gid, g in self.gt["rooms"].items():
             best, best_o = None, 0.0
             for p in preds:
-                union, overlap = self._stitch.union_and_overlap([p["polygon"], g["world_polygon"]])
+                union, overlap = self._stitch.union_and_overlap(
+                    [p["polygon"], g["world_polygon"]])
                 if overlap > best_o:
                     best, best_o = p, overlap
             if best is not None and best_o > 0.5 * g["floor_area_m2"]:
@@ -103,8 +111,10 @@ class BenchmarkEvaluator:
 
     @staticmethod
     def _seg(w) -> Tuple[np.ndarray, np.ndarray]:
-        a = np.asarray(w.get("placed_start_point") or w["start_point"], dtype=float)
-        b = np.asarray(w.get("placed_end_point") or w["end_point"], dtype=float)
+        a = np.asarray(w.get("placed_start_point")
+                       or w["start_point"], dtype=float)
+        b = np.asarray(w.get("placed_end_point")
+                       or w["end_point"], dtype=float)
         return a, b
 
     def _match_walls(self, gid: str, pred_room: Dict) -> List[Tuple[Dict, Optional[Dict]]]:
@@ -115,7 +125,8 @@ class BenchmarkEvaluator:
             return [(gw, by_id.get(gw["wall_id"])) for gw in g_room["walls"]]
         pairs = []
         for gw in g_room["walls"]:
-            ga, gb = np.asarray(gw["world_start"], float), np.asarray(gw["world_end"], float)
+            ga, gb = np.asarray(gw["world_start"], float), np.asarray(
+                gw["world_end"], float)
             gd = (gb - ga) / np.linalg.norm(gb - ga)
             gm = (ga + gb) / 2
             best, bd = None, 0.5
@@ -163,7 +174,8 @@ class BenchmarkEvaluator:
         mapping = self._match_rooms(plan)
         wall_err_pct, wall_err_cm, ceil_err_cm, area_err_pct = [], [], [], []
         op_err_cm, n_missed, n_phantom = [], 0, 0
-        ci_hits: Dict[str, List[bool]] = {"walls": [], "ceilings": [], "openings": [], "room_areas": []}
+        ci_hits: Dict[str, List[bool]] = {
+            "walls": [], "ceilings": [], "openings": [], "room_areas": []}
         missing_walls = 0
 
         for gid, g in self.gt["rooms"].items():
@@ -172,10 +184,14 @@ class BenchmarkEvaluator:
                 missing_walls += len(g["walls"])
                 n_missed += sum(len(w.get("openings", [])) for w in g["walls"])
                 continue
-            ceil_err_cm.append(abs(_val(p["ceiling_height_m"]) - g["ceiling_height_m"]) * 100)
-            ci_hits["ceilings"].append(bool(_in_ci(p["ceiling_height_m"], g["ceiling_height_m"])))
-            area_err_pct.append(abs(_val(p["floor_area_m2"]) - g["floor_area_m2"]) / g["floor_area_m2"] * 100)
-            ci_hits["room_areas"].append(bool(_in_ci(p["floor_area_m2"], g["floor_area_m2"])))
+            ceil_err_cm.append(
+                abs(_val(p["ceiling_height_m"]) - g["ceiling_height_m"]) * 100)
+            ci_hits["ceilings"].append(
+                bool(_in_ci(p["ceiling_height_m"], g["ceiling_height_m"])))
+            area_err_pct.append(
+                abs(_val(p["floor_area_m2"]) - g["floor_area_m2"]) / g["floor_area_m2"] * 100)
+            ci_hits["room_areas"].append(
+                bool(_in_ci(p["floor_area_m2"], g["floor_area_m2"])))
             by_id = p["room_id"] == gid
             matched_walls = set()
             for gw, pw in self._match_walls(gid, p):
@@ -186,12 +202,16 @@ class BenchmarkEvaluator:
                 matched_walls.add(pw["wall_id"])
                 L = _val(pw["length_m"])
                 wall_err_cm.append(abs(L - gw["length_m"]) * 100)
-                wall_err_pct.append(abs(L - gw["length_m"]) / gw["length_m"] * 100)
-                ci_hits["walls"].append(bool(_in_ci(pw["length_m"], gw["length_m"])))
+                wall_err_pct.append(
+                    abs(L - gw["length_m"]) / gw["length_m"] * 100)
+                ci_hits["walls"].append(
+                    bool(_in_ci(pw["length_m"], gw["length_m"])))
                 m, miss, ph = self._match_openings(gw, pw, by_id)
                 for go, po in m:
-                    op_err_cm.append(abs(_val(po["width_m"]) - go["width_m"]) * 100)
-                    ci_hits["openings"].append(bool(_in_ci(po["width_m"], go["width_m"])))
+                    op_err_cm.append(
+                        abs(_val(po["width_m"]) - go["width_m"]) * 100)
+                    ci_hits["openings"].append(
+                        bool(_in_ci(po["width_m"], go["width_m"])))
                 n_missed += len(miss)
                 n_phantom += len(ph)
             # openings on predicted walls that matched no GT wall are phantoms too
@@ -202,10 +222,13 @@ class BenchmarkEvaluator:
         denom = len(op_err_cm) + n_missed + n_phantom
         pct_ok = n_ok / denom * 100 if denom else 0.0
         gt_fp = self.gt["total_ground_truth_footprint_m2"]
-        fp_err_pct = abs(_val(plan["total_footprint_m2"]) - gt_fp) / gt_fp * 100
-        cov = {k: (round(100.0 * sum(v) / len(v), 1) if v else None) for k, v in ci_hits.items()}
+        fp_err_pct = abs(
+            _val(plan["total_footprint_m2"]) - gt_fp) / gt_fp * 100
+        cov = {k: (round(100.0 * sum(v) / len(v), 1) if v else None)
+               for k, v in ci_hits.items()}
         all_hits = [h for v in ci_hits.values() for h in v]
-        cov["all"] = round(100.0 * sum(all_hits) / len(all_hits), 1) if all_hits else None
+        cov["all"] = round(100.0 * sum(all_hits) /
+                           len(all_hits), 1) if all_hits else None
         mean_w = float(np.mean(wall_err_pct)) if wall_err_pct else float("nan")
         max_w = float(np.max(wall_err_pct)) if wall_err_pct else float("nan")
         max_c = float(np.max(ceil_err_cm)) if ceil_err_cm else float("nan")
@@ -218,11 +241,13 @@ class BenchmarkEvaluator:
             gates["wall_accuracy_gate"] = "PASS" if max_w <= 3.0 else "FAIL"
         elif tier == "photos":
             gates["wall_accuracy_gate"] = "PASS" if max_w <= 8.0 else "FAIL"
-            gates["photo_stitch_overlap_gate"] = "PASS" if not plan.get("overlaps_detected") else "FAIL"
+            gates["photo_stitch_overlap_gate"] = "PASS" if not plan.get(
+                "overlaps_detected") else "FAIL"
             gates["footprint_within_8pct_gate"] = "PASS" if fp_err_pct <= 8.0 else "FAIL"
             adj_ok = self._adjacency_ok(plan, mapping)
             gates["adjacency_gate"] = "PASS" if adj_ok else "FAIL"
-        gates["calibration_gate"] = "PASS" if (cov["all"] or 0) >= 95.0 else "FAIL"
+        gates["calibration_gate"] = "PASS" if (
+            cov["all"] or 0) >= 95.0 else "FAIL"
 
         return {
             "tier": tier,
@@ -245,7 +270,8 @@ class BenchmarkEvaluator:
     def _adjacency_ok(self, plan, mapping) -> bool:
         """Rooms connected by a door in GT must touch (within 0.3 m) in the stitched plan."""
         inv = {p["room_id"]: gid for gid, p in mapping.items()}
-        polys = {gid: np.asarray(p.get("placed_polygon") or p["polygon"], float) for gid, p in mapping.items()}
+        polys = {gid: np.asarray(
+            p.get("placed_polygon") or p["polygon"], float) for gid, p in mapping.items()}
         for gid, g in self.gt["rooms"].items():
             for w in g["walls"]:
                 for o in w.get("openings", []):
@@ -266,7 +292,8 @@ class BenchmarkEvaluator:
 
     # ================================================================ repeatability
     def _score_repeatability(self, run1: Dict, run2: Dict, gid: str) -> Dict[str, Any]:
-        r1, r2 = self._match_rooms(run1).get(gid), self._match_rooms(run2).get(gid)
+        r1, r2 = self._match_rooms(run1).get(
+            gid), self._match_rooms(run2).get(gid)
         if not r1 or not r2:
             return {"room_id": gid, "overall_repeatability_gate": "FAIL", "reason": "room not found in both captures"}
         w1 = {gw["wall_id"]: pw for gw, pw in self._match_walls(gid, r1)}
@@ -308,8 +335,10 @@ class BenchmarkEvaluator:
 
     # ================================================================ drift ablation
     def _score_drift_ablation(self, run_on: Dict, run_off: Dict) -> Dict[str, Any]:
-        s_on, s_off = self._score_tier(run_on, "lidar"), self._score_tier(run_off, "lidar")
-        m_on, m_off = run_on.get("drift_metrics", {}), run_off.get("drift_metrics", {})
+        s_on, s_off = self._score_tier(
+            run_on, "lidar"), self._score_tier(run_off, "lidar")
+        m_on, m_off = run_on.get(
+            "drift_metrics", {}), run_off.get("drift_metrics", {})
 
         def side(run, s, m):
             pe = self._placement_errors(run)
@@ -328,7 +357,8 @@ class BenchmarkEvaluator:
         on, off = side(run_on, s_on, m_on), side(run_off, s_off, m_off)
         corrected = bool(m_on.get("drift_correction_applied"))
         better = (on["mean_centroid_err_cm"] is not None and
-                  (off["mean_centroid_err_cm"] is None or on["mean_centroid_err_cm"] < off["mean_centroid_err_cm"])
+                  (off["mean_centroid_err_cm"] is None or on["mean_centroid_err_cm"]
+                   < off["mean_centroid_err_cm"])
                   and on["wall_error_mean_pct"] <= off["wall_error_mean_pct"])
         return {
             "method": m_on.get("method"), "loop_closures": m_on.get("loop_closures_found"),
@@ -353,16 +383,20 @@ class BenchmarkEvaluator:
     # ================================================================ damage
     def _score_damage_evaluation(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         gt_damages = self.gt["rooms"]["room_living"].get("staged_damages", [])
-        detected = [d for r in plan.get("rooms", []) for w in r.get("walls", []) for d in w.get("damage_regions", [])]
+        detected = [d for r in plan.get("rooms", []) for w in r.get(
+            "walls", []) for d in w.get("damage_regions", [])]
         classes_gt = {d["damage_class"] for d in gt_damages}
         classes_pred = {d["damage_class"] for d in detected}
         hits, errs = 0, []
         for g in gt_damages:
-            m = next((d for d in detected if d["damage_class"] == g["damage_class"]), None)
+            m = next(
+                (d for d in detected if d["damage_class"] == g["damage_class"]), None)
             if m:
-                errs.append(abs(_val(m["extent_m2"]) - g["extent_m2"]) / g["extent_m2"] * 100)
+                errs.append(abs(_val(m["extent_m2"]) -
+                            g["extent_m2"]) / g["extent_m2"] * 100)
                 hits += bool(_in_ci(m["extent_m2"], g["extent_m2"]))
-        rules = sorted({f["rule_fired"] for f in plan.get("concealed_damage_flags", [])})
+        rules = sorted({f["rule_fired"]
+                       for f in plan.get("concealed_damage_flags", [])})
         scope = plan.get("scope_line_items", [])
         evidence = self._evidence(plan)
         return {
@@ -390,13 +424,15 @@ def main():
         json.dump(rep, f, indent=2, default=float)
 
     print("=" * 72)
-    print(f" BENCHMARK (ground truth provenance: {rep['ground_truth_provenance'].upper()})")
+    print(
+        f" BENCHMARK (ground truth provenance: {rep['ground_truth_provenance'].upper()})")
     print("=" * 72)
     for t in ("lidar", "video", "photos"):
         r = rep[t]
         print(f"\n[{t.upper()}] evidence={r['evidence']} rooms={r['rooms_matched']} walls={r['walls_scored']} "
               f"(missing {r['walls_missing']})")
-        print(f"  walls: mean {r['wall_error_mean_pct']}% ({r['wall_error_mean_cm']} cm), max {r['wall_error_max_pct']}%")
+        print(
+            f"  walls: mean {r['wall_error_mean_pct']}% ({r['wall_error_mean_cm']} cm), max {r['wall_error_max_pct']}%")
         print(f"  openings: {r['openings_matched']} matched, {r['openings_missed']} missed, "
               f"{r['openings_phantom']} phantom; <=2cm: {r['pct_openings_le_2cm']}%; mean err {r['opening_error_mean_cm']} cm")
         print(f"  ceiling max err {r['max_ceiling_error_cm']} cm | footprint err {r['footprint_error_pct']}% | "

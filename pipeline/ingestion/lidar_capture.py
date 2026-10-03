@@ -64,19 +64,24 @@ def load_capture(path: str) -> List[Dict]:
             continue
         depth = depth.astype(np.float32) / 1000.0
         cp = os.path.join(path, f"conf_{idx}.png")
-        conf = cv2.imread(cp, cv2.IMREAD_UNCHANGED) if os.path.exists(cp) else None
+        conf = cv2.imread(
+            cp, cv2.IMREAD_UNCHANGED) if os.path.exists(cp) else None
         if conf is None:
             conf = np.full(depth.shape, 2, dtype=np.uint8)
 
         P = np.asarray(meta["cameraPoseARFrame"], dtype=float).reshape(4, 4)
         K = np.asarray(meta["intrinsics"], dtype=float).reshape(3, 3).copy()
         s = depth.shape[1] / _rgb_width(path, idx, meta)
-        K[0, 0] *= s; K[1, 1] *= s; K[0, 2] *= s; K[1, 2] *= s
+        K[0, 0] *= s
+        K[1, 1] *= s
+        K[0, 2] *= s
+        K[1, 2] *= s
 
         T = np.eye(4)
         T[:3, :3] = C_ARKIT_TO_ZUP @ P[:3, :3]
         T[:3, 3] = C_ARKIT_TO_ZUP @ P[:3, 3]
-        frames.append({"index": idx, "pose": T, "K": K, "depth": depth, "conf": conf})
+        frames.append({"index": idx, "pose": T, "K": K,
+                      "depth": depth, "conf": conf})
     return frames
 
 
@@ -90,6 +95,7 @@ def backproject(frame: Dict, pose: Optional[np.ndarray] = None, stride: int = 2,
     m = (d > 0.15) & (d < max_depth) & (c >= min_conf)
     K = frame["K"]
     z = d[m]
-    pc = np.stack([(uu[m] - K[0, 2]) / K[0, 0] * z, -(vv[m] - K[1, 2]) / K[1, 1] * z, -z], axis=1)
+    pc = np.stack([(uu[m] - K[0, 2]) / K[0, 0] * z, -
+                  (vv[m] - K[1, 2]) / K[1, 1] * z, -z], axis=1)
     P = frame["pose"] if pose is None else pose
     return (pc @ P[:3, :3].T + P[:3, 3]).astype(np.float32)

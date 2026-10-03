@@ -1,8 +1,8 @@
 {
   "property_id": "tier3_lidar_raw",
   "tier": "lidar",
-  "timestamp": "2026-10-03T22:38:50.534558",
-  "processing_time_seconds": 18.51,
+  "timestamp": "2026-10-03T23:37:07.271042",
+  "processing_time_seconds": 10.72,
   "data_provenance": "perceived_from_raw_lidar_frames (source: synthetic_renderer (benchmark/synth_scene.py))",
   "drift_correction_applied": true,
   "loop_closures_detected": 3,
@@ -25,6 +25,7 @@
       ]
     ],
     "manhattan_anchors_used": 117,
+    "manhattan_anchors_rejected": 0,
     "max_yaw_correction_deg": 12.559212552749841,
     "initial_drift_m": 0.26830469225304276,
     "residual_drift_m": 3.9640179179314345e-07
@@ -79,11 +80,11 @@
       "polygon": [
         [
           6.8347,
-          0.0162
+          0.0178
         ],
         [
           1.6234,
-          0.0144
+          0.016
         ],
         [
           1.6219,
@@ -98,8 +99,8 @@
       "floor_area_m2": {
         "val": 21.89,
         "ci_95": [
-          21.63,
-          22.16
+          21.62,
+          22.15
         ],
         "unit": "m2"
       },
@@ -116,11 +117,11 @@
           "wall_id": "room_01_w1",
           "start_point": [
             6.8347,
-            0.0162
+            0.0178
           ],
           "end_point": [
             1.6234,
-            0.0144
+            0.016
           ],
           "length_m": {
             "val": 5.211,
@@ -143,10 +144,10 @@
               "opening_id": "room_01_w1_op1",
               "type": "window",
               "width_m": {
-                "val": 1.599,
+                "val": 1.593,
                 "ci_95": [
-                  1.584,
-                  1.614
+                  1.578,
+                  1.608
                 ],
                 "unit": "m"
               },
@@ -159,35 +160,35 @@
                 "unit": "m"
               },
               "sill_m": 0.895,
-              "offset_along_wall_m": 2.617,
+              "offset_along_wall_m": 2.613,
               "connected_room_id": null
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
             6.8347,
-            0.0162
+            0.0178
           ],
           "placed_end_point": [
             1.6234,
-            0.0144
+            0.016
           ]
         },
         {
           "wall_id": "room_01_w2",
           "start_point": [
             1.6234,
-            0.0144
+            0.016
           ],
           "end_point": [
             1.6219,
             4.2158
           ],
           "length_m": {
-            "val": 4.201,
+            "val": 4.2,
             "ci_95": [
-              4.181,
-              4.222
+              4.179,
+              4.22
             ],
             "unit": "m"
           },
@@ -220,14 +221,14 @@
                 "unit": "m"
               },
               "sill_m": 0.0,
-              "offset_along_wall_m": 0.996,
+              "offset_along_wall_m": 0.995,
               "connected_room_id": "room_04"
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
             1.6234,
-            0.0144
+            0.016
           ],
           "placed_end_point": [
             1.6219,
@@ -279,13 +280,13 @@
           ],
           "end_point": [
             6.8347,
-            0.0162
+            0.0178
           ],
           "length_m": {
-            "val": 4.201,
+            "val": 4.2,
             "ci_95": [
-              4.181,
-              4.222
+              4.179,
+              4.22
             ],
             "unit": "m"
           },
@@ -305,7 +306,7 @@
           ],
           "placed_end_point": [
             6.8347,
-            0.0162
+            0.0178
           ]
         }
       ],
@@ -314,11 +315,11 @@
       "placed_polygon": [
         [
           6.8347,
-          0.0162
+          0.0178
         ],
         [
           1.6234,
-          0.0144
+          0.016
         ],
         [
           1.6219,
@@ -337,26 +338,26 @@
       "polygon": [
         [
           -0.1637,
-          0.0001
-        ],
-        [
-          -4.2519,
-          -0.0013
+          -0.0002
         ],
         [
           -4.2531,
-          3.6018
+          -0.0017
+        ],
+        [
+          -4.2543,
+          3.602
         ],
         [
           -0.165,
-          3.6032
+          3.6034
         ]
       ],
       "pose_placed": true,
       "floor_area_m2": {
-        "val": 14.73,
+        "val": 14.74,
         "ci_95": [
-          14.55,
+          14.56,
           14.91
         ],
         "unit": "m2"
@@ -374,17 +375,17 @@
           "wall_id": "room_02_w1",
           "start_point": [
             -0.1637,
-            0.0001
+            -0.0002
           ],
           "end_point": [
-            -4.2519,
-            -0.0013
+            -4.2531,
+            -0.0017
           ],
           "length_m": {
-            "val": 4.088,
+            "val": 4.089,
             "ci_95": [
-              4.068,
-              4.108
+              4.069,
+              4.11
             ],
             "unit": "m"
           },
@@ -400,27 +401,27 @@
           "damage_regions": [],
           "placed_start_point": [
             -0.1637,
-            0.0001
+            -0.0002
           ],
           "placed_end_point": [
-            -4.2519,
-            -0.0013
+            -4.2531,
+            -0.0017
           ]
         },
         {
           "wall_id": "room_02_w2",
           "start_point": [
-            -4.2519,
-            -0.0013
+            -4.2531,
+            -0.0017
           ],
           "end_point": [
-            -4.2531,
-            3.6018
+            -4.2543,
+            3.602
           ],
           "length_m": {
-            "val": 3.603,
+            "val": 3.604,
             "ci_95": [
-              3.584,
+              3.585,
               3.622
             ],
             "unit": "m"
@@ -438,51 +439,51 @@
               "opening_id": "room_02_w2_op1",
               "type": "window",
               "width_m": {
-                "val": 1.39,
+                "val": 1.399,
                 "ci_95": [
-                  1.375,
-                  1.405
+                  1.384,
+                  1.414
                 ],
                 "unit": "m"
               },
               "height_m": {
-                "val": 1.207,
+                "val": 1.209,
                 "ci_95": [
-                  1.195,
-                  1.219
+                  1.197,
+                  1.221
                 ],
                 "unit": "m"
               },
-              "sill_m": 0.895,
-              "offset_along_wall_m": 1.806,
+              "sill_m": 0.894,
+              "offset_along_wall_m": 1.803,
               "connected_room_id": null
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
-            -4.2519,
-            -0.0013
+            -4.2531,
+            -0.0017
           ],
           "placed_end_point": [
-            -4.2531,
-            3.6018
+            -4.2543,
+            3.602
           ]
         },
         {
           "wall_id": "room_02_w3",
           "start_point": [
-            -4.2531,
-            3.6018
+            -4.2543,
+            3.602
           ],
           "end_point": [
             -0.165,
-            3.6032
+            3.6034
           ],
           "length_m": {
-            "val": 4.088,
+            "val": 4.089,
             "ci_95": [
-              4.068,
-              4.108
+              4.069,
+              4.11
             ],
             "unit": "m"
           },
@@ -497,28 +498,28 @@
           "openings": [],
           "damage_regions": [],
           "placed_start_point": [
-            -4.2531,
-            3.6018
+            -4.2543,
+            3.602
           ],
           "placed_end_point": [
             -0.165,
-            3.6032
+            3.6034
           ]
         },
         {
           "wall_id": "room_02_w4",
           "start_point": [
             -0.165,
-            3.6032
+            3.6034
           ],
           "end_point": [
             -0.1637,
-            0.0001
+            -0.0002
           ],
           "length_m": {
-            "val": 3.603,
+            "val": 3.604,
             "ci_95": [
-              3.584,
+              3.585,
               3.622
             ],
             "unit": "m"
@@ -559,11 +560,11 @@
           "damage_regions": [],
           "placed_start_point": [
             -0.165,
-            3.6032
+            3.6034
           ],
           "placed_end_point": [
             -0.1637,
-            0.0001
+            -0.0002
           ]
         }
       ],
@@ -572,19 +573,19 @@
       "placed_polygon": [
         [
           -0.1637,
-          0.0001
-        ],
-        [
-          -4.2519,
-          -0.0013
+          -0.0002
         ],
         [
           -4.2531,
-          3.6018
+          -0.0017
+        ],
+        [
+          -4.2543,
+          3.602
         ],
         [
           -0.165,
-          3.6032
+          3.6034
         ]
       ]
     },
@@ -594,16 +595,16 @@
       "room_type": "room",
       "polygon": [
         [
-          0.0141,
+          0.0155,
           4.3506
         ],
         [
-          0.013,
-          7.552
+          0.0143,
+          7.5529
         ],
         [
           3.5128,
-          7.5532
+          7.5541
         ],
         [
           3.5139,
@@ -631,18 +632,18 @@
         {
           "wall_id": "room_03_w1",
           "start_point": [
-            0.0141,
+            0.0155,
             4.3506
           ],
           "end_point": [
-            0.013,
-            7.552
+            0.0143,
+            7.5529
           ],
           "length_m": {
-            "val": 3.201,
+            "val": 3.202,
             "ci_95": [
-              3.184,
-              3.219
+              3.185,
+              3.22
             ],
             "unit": "m"
           },
@@ -657,29 +658,29 @@
           "openings": [],
           "damage_regions": [],
           "placed_start_point": [
-            0.0141,
+            0.0155,
             4.3506
           ],
           "placed_end_point": [
-            0.013,
-            7.552
+            0.0143,
+            7.5529
           ]
         },
         {
           "wall_id": "room_03_w2",
           "start_point": [
-            0.013,
-            7.552
+            0.0143,
+            7.5529
           ],
           "end_point": [
             3.5128,
-            7.5532
+            7.5541
           ],
           "length_m": {
-            "val": 3.5,
+            "val": 3.498,
             "ci_95": [
-              3.481,
-              3.518
+              3.48,
+              3.517
             ],
             "unit": "m"
           },
@@ -696,51 +697,51 @@
               "opening_id": "room_03_w2_op1",
               "type": "window",
               "width_m": {
-                "val": 0.993,
+                "val": 1.002,
                 "ci_95": [
-                  0.978,
-                  1.008
+                  0.987,
+                  1.017
                 ],
                 "unit": "m"
               },
               "height_m": {
-                "val": 1.011,
+                "val": 1.013,
                 "ci_95": [
-                  0.999,
-                  1.023
+                  1.001,
+                  1.025
                 ],
                 "unit": "m"
               },
-              "sill_m": 0.994,
-              "offset_along_wall_m": 2.189,
+              "sill_m": 0.992,
+              "offset_along_wall_m": 2.192,
               "connected_room_id": null
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
-            0.013,
-            7.552
+            0.0143,
+            7.5529
           ],
           "placed_end_point": [
             3.5128,
-            7.5532
+            7.5541
           ]
         },
         {
           "wall_id": "room_03_w3",
           "start_point": [
             3.5128,
-            7.5532
+            7.5541
           ],
           "end_point": [
             3.5139,
             4.3518
           ],
           "length_m": {
-            "val": 3.201,
+            "val": 3.202,
             "ci_95": [
-              3.184,
-              3.219
+              3.185,
+              3.22
             ],
             "unit": "m"
           },
@@ -756,7 +757,7 @@
           "damage_regions": [],
           "placed_start_point": [
             3.5128,
-            7.5532
+            7.5541
           ],
           "placed_end_point": [
             3.5139,
@@ -770,14 +771,14 @@
             4.3518
           ],
           "end_point": [
-            0.0141,
+            0.0155,
             4.3506
           ],
           "length_m": {
-            "val": 3.5,
+            "val": 3.498,
             "ci_95": [
-              3.481,
-              3.518
+              3.48,
+              3.517
             ],
             "unit": "m"
           },
@@ -820,7 +821,7 @@
             4.3518
           ],
           "placed_end_point": [
-            0.0141,
+            0.0155,
             4.3506
           ]
         }
@@ -829,16 +830,16 @@
       "cv_telemetry": {},
       "placed_polygon": [
         [
-          0.0141,
+          0.0155,
           4.3506
         ],
         [
-          0.013,
-          7.552
+          0.0143,
+          7.5529
         ],
         [
           3.5128,
-          7.5532
+          7.5541
         ],
         [
           3.5139,
@@ -852,20 +853,20 @@
       "room_type": "hallway",
       "polygon": [
         [
-          0.0015,
-          0.0033
+          0.0013,
+          0.0026
         ],
         [
-          0.0,
+          -0.0001,
           4.2182
         ],
         [
-          1.5023,
+          1.5014,
           4.2188
         ],
         [
-          1.5038,
-          0.0039
+          1.5028,
+          0.0031
         ]
       ],
       "pose_placed": true,
@@ -889,17 +890,17 @@
         {
           "wall_id": "room_04_w1",
           "start_point": [
-            0.0015,
-            0.0033
+            0.0013,
+            0.0026
           ],
           "end_point": [
-            0.0,
+            -0.0001,
             4.2182
           ],
           "length_m": {
-            "val": 4.215,
+            "val": 4.216,
             "ci_95": [
-              4.194,
+              4.195,
               4.236
             ],
             "unit": "m"
@@ -917,51 +918,51 @@
               "opening_id": "room_04_w1_op1",
               "type": "door",
               "width_m": {
-                "val": 0.839,
+                "val": 0.84,
                 "ci_95": [
-                  0.824,
-                  0.854
+                  0.825,
+                  0.855
                 ],
                 "unit": "m"
               },
               "height_m": {
-                "val": 2.054,
+                "val": 2.055,
                 "ci_95": [
-                  2.042,
-                  2.066
+                  2.043,
+                  2.067
                 ],
                 "unit": "m"
               },
               "sill_m": 0.0,
-              "offset_along_wall_m": 2.511,
+              "offset_along_wall_m": 2.509,
               "connected_room_id": "room_02"
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
-            0.0015,
-            0.0033
+            0.0013,
+            0.0026
           ],
           "placed_end_point": [
-            0.0,
+            -0.0001,
             4.2182
           ]
         },
         {
           "wall_id": "room_04_w2",
           "start_point": [
-            0.0,
+            -0.0001,
             4.2182
           ],
           "end_point": [
-            1.5023,
+            1.5014,
             4.2188
           ],
           "length_m": {
             "val": 1.502,
             "ci_95": [
-              1.49,
-              1.515
+              1.489,
+              1.514
             ],
             "unit": "m"
           },
@@ -994,34 +995,34 @@
                 "unit": "m"
               },
               "sill_m": 0.0,
-              "offset_along_wall_m": 0.747,
+              "offset_along_wall_m": 0.748,
               "connected_room_id": "room_03"
             }
           ],
           "damage_regions": [],
           "placed_start_point": [
-            0.0,
+            -0.0001,
             4.2182
           ],
           "placed_end_point": [
-            1.5023,
+            1.5014,
             4.2188
           ]
         },
         {
           "wall_id": "room_04_w3",
           "start_point": [
-            1.5023,
+            1.5014,
             4.2188
           ],
           "end_point": [
-            1.5038,
-            0.0039
+            1.5028,
+            0.0031
           ],
           "length_m": {
-            "val": 4.215,
+            "val": 4.216,
             "ci_95": [
-              4.194,
+              4.195,
               4.236
             ],
             "unit": "m"
@@ -1061,29 +1062,29 @@
           ],
           "damage_regions": [],
           "placed_start_point": [
-            1.5023,
+            1.5014,
             4.2188
           ],
           "placed_end_point": [
-            1.5038,
-            0.0039
+            1.5028,
+            0.0031
           ]
         },
         {
           "wall_id": "room_04_w4",
           "start_point": [
-            1.5038,
-            0.0039
+            1.5028,
+            0.0031
           ],
           "end_point": [
-            0.0015,
-            0.0033
+            0.0013,
+            0.0026
           ],
           "length_m": {
             "val": 1.502,
             "ci_95": [
-              1.49,
-              1.515
+              1.489,
+              1.514
             ],
             "unit": "m"
           },
@@ -1098,12 +1099,12 @@
           "openings": [],
           "damage_regions": [],
           "placed_start_point": [
-            1.5038,
-            0.0039
+            1.5028,
+            0.0031
           ],
           "placed_end_point": [
-            0.0015,
-            0.0033
+            0.0013,
+            0.0026
           ]
         }
       ],
@@ -1111,20 +1112,20 @@
       "cv_telemetry": {},
       "placed_polygon": [
         [
-          0.0015,
-          0.0033
+          0.0013,
+          0.0026
         ],
         [
-          0.0,
+          -0.0001,
           4.2182
         ],
         [
-          1.5023,
+          1.5014,
           4.2188
         ],
         [
-          1.5038,
-          0.0039
+          1.5028,
+          0.0031
         ]
       ]
     }

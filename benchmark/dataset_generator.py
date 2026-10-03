@@ -47,13 +47,15 @@ def build_benchmark_dataset(base_dir: str = "benchmark/data", render_lidar: bool
 
     video_dir = os.path.join(base_dir, "tier2_video")
     os.makedirs(video_dir, exist_ok=True)
-    _create_scenario_file(video_dir, gt, noise_std=0.025, seed=3, odom=S.VIDEO_ODOM, traj=(traj, observe))
+    _create_scenario_file(video_dir, gt, noise_std=0.025,
+                          seed=3, odom=S.VIDEO_ODOM, traj=(traj, observe))
 
     photos_dir = os.path.join(base_dir, "tier1_photos")
     os.makedirs(photos_dir, exist_ok=True)
     for rid in gt["rooms"]:
         os.makedirs(os.path.join(photos_dir, rid), exist_ok=True)
-    _create_scenario_file(photos_dir, gt, noise_std=0.065, seed=4, odom=None, traj=None)
+    _create_scenario_file(photos_dir, gt, noise_std=0.065,
+                          seed=4, odom=None, traj=None)
 
     print(f"[BENCHMARK] Synthetic benchmark dataset written to: {base_dir}")
     return base_dir
@@ -71,10 +73,12 @@ def _create_scenario_file(target_dir: str, gt: Dict[str, Any], noise_std: float,
     true_traj, observe = (traj if traj else (None, {}))
     if odom is not None:
         raw = S.simulate_odometry(true_traj, rng, odom)
-        poses = [S._pose_zup(x, y, yaw, 0.0, S.CAM_H).round(6).tolist() for x, y, yaw in raw]
+        poses = [S._pose_zup(x, y, yaw, 0.0, S.CAM_H).round(
+            6).tolist() for x, y, yaw in raw]
 
     for rid, rdata in rooms_gt.items():
-        local = np.asarray(rdata["polygon"], dtype=float) + rng.normal(0, noise_std * 0.2, (4, 2))
+        local = np.asarray(rdata["polygon"], dtype=float) + \
+            rng.normal(0, noise_std * 0.2, (4, 2))
         room_obj = {"room_id": rid, "name": rdata["name"]}
         if odom is not None and rid in observe:
             k = observe[rid]
@@ -85,7 +89,8 @@ def _create_scenario_file(target_dir: str, gt: Dict[str, Any], noise_std: float,
             room_obj.update({"polygon": np.round(cam, 4).tolist(), "observed_at_pose": int(k),
                              "polygon_frame": "camera"})
         else:
-            room_obj.update({"polygon": np.round(local, 4).tolist(), "polygon_frame": "room_local"})
+            room_obj.update({"polygon": np.round(
+                local, 4).tolist(), "polygon_frame": "room_local"})
 
         raw_ops = []
         for w_idx, wall in enumerate(rdata["walls"]):
@@ -95,7 +100,8 @@ def _create_scenario_file(target_dir: str, gt: Dict[str, Any], noise_std: float,
                     "width_m": round(op["width_m"] + rng.normal(0, noise_std * 0.3), 4),
                     "height_m": op["height_m"], "connected_room_id": op.get("connected_room"),
                 })
-        room_obj["ceiling_height_m"] = round(rdata["ceiling_height_m"] + rng.normal(0, noise_std * 0.2), 4)
+        room_obj["ceiling_height_m"] = round(
+            rdata["ceiling_height_m"] + rng.normal(0, noise_std * 0.2), 4)
         room_obj["openings"] = raw_ops
         rooms.append(room_obj)
         staged.extend(rdata.get("staged_damages", []))
@@ -108,5 +114,6 @@ def _create_scenario_file(target_dir: str, gt: Dict[str, Any], noise_std: float,
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--skip-render", action="store_true", help="Do not re-render LiDAR captures")
+    ap.add_argument("--skip-render", action="store_true",
+                    help="Do not re-render LiDAR captures")
     build_benchmark_dataset(render_lidar=not ap.parse_args().skip_render)
