@@ -475,7 +475,36 @@
     </section>
   </main>
 
+  <!-- Permanent Global Inputs for Camera and File Upload -->
+  <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
+  <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
+  <input type="file" id="fileInput" accept="*/*" style="display:none;" onchange="handleFileUpload(event)">
+
   <script>
+    function triggerCameraPhoto() {
+      const el = document.getElementById('cameraPhotoInput');
+      if (el) {
+        el.value = '';
+        el.click();
+      }
+    }
+
+    function triggerCameraVideo() {
+      const el = document.getElementById('cameraVideoInput');
+      if (el) {
+        el.value = '';
+        el.click();
+      }
+    }
+
+    function triggerFileUpload() {
+      const el = document.getElementById('fileInput');
+      if (el) {
+        el.value = '';
+        el.click();
+      }
+    }
+
     let currentSample = "lidar_living";
     let planData = null;
     let benchData = null;
@@ -674,11 +703,14 @@
 
             <!-- Quick Action Buttons -->
             <div style="display:flex; gap:0.5rem;">
-              <button class="btn-action" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:0.8rem; padding:0.6rem;" onclick="document.getElementById('cameraPhotoInput').click()">
+              <button class="btn-action" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerCameraPhoto()">
                 📸 Retake / New Photo
               </button>
-              <button class="btn-action" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); font-size:0.8rem; padding:0.6rem;" onclick="switchTab('tabConcealed', document.querySelectorAll('.tab')[3])">
-                Concealed Damage &rarr;
+              <button class="btn-action" style="flex:1; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc; font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerFileUpload()">
+                📁 Pick from Files
+              </button>
+              <button class="btn-action" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center;" onclick="switchTab('tabConcealed', document.querySelectorAll('.tab')[3])">
+                Concealed Flags &rarr;
               </button>
             </div>
           </div>
@@ -727,24 +759,21 @@
 
           <!-- Mobile Direct Camera Actions -->
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:0.75rem;">
-            <button class="btn-action" style="background:rgba(56, 189, 248, 0.12); border:1px solid rgba(56, 189, 248, 0.4); color:var(--accent-blue); padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="document.getElementById('cameraPhotoInput').click()">
+            <button class="btn-action" style="background:rgba(56, 189, 248, 0.12); border:1px solid rgba(56, 189, 248, 0.4); color:var(--accent-blue); padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="triggerCameraPhoto()">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
               Camera (Photo)
             </button>
-            <button class="btn-action" style="background:rgba(99, 102, 241, 0.12); border:1px solid rgba(99, 102, 241, 0.4); color:#a5b4fc; padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="document.getElementById('cameraVideoInput').click()">
+            <button class="btn-action" style="background:rgba(99, 102, 241, 0.12); border:1px solid rgba(99, 102, 241, 0.4); color:#a5b4fc; padding:0.6rem; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:0.4rem;" onclick="triggerCameraVideo()">
               <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               Camera (Video)
             </button>
           </div>
-          <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
-          <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
 
           <!-- File Upload Zone -->
-          <div class="upload-zone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOverZone(event)" ondragleave="onDragLeaveZone(event)" ondrop="onDropZone(event)">
+          <div class="upload-zone" onclick="triggerFileUpload()" ondragover="onDragOverZone(event)" ondragleave="onDragLeaveZone(event)" ondrop="onDropZone(event)">
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom:0.4rem; color:var(--accent-blue);"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <p style="font-size:0.85rem; font-weight:700;">Drop your recorded video (.mp4), photo (.jpg), or point cloud (.ply) here</p>
             <p style="font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem;">Live processing of real video clips, smartphone photos, or LiDAR point clouds (.ply, .obj, .mp4, .jpg)</p>
-            <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(event)">
           </div>
 
           <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
