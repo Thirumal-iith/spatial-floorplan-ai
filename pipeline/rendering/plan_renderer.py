@@ -124,12 +124,23 @@ class FloorPlanRenderer:
         footprint = stitched_plan.get("total_footprint_m2", {}).get("val", stitched_plan.get("total_footprint_m2", 0.0))
         rest_cost = stitched_plan.get("total_estimated_restoration_cost", 0.0)
 
+        num_rooms = len(rooms)
+        if num_rooms == 1:
+            r_single = rooms[0].get("name", prop_id)
+            title_txt = f"SINGLE ROOM PLAN: {r_single}"
+            mode_txt = f"MODE: SINGLE-ROOM SCAN (1 ROOM)  |  TIER: {tier}"
+            rooms_txt = f'Total Footprint: <tspan fill="#f8fafc" font-weight="bold">{footprint:.2f} m²</tspan> (1 Isolated Room)'
+        else:
+            title_txt = f"MULTI-ROOM BLUEPRINT: {prop_id}"
+            mode_txt = f"MODE: MULTI-ROOM GRAPH STITCHING ({num_rooms} ROOMS)  |  TIER: {tier}"
+            rooms_txt = f'Total Footprint: <tspan fill="#f8fafc" font-weight="bold">{footprint:.2f} m²</tspan> ({num_rooms} Connected Rooms)'
+
         svg_lines.append('  <!-- Title Block -->')
         svg_lines.append('  <g transform="translate(40, 40)">')
-        svg_lines.append('    <rect width="360" height="110" rx="8" fill="#1e293b" fill-opacity="0.95" stroke="#334155" stroke-width="1.5"/>')
-        svg_lines.append(f'    <text x="20" y="32" fill="#f8fafc" font-size="18" font-weight="800">PROPERTY AUDIT: {prop_id}</text>')
-        svg_lines.append(f'    <text x="20" y="56" fill="#38bdf8" font-size="12" font-weight="600">INPUT TIER: {tier}  |  DRIFT CORRECTION: ON</text>')
-        svg_lines.append(f'    <text x="20" y="78" fill="#94a3b8" font-size="12">Total Footprint: <tspan fill="#f8fafc" font-weight="bold">{footprint:.2f} m²</tspan></text>')
+        svg_lines.append('    <rect width="420" height="110" rx="8" fill="#1e293b" fill-opacity="0.95" stroke="#334155" stroke-width="1.5"/>')
+        svg_lines.append(f'    <text x="20" y="32" fill="#f8fafc" font-size="15" font-weight="800">{title_txt}</text>')
+        svg_lines.append(f'    <text x="20" y="56" fill="#38bdf8" font-size="11" font-weight="600">{mode_txt}</text>')
+        svg_lines.append(f'    <text x="20" y="78" fill="#94a3b8" font-size="12">{rooms_txt}</text>')
         svg_lines.append(f'    <text x="20" y="98" fill="#f43f5e" font-size="12" font-weight="bold">Scope Estimate: ${rest_cost:,.2f}</text>')
         svg_lines.append('  </g>')
 
