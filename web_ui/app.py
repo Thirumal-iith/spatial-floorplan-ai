@@ -52,6 +52,29 @@ def download_report():
     return "PDF Report not found", 404
 
 
+@app.route("/api/download-apk")
+def download_apk():
+    apk_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "downloads", "spatial_ai_android.apk")
+    if os.path.exists(apk_path):
+        return send_file(
+            apk_path,
+            mimetype="application/vnd.android.package-archive",
+            as_attachment=True,
+            download_name="Spatial_AI_Property_Audit.apk"
+        )
+    return "APK not found", 404
+
+
+@app.route("/manifest.json")
+def manifest():
+    return send_file(os.path.join(PROJECT_ROOT, "web_ui", "static", "manifest.json"), mimetype="application/manifest+json")
+
+
+@app.route("/sw.js")
+def service_worker():
+    return send_file(os.path.join(PROJECT_ROOT, "web_ui", "static", "sw.js"), mimetype="application/javascript")
+
+
 @app.route("/api/benchmark")
 def get_benchmark():
     bench_path = os.path.join(PROJECT_ROOT, "benchmark", "reports", "benchmark_results.json")
@@ -189,5 +212,5 @@ def custom_sandbox_api():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
 

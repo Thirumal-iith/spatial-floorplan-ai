@@ -1,0 +1,25 @@
+{
+  "name": "Spatial AI Property Audit & 3D Reconstruction",
+  "short_name": "Spatial AI",
+  "description": "Autonomous Spatial 3D Property Reconstruction, Damage Inspection & Restoration Scoping Engine",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090d16",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

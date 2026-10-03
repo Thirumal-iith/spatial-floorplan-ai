@@ -12,3 +12,7 @@ htmlcov/
 scratch/
 .DS_Store
 Thumbs.db
+*.apk
+uploads/
+results_photo/
+results_ply/
