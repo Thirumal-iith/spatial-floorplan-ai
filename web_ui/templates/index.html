@@ -431,13 +431,16 @@
     </div>
 
     <div class="top-actions">
-      <!-- Quick Sample Loader -->
-      <div class="sample-pill-group" id="samplePillGroup">
-        <button class="sample-pill" id="pill_lidar_living" onclick="loadSample('lidar_living', this)">LiDAR Living (1 Room)</button>
-        <button class="sample-pill" id="pill_lidar_bedroom" onclick="loadSample('lidar_bedroom', this)">LiDAR Bedroom (1 Room)</button>
-        <button class="sample-pill" id="pill_video_walkthrough" onclick="loadSample('video_walkthrough', this)">Video Clip (1 Room)</button>
-        <button class="sample-pill" id="pill_photo_damage" onclick="loadSample('photo_damage', this)">Photo Damage (1 Room)</button>
-        <button class="sample-pill" id="pill_multi_room" onclick="loadSample('multi_room', this)">Multi-Room Apt (4 Rooms)</button>
+      <!-- Mode Indicator & Preset Scenarios -->
+      <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <span style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Reference Scenarios:</span>
+        <div class="sample-pill-group" id="samplePillGroup">
+          <button class="sample-pill" id="pill_lidar_living" onclick="loadSample('lidar_living', this)" title="1-Room LiDAR Benchmark">1-Rm LiDAR (Living)</button>
+          <button class="sample-pill" id="pill_lidar_bedroom" onclick="loadSample('lidar_bedroom', this)" title="1-Room LiDAR Repeat Scan">1-Rm LiDAR (Bedroom)</button>
+          <button class="sample-pill" id="pill_video_walkthrough" onclick="loadSample('video_walkthrough', this)" title="1-Room Video Capture">1-Rm Video Clip</button>
+          <button class="sample-pill" id="pill_photo_damage" onclick="loadSample('photo_damage', this)" title="1-Room Photo Staged Damage">1-Rm Photo Damage</button>
+          <button class="sample-pill" id="pill_multi_room" onclick="loadSample('multi_room', this)" title="4-Room Whole-Apartment Benchmark Scan">4-Rm Apt (Multi-Room Demo)</button>
+        </div>
       </div>
       <button onclick="openQrModal()" class="btn-action" style="background:linear-gradient(135deg, #10b981, #059669); text-decoration:none; display:inline-flex; align-items:center; gap:0.35rem; padding:0.35rem 0.75rem; font-size:0.78rem;">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>

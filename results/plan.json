@@ -1,23 +1,23 @@
 {
-  "property_id": "water_damage_wall.jpg",
+  "property_id": "up_1791018605968_Screenshot 2026-10-03 132804.png",
   "tier": "photos",
-  "timestamp": "2026-10-03T14:35:48.911326",
-  "processing_time_seconds": 0.11,
+  "timestamp": "2026-10-03T14:44:05.131953",
+  "processing_time_seconds": 0.17,
   "drift_correction_applied": true,
   "loop_closures_detected": 1,
   "total_footprint_m2": {
-    "val": 21.87,
+    "val": 18.8,
     "ci_95": [
-      19.46,
-      24.28
+      16.73,
+      20.86
     ],
     "unit": "m2"
   },
   "net_floor_area_m2": {
-    "val": 20.12,
+    "val": 17.29,
     "ci_95": [
-      17.91,
-      22.33
+      15.39,
+      19.2
     ],
     "unit": "m2"
   },
@@ -25,30 +25,30 @@
   "rooms": [
     {
       "room_id": "cv_room_01",
-      "name": "water_damage_wall.jpg",
+      "name": "up_1791018605968_Screenshot 2026-10-03 132804.png",
       "polygon": [
         [
-          -2.7,
-          -2.025
+          -2.64,
+          -1.78
         ],
         [
-          2.7,
-          -2.025
+          2.64,
+          -1.78
         ],
         [
-          2.7,
-          2.025
+          2.64,
+          1.78
         ],
         [
-          -2.7,
-          2.025
+          -2.64,
+          1.78
         ]
       ],
       "floor_area_m2": {
-        "val": 21.87,
+        "val": 18.8,
         "ci_95": [
-          19.46,
-          24.28
+          16.73,
+          20.86
         ],
         "unit": "m2"
       },
@@ -64,18 +64,18 @@
         {
           "wall_id": "wall_south",
           "start_point": [
-            -2.7,
-            -2.025
+            -2.64,
+            -1.78
           ],
           "end_point": [
-            2.7,
-            -2.025
+            2.64,
+            -1.78
           ],
           "length_m": {
-            "val": 5.4,
+            "val": 5.28,
             "ci_95": [
-              4.995,
-              5.805
+              4.884,
+              5.676
             ],
             "unit": "m"
           },
@@ -107,7 +107,7 @@
                 ],
                 "unit": "m"
               },
-              "offset_along_wall_m": 2.7
+              "offset_along_wall_m": 2.64
             }
           ],
           "damage_regions": []
@@ -115,18 +115,18 @@
         {
           "wall_id": "wall_east",
           "start_point": [
-            2.7,
-            -2.025
+            2.64,
+            -1.78
           ],
           "end_point": [
-            2.7,
-            2.025
+            2.64,
+            1.78
           ],
           "length_m": {
-            "val": 4.05,
+            "val": 3.56,
             "ci_95": [
-              3.746,
-              4.354
+              3.293,
+              3.827
             ],
             "unit": "m"
           },
@@ -144,42 +144,318 @@
               "damage_id": "dmg_wall_east_wtr_01",
               "damage_class": "water_stain",
               "extent_m2": {
-                "val": 2.12,
+                "val": 0.11,
                 "ci_95": [
-                  1.89,
-                  2.35
+                  0.01,
+                  0.21
                 ],
                 "unit": "m2"
               },
-              "linear_extent_m": 4.05,
-              "confidence_pct": 82.0,
+              "linear_extent_m": 0.38,
+              "confidence_pct": 84.9,
               "location_on_surface": {
                 "u_min": 0.0,
-                "u_max": 4.05,
-                "v_min": 0.0,
-                "v_max": 0.994
+                "u_max": 0.377,
+                "v_min": 0.072,
+                "v_max": 0.632
               },
               "severity": "severe",
-              "notes": "Moisture staining detected reaching 0.99m AFF. Tide marks present.",
+              "notes": "Moisture staining detected reaching 0.63m AFF. Tide marks present.",
               "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_wtr_02",
+              "damage_class": "water_stain",
+              "extent_m2": {
+                "val": 0.81,
+                "ci_95": [
+                  0.71,
+                  0.91
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 2.14,
+              "confidence_pct": 82.0,
+              "location_on_surface": {
+                "u_min": 0.816,
+                "u_max": 2.951,
+                "v_min": 0.0,
+                "v_max": 0.845
+              },
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 0.84m AFF. Tide marks present.",
+              "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_wtr_03",
+              "damage_class": "water_stain",
+              "extent_m2": {
+                "val": 0.14,
+                "ci_95": [
+                  0.04,
+                  0.24
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.16,
+              "confidence_pct": 85.2,
+              "location_on_surface": {
+                "u_min": 3.404,
+                "u_max": 3.56,
+                "v_min": 0.292,
+                "v_max": 1.493
+              },
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 1.49m AFF. Tide marks present.",
+              "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_wtr_04",
+              "damage_class": "water_stain",
+              "extent_m2": {
+                "val": 0.48,
+                "ci_95": [
+                  0.38,
+                  0.58
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 1.42,
+              "confidence_pct": 84.1,
+              "location_on_surface": {
+                "u_min": 1.936,
+                "u_max": 3.361,
+                "v_min": 1.901,
+                "v_max": 2.65
+              },
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+              "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_wtr_05",
+              "damage_class": "water_stain",
+              "extent_m2": {
+                "val": 0.8,
+                "ci_95": [
+                  0.7,
+                  0.9
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 2.69,
+              "confidence_pct": 83.4,
+              "location_on_surface": {
+                "u_min": 0.265,
+                "u_max": 2.958,
+                "v_min": 1.99,
+                "v_max": 2.65
+              },
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+              "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_wtr_06",
+              "damage_class": "water_stain",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.23,
+              "confidence_pct": 87.6,
+              "location_on_surface": {
+                "u_min": 0.0,
+                "u_max": 0.232,
+                "v_min": 1.669,
+                "v_max": 2.65
+              },
+              "severity": "severe",
+              "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+              "wall_id": "wall_east"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_16",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 0.06,
+                "ci_95": [
+                  -0.04,
+                  0.16
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.33,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 1.635,
+                "u_max": 1.961,
+                "v_min": 0.0,
+                "v_max": 0.252
+              },
+              "severity": "moderate",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_17",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 0.07,
+                "ci_95": [
+                  -0.03,
+                  0.17
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.4,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 0.834,
+                "u_max": 1.233,
+                "v_min": 0.252,
+                "v_max": 0.508
+              },
+              "severity": "moderate",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_18",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 0.74,
+                "ci_95": [
+                  0.64,
+                  0.84
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 1.03,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 2.313,
+                "u_max": 3.346,
+                "v_min": 0.741,
+                "v_max": 1.765
+              },
+              "severity": "severe",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_19",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 0.19,
+                "ci_95": [
+                  0.09,
+                  0.29
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.52,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 2.828,
+                "u_max": 3.35,
+                "v_min": 1.813,
+                "v_max": 2.326
+              },
+              "severity": "moderate",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_20",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 3.69,
+                "ci_95": [
+                  3.28,
+                  4.1
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 1.99,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 1.573,
+                "u_max": 3.56,
+                "v_min": 0.0,
+                "v_max": 2.65
+              },
+              "severity": "severe",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_21",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 0.17,
+                "ci_95": [
+                  0.07,
+                  0.27
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.76,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 0.819,
+                "u_max": 1.584,
+                "v_min": 2.334,
+                "v_max": 2.65
+              },
+              "severity": "moderate",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
+            },
+            {
+              "damage_id": "dmg_wall_east_mld_22",
+              "damage_class": "mold",
+              "extent_m2": {
+                "val": 3.42,
+                "ci_95": [
+                  3.04,
+                  3.8
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 1.84,
+              "confidence_pct": 91.8,
+              "location_on_surface": {
+                "u_min": 0.0,
+                "u_max": 1.842,
+                "v_min": 0.0,
+                "v_max": 2.65
+              },
+              "severity": "severe",
+              "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+              "wall_id": "wall_north"
             }
           ]
         },
         {
           "wall_id": "wall_north",
           "start_point": [
-            2.7,
-            2.025
+            2.64,
+            1.78
           ],
           "end_point": [
-            -2.7,
-            2.025
+            -2.64,
+            1.78
           ],
           "length_m": {
-            "val": 5.4,
+            "val": 5.28,
             "ci_95": [
-              4.995,
-              5.805
+              4.884,
+              5.676
             ],
             "unit": "m"
           },
@@ -211,7 +487,7 @@
                 ],
                 "unit": "m"
               },
-              "offset_along_wall_m": 2.7
+              "offset_along_wall_m": 2.64
             }
           ],
           "damage_regions": []
@@ -219,18 +495,18 @@
         {
           "wall_id": "wall_west",
           "start_point": [
-            -2.7,
-            2.025
+            -2.64,
+            1.78
           ],
           "end_point": [
-            -2.7,
-            -2.025
+            -2.64,
+            -1.78
           ],
           "length_m": {
-            "val": 4.05,
+            "val": 3.56,
             "ci_95": [
-              3.746,
-              4.354
+              3.293,
+              3.827
             ],
             "unit": "m"
           },
@@ -245,26 +521,210 @@
           "openings": [],
           "damage_regions": [
             {
-              "damage_id": "dmg_wall_east_crk_02",
+              "damage_id": "dmg_wall_east_crk_07",
               "damage_class": "drywall_crack",
               "extent_m2": {
-                "val": 0.62,
+                "val": 0.1,
                 "ci_95": [
-                  0.52,
-                  0.72
+                  0.0,
+                  0.2
                 ],
                 "unit": "m2"
               },
-              "linear_extent_m": 4.12,
-              "confidence_pct": 88.1,
+              "linear_extent_m": 0.17,
+              "confidence_pct": 89.2,
+              "location_on_surface": {
+                "u_min": 2.907,
+                "u_max": 3.074,
+                "v_min": 0.404,
+                "v_max": 0.44
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.17 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_08",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.27,
+              "confidence_pct": 85.4,
+              "location_on_surface": {
+                "u_min": 2.418,
+                "u_max": 2.675,
+                "v_min": 0.6,
+                "v_max": 0.685
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.27 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_09",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.57,
+              "confidence_pct": 85.2,
+              "location_on_surface": {
+                "u_min": 3.408,
+                "u_max": 3.56,
+                "v_min": 0.288,
+                "v_max": 0.841
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.57 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_10",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.28,
+              "confidence_pct": 96.0,
+              "location_on_surface": {
+                "u_min": 0.12,
+                "u_max": 0.149,
+                "v_min": 1.681,
+                "v_max": 1.957
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.28 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_11",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.36,
+              "confidence_pct": 89.9,
+              "location_on_surface": {
+                "u_min": 0.638,
+                "u_max": 0.99,
+                "v_min": 1.977,
+                "v_max": 2.05
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.36 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_12",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.18,
+                "ci_95": [
+                  0.08,
+                  0.28
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 1.17,
+              "confidence_pct": 91.2,
+              "location_on_surface": {
+                "u_min": 0.558,
+                "u_max": 1.711,
+                "v_min": 2.034,
+                "v_max": 2.246
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 1.17 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_13",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.57,
+              "confidence_pct": 91.0,
+              "location_on_surface": {
+                "u_min": 1.334,
+                "u_max": 1.892,
+                "v_min": 2.178,
+                "v_max": 2.282
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.57 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_14",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.12,
+                "ci_95": [
+                  0.02,
+                  0.22
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.81,
+              "confidence_pct": 91.7,
               "location_on_surface": {
                 "u_min": 0.0,
-                "u_max": 4.05,
-                "v_min": 0.232,
-                "v_max": 0.999
+                "u_max": 0.116,
+                "v_min": 1.581,
+                "v_max": 2.378
               },
-              "severity": "severe",
-              "notes": "Structural shear crack extending 4.12 linear meters.",
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.81 linear meters.",
+              "wall_id": "wall_west"
+            },
+            {
+              "damage_id": "dmg_wall_east_crk_15",
+              "damage_class": "drywall_crack",
+              "extent_m2": {
+                "val": 0.1,
+                "ci_95": [
+                  0.0,
+                  0.2
+                ],
+                "unit": "m2"
+              },
+              "linear_extent_m": 0.52,
+              "confidence_pct": 93.1,
+              "location_on_surface": {
+                "u_min": 3.491,
+                "u_max": 3.56,
+                "v_min": 2.13,
+                "v_max": 2.65
+              },
+              "severity": "moderate",
+              "notes": "Structural shear crack extending 0.52 linear meters.",
               "wall_id": "wall_west"
             }
           ]
@@ -275,77 +735,537 @@
           "damage_id": "dmg_wall_east_wtr_01",
           "damage_class": "water_stain",
           "extent_m2": {
-            "val": 2.12,
+            "val": 0.11,
             "ci_95": [
-              1.89,
-              2.35
+              0.01,
+              0.21
             ],
             "unit": "m2"
           },
-          "linear_extent_m": 4.05,
-          "confidence_pct": 82.0,
+          "linear_extent_m": 0.38,
+          "confidence_pct": 84.9,
           "location_on_surface": {
             "u_min": 0.0,
-            "u_max": 4.05,
-            "v_min": 0.0,
-            "v_max": 0.994
+            "u_max": 0.377,
+            "v_min": 0.072,
+            "v_max": 0.632
           },
           "severity": "severe",
-          "notes": "Moisture staining detected reaching 0.99m AFF. Tide marks present.",
+          "notes": "Moisture staining detected reaching 0.63m AFF. Tide marks present.",
           "wall_id": "wall_east"
         },
         {
-          "damage_id": "dmg_wall_east_crk_02",
-          "damage_class": "drywall_crack",
+          "damage_id": "dmg_wall_east_wtr_02",
+          "damage_class": "water_stain",
           "extent_m2": {
-            "val": 0.62,
+            "val": 0.81,
             "ci_95": [
-              0.52,
-              0.72
+              0.71,
+              0.91
             ],
             "unit": "m2"
           },
-          "linear_extent_m": 4.12,
-          "confidence_pct": 88.1,
+          "linear_extent_m": 2.14,
+          "confidence_pct": 82.0,
           "location_on_surface": {
-            "u_min": 0.0,
-            "u_max": 4.05,
-            "v_min": 0.232,
-            "v_max": 0.999
+            "u_min": 0.816,
+            "u_max": 2.951,
+            "v_min": 0.0,
+            "v_max": 0.845
           },
           "severity": "severe",
-          "notes": "Structural shear crack extending 4.12 linear meters.",
+          "notes": "Moisture staining detected reaching 0.84m AFF. Tide marks present.",
+          "wall_id": "wall_east"
+        },
+        {
+          "damage_id": "dmg_wall_east_wtr_03",
+          "damage_class": "water_stain",
+          "extent_m2": {
+            "val": 0.14,
+            "ci_95": [
+              0.04,
+              0.24
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.16,
+          "confidence_pct": 85.2,
+          "location_on_surface": {
+            "u_min": 3.404,
+            "u_max": 3.56,
+            "v_min": 0.292,
+            "v_max": 1.493
+          },
+          "severity": "severe",
+          "notes": "Moisture staining detected reaching 1.49m AFF. Tide marks present.",
+          "wall_id": "wall_east"
+        },
+        {
+          "damage_id": "dmg_wall_east_wtr_04",
+          "damage_class": "water_stain",
+          "extent_m2": {
+            "val": 0.48,
+            "ci_95": [
+              0.38,
+              0.58
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 1.42,
+          "confidence_pct": 84.1,
+          "location_on_surface": {
+            "u_min": 1.936,
+            "u_max": 3.361,
+            "v_min": 1.901,
+            "v_max": 2.65
+          },
+          "severity": "severe",
+          "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+          "wall_id": "wall_east"
+        },
+        {
+          "damage_id": "dmg_wall_east_wtr_05",
+          "damage_class": "water_stain",
+          "extent_m2": {
+            "val": 0.8,
+            "ci_95": [
+              0.7,
+              0.9
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 2.69,
+          "confidence_pct": 83.4,
+          "location_on_surface": {
+            "u_min": 0.265,
+            "u_max": 2.958,
+            "v_min": 1.99,
+            "v_max": 2.65
+          },
+          "severity": "severe",
+          "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+          "wall_id": "wall_east"
+        },
+        {
+          "damage_id": "dmg_wall_east_wtr_06",
+          "damage_class": "water_stain",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.23,
+          "confidence_pct": 87.6,
+          "location_on_surface": {
+            "u_min": 0.0,
+            "u_max": 0.232,
+            "v_min": 1.669,
+            "v_max": 2.65
+          },
+          "severity": "severe",
+          "notes": "Moisture staining detected reaching 2.65m AFF. Tide marks present.",
+          "wall_id": "wall_east"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_07",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.17,
+          "confidence_pct": 89.2,
+          "location_on_surface": {
+            "u_min": 2.907,
+            "u_max": 3.074,
+            "v_min": 0.404,
+            "v_max": 0.44
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.17 linear meters.",
           "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_08",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.27,
+          "confidence_pct": 85.4,
+          "location_on_surface": {
+            "u_min": 2.418,
+            "u_max": 2.675,
+            "v_min": 0.6,
+            "v_max": 0.685
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.27 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_09",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.57,
+          "confidence_pct": 85.2,
+          "location_on_surface": {
+            "u_min": 3.408,
+            "u_max": 3.56,
+            "v_min": 0.288,
+            "v_max": 0.841
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.57 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_10",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.28,
+          "confidence_pct": 96.0,
+          "location_on_surface": {
+            "u_min": 0.12,
+            "u_max": 0.149,
+            "v_min": 1.681,
+            "v_max": 1.957
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.28 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_11",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.36,
+          "confidence_pct": 89.9,
+          "location_on_surface": {
+            "u_min": 0.638,
+            "u_max": 0.99,
+            "v_min": 1.977,
+            "v_max": 2.05
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.36 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_12",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.18,
+            "ci_95": [
+              0.08,
+              0.28
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 1.17,
+          "confidence_pct": 91.2,
+          "location_on_surface": {
+            "u_min": 0.558,
+            "u_max": 1.711,
+            "v_min": 2.034,
+            "v_max": 2.246
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 1.17 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_13",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.57,
+          "confidence_pct": 91.0,
+          "location_on_surface": {
+            "u_min": 1.334,
+            "u_max": 1.892,
+            "v_min": 2.178,
+            "v_max": 2.282
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.57 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_14",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.12,
+            "ci_95": [
+              0.02,
+              0.22
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.81,
+          "confidence_pct": 91.7,
+          "location_on_surface": {
+            "u_min": 0.0,
+            "u_max": 0.116,
+            "v_min": 1.581,
+            "v_max": 2.378
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.81 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_crk_15",
+          "damage_class": "drywall_crack",
+          "extent_m2": {
+            "val": 0.1,
+            "ci_95": [
+              0.0,
+              0.2
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.52,
+          "confidence_pct": 93.1,
+          "location_on_surface": {
+            "u_min": 3.491,
+            "u_max": 3.56,
+            "v_min": 2.13,
+            "v_max": 2.65
+          },
+          "severity": "moderate",
+          "notes": "Structural shear crack extending 0.52 linear meters.",
+          "wall_id": "wall_west"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_16",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 0.06,
+            "ci_95": [
+              -0.04,
+              0.16
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.33,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 1.635,
+            "u_max": 1.961,
+            "v_min": 0.0,
+            "v_max": 0.252
+          },
+          "severity": "moderate",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_17",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 0.07,
+            "ci_95": [
+              -0.03,
+              0.17
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.4,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 0.834,
+            "u_max": 1.233,
+            "v_min": 0.252,
+            "v_max": 0.508
+          },
+          "severity": "moderate",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_18",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 0.74,
+            "ci_95": [
+              0.64,
+              0.84
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 1.03,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 2.313,
+            "u_max": 3.346,
+            "v_min": 0.741,
+            "v_max": 1.765
+          },
+          "severity": "severe",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_19",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 0.19,
+            "ci_95": [
+              0.09,
+              0.29
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.52,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 2.828,
+            "u_max": 3.35,
+            "v_min": 1.813,
+            "v_max": 2.326
+          },
+          "severity": "moderate",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_20",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 3.69,
+            "ci_95": [
+              3.28,
+              4.1
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 1.99,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 1.573,
+            "u_max": 3.56,
+            "v_min": 0.0,
+            "v_max": 2.65
+          },
+          "severity": "severe",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_21",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 0.17,
+            "ci_95": [
+              0.07,
+              0.27
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 0.76,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 0.819,
+            "u_max": 1.584,
+            "v_min": 2.334,
+            "v_max": 2.65
+          },
+          "severity": "moderate",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
+        },
+        {
+          "damage_id": "dmg_wall_east_mld_22",
+          "damage_class": "mold",
+          "extent_m2": {
+            "val": 3.42,
+            "ci_95": [
+              3.04,
+              3.8
+            ],
+            "unit": "m2"
+          },
+          "linear_extent_m": 1.84,
+          "confidence_pct": 91.8,
+          "location_on_surface": {
+            "u_min": 0.0,
+            "u_max": 1.842,
+            "v_min": 0.0,
+            "v_max": 2.65
+          },
+          "severity": "severe",
+          "notes": "Microbial fungal colony cluster detected requiring bio-containment.",
+          "wall_id": "wall_north"
         }
       ],
       "cv_telemetry": {
-        "total_edges": 6,
-        "vert_lines": 0,
-        "horiz_lines": 6,
-        "resolution": "640x480",
-        "aspect_ratio": 1.33,
-        "damage_zones_count": 2,
-        "mean_luminance": 212.0,
-        "width_m": 5.4,
-        "length_m": 4.05,
-        "floor_area_m2": 21.87
+        "total_edges": 820,
+        "vert_lines": 131,
+        "horiz_lines": 689,
+        "resolution": "982x662",
+        "aspect_ratio": 1.48,
+        "damage_zones_count": 22,
+        "mean_luminance": 94.9,
+        "width_m": 5.28,
+        "length_m": 3.56,
+        "floor_area_m2": 18.8
       },
       "placed_polygon": [
         [
-          -2.7,
-          -2.025
+          -2.64,
+          -1.78
         ],
         [
-          2.7,
-          -2.025
+          2.64,
+          -1.78
         ],
         [
-          2.7,
-          2.025
+          2.64,
+          1.78
         ],
         [
-          -2.7,
-          2.025
+          -2.64,
+          1.78
         ]
       ]
     }
@@ -357,7 +1277,7 @@
       "surface_id": "wall_east",
       "rule_fired": "RULE_WTR_01",
       "building_code_standard": "IICRC S500 \u00a712.2.1",
-      "trigger_evidence": "Water stain reached 0.99m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "trigger_evidence": "Water stain reached 0.63m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
       "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
       "severity": "high"
     },
@@ -367,8 +1287,148 @@
       "surface_id": "wall_east",
       "rule_fired": "RULE_ELEC_01",
       "building_code_standard": "NFPA 70 NEC Art. 110.11",
-      "trigger_evidence": "Water staining boundary (0.00m - 0.99m AFF) intersects standard outlet elevation. In-wall junction box risk.",
+      "trigger_evidence": "Water staining boundary (0.07m - 0.63m AFF) intersects standard outlet elevation. In-wall junction box risk.",
       "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_WTR_01",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 0.84m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_ELEC01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_ELEC_01",
+      "building_code_standard": "NFPA 70 NEC Art. 110.11",
+      "trigger_evidence": "Water staining boundary (0.00m - 0.84m AFF) intersects standard outlet elevation. In-wall junction box risk.",
+      "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_WTR_01",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 1.49m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_ELEC01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_ELEC_01",
+      "building_code_standard": "NFPA 70 NEC Art. 110.11",
+      "trigger_evidence": "Water staining boundary (0.29m - 1.49m AFF) intersects standard outlet elevation. In-wall junction box risk.",
+      "recommended_action": "De-energize circuit branch; inspect box terminals for corrosion; wire insulation resistance test.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_WTR_01",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 2.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_WTR_01",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 2.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_WTR01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_WTR_01",
+      "building_code_standard": "IICRC S500 \u00a712.2.1",
+      "trigger_evidence": "Water stain reached 2.65m AFF (threshold: >0.30m). Saturated cavity insulation risk.",
+      "recommended_action": "Execute 2-foot (0.61m) flood cut; extract wet fiberglass insulation; inspect bottom plate.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 0.06m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 0.07m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 0.74m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 0.19m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 3.69m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 0.17m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
+      "severity": "high"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_east_MLD01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_east",
+      "rule_fired": "RULE_MOLD_01",
+      "building_code_standard": "EPA / IICRC S520",
+      "trigger_evidence": "Microbial mold growth observed with surface extent 3.42m\u00b2.",
+      "recommended_action": "Establish negative-air containment barrier; HEPA vacuuming; biocidal antimicrobial wash.",
       "severity": "high"
     },
     {
@@ -377,7 +1437,87 @@
       "surface_id": "wall_west",
       "rule_fired": "RULE_CRK_01",
       "building_code_standard": "ASTM E2126 / IBC \u00a71808",
-      "trigger_evidence": "Structural shear crack detected with surface extent 0.62m\u00b2 (4.05m linear).",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.17m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.26m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.15m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.03m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.35m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.18m\u00b2 (1.15m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.56m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.12m\u00b2 (0.12m linear).",
+      "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
+      "severity": "medium"
+    },
+    {
+      "flag_id": "FLAG_cv_room_01_wall_west_CRK01",
+      "room_id": "cv_room_01",
+      "surface_id": "wall_west",
+      "rule_fired": "RULE_CRK_01",
+      "building_code_standard": "ASTM E2126 / IBC \u00a71808",
+      "trigger_evidence": "Structural shear crack detected with surface extent 0.10m\u00b2 (0.07m linear).",
       "recommended_action": "Install Avongard Tell-Tale displacement crack monitoring gauge; evaluate foundation settlement.",
       "severity": "medium"
     }
@@ -389,10 +1529,10 @@
       "category": "WTR",
       "code": "WTR-DRY-CUT",
       "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
-      "quantity": 9.8,
+      "quantity": 3.3,
       "unit": "LF",
       "estimated_unit_cost": 18.5,
-      "total_cost": 181.3
+      "total_cost": 61.05
     },
     {
       "item_id": "SC_cv_room_01_002",
@@ -400,10 +1540,10 @@
       "category": "INS",
       "code": "INS-BAT-R13",
       "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
-      "quantity": 22.8,
+      "quantity": 1.2,
       "unit": "SF",
       "estimated_unit_cost": 2.85,
-      "total_cost": 64.98
+      "total_cost": 3.42
     },
     {
       "item_id": "SC_cv_room_01_003",
@@ -411,10 +1551,10 @@
       "category": "WTR",
       "code": "WTR-MOLD-MED",
       "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
-      "quantity": 22.8,
+      "quantity": 1.2,
       "unit": "SF",
       "estimated_unit_cost": 1.1,
-      "total_cost": 25.08
+      "total_cost": 1.32
     },
     {
       "item_id": "SC_cv_room_01_004",
@@ -422,10 +1562,10 @@
       "category": "DRY",
       "code": "DRY-HANG-F",
       "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
-      "quantity": 22.8,
+      "quantity": 1.2,
       "unit": "SF",
       "estimated_unit_cost": 4.2,
-      "total_cost": 95.76
+      "total_cost": 5.04
     },
     {
       "item_id": "SC_cv_room_01_005",
@@ -433,24 +1573,486 @@
       "category": "PNT",
       "code": "PNT-PR-W",
       "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
-      "quantity": 22.8,
+      "quantity": 1.2,
       "unit": "SF",
       "estimated_unit_cost": 2.15,
-      "total_cost": 49.02
+      "total_cost": 2.58
     },
     {
       "item_id": "SC_cv_room_01_006",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-DRY-CUT",
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 4.0,
+      "unit": "LF",
+      "estimated_unit_cost": 18.5,
+      "total_cost": 74.0
+    },
+    {
+      "item_id": "SC_cv_room_01_007",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "INS",
+      "code": "INS-BAT-R13",
+      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
+      "quantity": 8.7,
+      "unit": "SF",
+      "estimated_unit_cost": 2.85,
+      "total_cost": 24.79
+    },
+    {
+      "item_id": "SC_cv_room_01_008",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-MOLD-MED",
+      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
+      "quantity": 8.7,
+      "unit": "SF",
+      "estimated_unit_cost": 1.1,
+      "total_cost": 9.57
+    },
+    {
+      "item_id": "SC_cv_room_01_009",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "DRY",
+      "code": "DRY-HANG-F",
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 8.7,
+      "unit": "SF",
+      "estimated_unit_cost": 4.2,
+      "total_cost": 36.54
+    },
+    {
+      "item_id": "SC_cv_room_01_010",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "PNT",
+      "code": "PNT-PR-W",
+      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
+      "quantity": 8.7,
+      "unit": "SF",
+      "estimated_unit_cost": 2.15,
+      "total_cost": 18.7
+    },
+    {
+      "item_id": "SC_cv_room_01_011",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-DRY-CUT",
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 18.5,
+      "total_cost": 61.05
+    },
+    {
+      "item_id": "SC_cv_room_01_012",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "INS",
+      "code": "INS-BAT-R13",
+      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
+      "quantity": 1.5,
+      "unit": "SF",
+      "estimated_unit_cost": 2.85,
+      "total_cost": 4.28
+    },
+    {
+      "item_id": "SC_cv_room_01_013",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-MOLD-MED",
+      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
+      "quantity": 1.5,
+      "unit": "SF",
+      "estimated_unit_cost": 1.1,
+      "total_cost": 1.65
+    },
+    {
+      "item_id": "SC_cv_room_01_014",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "DRY",
+      "code": "DRY-HANG-F",
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 1.5,
+      "unit": "SF",
+      "estimated_unit_cost": 4.2,
+      "total_cost": 6.3
+    },
+    {
+      "item_id": "SC_cv_room_01_015",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "PNT",
+      "code": "PNT-PR-W",
+      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
+      "quantity": 1.5,
+      "unit": "SF",
+      "estimated_unit_cost": 2.15,
+      "total_cost": 3.22
+    },
+    {
+      "item_id": "SC_cv_room_01_016",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-DRY-CUT",
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 18.5,
+      "total_cost": 61.05
+    },
+    {
+      "item_id": "SC_cv_room_01_017",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "INS",
+      "code": "INS-BAT-R13",
+      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
+      "quantity": 5.2,
+      "unit": "SF",
+      "estimated_unit_cost": 2.85,
+      "total_cost": 14.82
+    },
+    {
+      "item_id": "SC_cv_room_01_018",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-MOLD-MED",
+      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
+      "quantity": 5.2,
+      "unit": "SF",
+      "estimated_unit_cost": 1.1,
+      "total_cost": 5.72
+    },
+    {
+      "item_id": "SC_cv_room_01_019",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "DRY",
+      "code": "DRY-HANG-F",
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 5.2,
+      "unit": "SF",
+      "estimated_unit_cost": 4.2,
+      "total_cost": 21.84
+    },
+    {
+      "item_id": "SC_cv_room_01_020",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "PNT",
+      "code": "PNT-PR-W",
+      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
+      "quantity": 5.2,
+      "unit": "SF",
+      "estimated_unit_cost": 2.15,
+      "total_cost": 11.18
+    },
+    {
+      "item_id": "SC_cv_room_01_021",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-DRY-CUT",
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 3.9,
+      "unit": "LF",
+      "estimated_unit_cost": 18.5,
+      "total_cost": 72.15
+    },
+    {
+      "item_id": "SC_cv_room_01_022",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "INS",
+      "code": "INS-BAT-R13",
+      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
+      "quantity": 8.6,
+      "unit": "SF",
+      "estimated_unit_cost": 2.85,
+      "total_cost": 24.51
+    },
+    {
+      "item_id": "SC_cv_room_01_023",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-MOLD-MED",
+      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
+      "quantity": 8.6,
+      "unit": "SF",
+      "estimated_unit_cost": 1.1,
+      "total_cost": 9.46
+    },
+    {
+      "item_id": "SC_cv_room_01_024",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "DRY",
+      "code": "DRY-HANG-F",
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 8.6,
+      "unit": "SF",
+      "estimated_unit_cost": 4.2,
+      "total_cost": 36.12
+    },
+    {
+      "item_id": "SC_cv_room_01_025",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "PNT",
+      "code": "PNT-PR-W",
+      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
+      "quantity": 8.6,
+      "unit": "SF",
+      "estimated_unit_cost": 2.15,
+      "total_cost": 18.49
+    },
+    {
+      "item_id": "SC_cv_room_01_026",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-DRY-CUT",
+      "description": "Tear out wet drywall up to 2-foot (0.61m) flood cut, bag & haul debris",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 18.5,
+      "total_cost": 61.05
+    },
+    {
+      "item_id": "SC_cv_room_01_027",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "INS",
+      "code": "INS-BAT-R13",
+      "description": "Replace wet R-13 fiberglass batt wall cavity insulation",
+      "quantity": 1.1,
+      "unit": "SF",
+      "estimated_unit_cost": 2.85,
+      "total_cost": 3.14
+    },
+    {
+      "item_id": "SC_cv_room_01_028",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "WTR-MOLD-MED",
+      "description": "Apply EPA-registered antimicrobial agent to exposed wall studs",
+      "quantity": 1.1,
+      "unit": "SF",
+      "estimated_unit_cost": 1.1,
+      "total_cost": 1.21
+    },
+    {
+      "item_id": "SC_cv_room_01_029",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "DRY",
+      "code": "DRY-HANG-F",
+      "description": "Hang, tape, float, sand and finish 1/2-inch gypsum drywall",
+      "quantity": 1.1,
+      "unit": "SF",
+      "estimated_unit_cost": 4.2,
+      "total_cost": 4.62
+    },
+    {
+      "item_id": "SC_cv_room_01_030",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "PNT",
+      "code": "PNT-PR-W",
+      "description": "Apply antimicrobial stain-blocking primer and two coats acrylic latex",
+      "quantity": 1.1,
+      "unit": "SF",
+      "estimated_unit_cost": 2.15,
+      "total_cost": 2.37
+    },
+    {
+      "item_id": "SC_cv_room_01_031",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 0.6,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 2.04
+    },
+    {
+      "item_id": "SC_cv_room_01_032",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 0.8,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 2.72
+    },
+    {
+      "item_id": "SC_cv_room_01_033",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 8.0,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 27.2
+    },
+    {
+      "item_id": "SC_cv_room_01_034",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 2.0,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 6.8
+    },
+    {
+      "item_id": "SC_cv_room_01_035",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 39.7,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 134.98
+    },
+    {
+      "item_id": "SC_cv_room_01_036",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 1.8,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 6.12
+    },
+    {
+      "item_id": "SC_cv_room_01_037",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "WTR",
+      "code": "CLN-MOLD-HEPA",
+      "description": "HEPA vacuuming, bio-containment barrier setup and biocidal fogging",
+      "quantity": 36.8,
+      "unit": "SF",
+      "estimated_unit_cost": 3.4,
+      "total_cost": 125.12
+    },
+    {
+      "item_id": "SC_cv_room_01_038",
       "surface_ref": "cv_room_01/wall_west",
       "category": "STR",
       "code": "MAS-CRK-REP",
       "description": "Stitch and inject structural epoxy into shear crack",
-      "quantity": 13.3,
+      "quantity": 3.3,
       "unit": "LF",
       "estimated_unit_cost": 45.0,
-      "total_cost": 598.5
+      "total_cost": 148.5
     },
     {
-      "item_id": "SC_cv_room_01_007",
+      "item_id": "SC_cv_room_01_039",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_040",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_041",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_042",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_043",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.8,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 171.0
+    },
+    {
+      "item_id": "SC_cv_room_01_044",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_045",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_046",
+      "surface_ref": "cv_room_01/wall_west",
+      "category": "STR",
+      "code": "MAS-CRK-REP",
+      "description": "Stitch and inject structural epoxy into shear crack",
+      "quantity": 3.3,
+      "unit": "LF",
+      "estimated_unit_cost": 45.0,
+      "total_cost": 148.5
+    },
+    {
+      "item_id": "SC_cv_room_01_047",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "ELEC",
+      "code": "ELEC-SWT-R",
+      "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
+      "quantity": 1.0,
+      "unit": "EA",
+      "estimated_unit_cost": 65.0,
+      "total_cost": 65.0
+    },
+    {
+      "item_id": "SC_cv_room_01_048",
+      "surface_ref": "cv_room_01/wall_east",
+      "category": "ELEC",
+      "code": "ELEC-SWT-R",
+      "description": "Test branch wiring and replace water-exposed electrical duplex receptacle",
+      "quantity": 1.0,
+      "unit": "EA",
+      "estimated_unit_cost": 65.0,
+      "total_cost": 65.0
+    },
+    {
+      "item_id": "SC_cv_room_01_049",
       "surface_ref": "cv_room_01/wall_east",
       "category": "ELEC",
       "code": "ELEC-SWT-R",
@@ -461,25 +2063,25 @@
       "total_cost": 65.0
     }
   ],
-  "total_estimated_restoration_cost": 1079.64,
+  "total_estimated_restoration_cost": 2520.22,
   "device_matrix_reference": {
     "tier": "photos",
     "compliance_gate": "PASSED"
   },
   "cv_telemetry": {
-    "total_edges": 6,
-    "vert_lines": 0,
-    "horiz_lines": 6,
-    "resolution": "640x480",
-    "aspect_ratio": 1.33,
-    "damage_zones_count": 2,
-    "mean_luminance": 212.0,
-    "width_m": 5.4,
-    "length_m": 4.05,
-    "floor_area_m2": 21.87
+    "total_edges": 820,
+    "vert_lines": 131,
+    "horiz_lines": 689,
+    "resolution": "982x662",
+    "aspect_ratio": 1.48,
+    "damage_zones_count": 22,
+    "mean_luminance": 94.9,
+    "width_m": 5.28,
+    "length_m": 3.56,
+    "floor_area_m2": 18.8
   },
-  "raw_image_url": "/static/raw_1791018348912.jpg",
-  "annotated_image_url": "/static/annotated_1791018348912.jpg",
+  "uploaded_filename": "Screenshot 2026-10-03 132804.png",
   "has_annotated_image": true,
-  "uploaded_filename": "water_damage_wall.jpg"
+  "annotated_image_url": "/static/annotated_1791018605968.jpg",
+  "raw_image_url": "/static/raw_1791018605968.jpg"
 }

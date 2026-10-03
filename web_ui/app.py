@@ -117,6 +117,7 @@ def run_pipeline_api():
 def load_sample_api():
     req = request.get_json() or {}
     sample_key = req.get("sample", "lidar_living")
+    print(f"DEBUG: /api/load-sample called with sample_key='{sample_key}' from {request.remote_addr}")
 
     samples_map = {
         "lidar_living": (os.path.join(PROJECT_ROOT, "sample_captures", "living_room_lidar.ply"), "lidar"),
