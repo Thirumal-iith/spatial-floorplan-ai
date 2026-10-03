@@ -244,10 +244,15 @@ class PipelineRunner:
                 damages = room_obj.get("detected_damages", [])
                 return [room_obj], damages, []
             elif ext in (".mp4", ".mov", ".avi", ".mkv", ".webm"):
-                room_obj = self.video_processor.process_video_file(input_dir)
-                damages = room_obj.get("detected_damages", [])
-                raw_poses = [np.array(p) for p in room_obj.get("poses", [])]
-                return [room_obj], damages, raw_poses
+                res = self.video_processor.process_video_file(input_dir)
+                rooms = res if isinstance(res, list) else [res]
+                damages = []
+                raw_poses = []
+                for r in rooms:
+                    damages.extend(r.get("detected_damages", []))
+                    for p in r.get("poses", []):
+                        raw_poses.append(np.array(p))
+                return rooms, damages, raw_poses
             elif ext == ".zip":
                 import tempfile
                 extract_path = tempfile.mkdtemp(prefix="capture_zip_")
