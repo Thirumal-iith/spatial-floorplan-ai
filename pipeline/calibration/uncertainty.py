@@ -37,7 +37,10 @@ class UncertaintyCalibrator:
     @classmethod
     def calibrate_wall_length(cls, length_m: float, tier: str = "lidar") -> Dict[str, Any]:
         cfg = cls.NOISE_MODELS.get(tier.lower(), cls.NOISE_MODELS["lidar"])
-        delta = max(cfg["wall_abs"], cfg["wall_rel"] * length_m)
+        # Fixed face-snap noise (two wall faces) and length-proportional drift
+        # are independent error sources, so they add. max() under-covered long
+        # walls (LiDAR wall CI coverage 87.5% < 95% on the synthetic benchmark).
+        delta = cfg["wall_abs"] + cfg["wall_rel"] * length_m
         return {
             "val": round(float(length_m), 3),
             "ci_95": (round(float(length_m - delta), 3), round(float(length_m + delta), 3)),

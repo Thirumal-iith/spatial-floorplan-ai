@@ -1,85 +1,206 @@
 {
+  "ground_truth_provenance": "synthetic",
   "lidar": {
     "tier": "lidar",
-    "wall_error_mean_pct": 0.07,
-    "opening_error_mean_cm": 0.09,
+    "evidence": "perceived",
+    "rooms_matched": "4/4",
+    "walls_scored": 16,
+    "walls_missing": 0,
+    "wall_error_mean_pct": 0.142,
+    "wall_error_max_pct": 0.357,
+    "wall_error_mean_cm": 0.56,
+    "openings_matched": 9,
+    "openings_missed": 0,
+    "openings_phantom": 0,
+    "opening_error_mean_cm": 0.42,
     "pct_openings_le_2cm": 100.0,
-    "max_ceiling_error_cm": 0.1,
-    "footprint_error_pct": 0.03,
+    "max_ceiling_error_cm": 0.0,
+    "room_area_error_mean_pct": 0.23,
+    "footprint_error_pct": 0.111,
     "overlaps_detected": false,
+    "ci95_coverage_pct": {
+      "walls": 100.0,
+      "ceilings": 100.0,
+      "openings": 100.0,
+      "room_areas": 100.0,
+      "all": 100.0
+    },
     "gates": {
       "opening_widths_gate": "PASS",
       "ceiling_height_gate": "PASS",
-      "wall_accuracy_gate": "PASS"
+      "calibration_gate": "PASS"
     }
   },
   "repeatability": {
     "room_id": "room_bedroom",
-    "max_wall_diff_cm": 0.0,
-    "max_wall_diff_pct": 0.0,
+    "evidence": "perceived",
+    "walls": [
+      {
+        "wall": "room_bedroom_w1",
+        "gt_m": 4.1,
+        "capture1_m": 4.088,
+        "capture2_m": 4.101,
+        "diff_cm": 1.3,
+        "diff_pct": 0.317,
+        "status": "PASS"
+      },
+      {
+        "wall": "room_bedroom_w2",
+        "gt_m": 3.6,
+        "capture1_m": 3.603,
+        "capture2_m": 3.611,
+        "diff_cm": 0.8,
+        "diff_pct": 0.222,
+        "status": "PASS"
+      },
+      {
+        "wall": "room_bedroom_w3",
+        "gt_m": 4.1,
+        "capture1_m": 4.088,
+        "capture2_m": 4.101,
+        "diff_cm": 1.3,
+        "diff_pct": 0.317,
+        "status": "PASS"
+      },
+      {
+        "wall": "room_bedroom_w4",
+        "gt_m": 3.6,
+        "capture1_m": 3.603,
+        "capture2_m": 3.611,
+        "diff_cm": 0.8,
+        "diff_pct": 0.222,
+        "status": "PASS"
+      }
+    ],
+    "max_wall_diff_cm": 1.3,
+    "max_wall_diff_pct": 0.317,
+    "ceiling_capture1_m": 2.68,
+    "ceiling_capture2_m": 2.68,
     "ceiling_spread_cm": 0.0,
+    "ceiling_mean_bias_cm": 0.0,
+    "classification": "repeatable and unbiased",
     "wall_agreement_gate": "PASS",
     "ceiling_spread_gate": "PASS",
-    "overall_repeatability_gate": "PASS",
-    "classification": "Repeatable and Unbiased (Within 1cm / 0.5% threshold)"
+    "overall_repeatability_gate": "PASS"
   },
   "video": {
     "tier": "video",
-    "wall_error_mean_pct": 0.34,
-    "opening_error_mean_cm": 0.48,
+    "evidence": "passthrough",
+    "rooms_matched": "4/4",
+    "walls_scored": 16,
+    "walls_missing": 0,
+    "wall_error_mean_pct": 0.163,
+    "wall_error_max_pct": 0.344,
+    "wall_error_mean_cm": 0.57,
+    "openings_matched": 9,
+    "openings_missed": 0,
+    "openings_phantom": 0,
+    "opening_error_mean_cm": 0.4,
     "pct_openings_le_2cm": 100.0,
-    "max_ceiling_error_cm": 0.3,
-    "footprint_error_pct": 0.07,
+    "max_ceiling_error_cm": 0.8,
+    "room_area_error_mean_pct": 0.22,
+    "footprint_error_pct": 0.092,
     "overlaps_detected": false,
+    "ci95_coverage_pct": {
+      "walls": 100.0,
+      "ceilings": 100.0,
+      "openings": 100.0,
+      "room_areas": 100.0,
+      "all": 100.0
+    },
     "gates": {
       "wall_accuracy_gate": "PASS",
-      "footprint_gate": "PASS"
+      "calibration_gate": "PASS"
     }
   },
   "photos": {
     "tier": "photos",
-    "wall_error_mean_pct": 0.87,
-    "opening_error_mean_cm": 1.22,
-    "pct_openings_le_2cm": 100.0,
-    "max_ceiling_error_cm": 10.0,
-    "footprint_error_pct": 0.17,
+    "evidence": "passthrough",
+    "rooms_matched": "4/4",
+    "walls_scored": 16,
+    "walls_missing": 0,
+    "wall_error_mean_pct": 0.493,
+    "wall_error_max_pct": 2.0,
+    "wall_error_mean_cm": 1.54,
+    "openings_matched": 9,
+    "openings_missed": 0,
+    "openings_phantom": 0,
+    "opening_error_mean_cm": 1.4,
+    "pct_openings_le_2cm": 77.8,
+    "max_ceiling_error_cm": 2.0,
+    "room_area_error_mean_pct": 0.39,
+    "footprint_error_pct": 0.351,
     "overlaps_detected": false,
+    "ci95_coverage_pct": {
+      "walls": 100.0,
+      "ceilings": 100.0,
+      "openings": 100.0,
+      "room_areas": 100.0,
+      "all": 100.0
+    },
     "gates": {
+      "wall_accuracy_gate": "PASS",
       "photo_stitch_overlap_gate": "PASS",
-      "footprint_within_8pct_gate": "PASS"
+      "footprint_within_8pct_gate": "PASS",
+      "adjacency_gate": "PASS",
+      "calibration_gate": "PASS"
     }
   },
   "drift_ablation": {
+    "method": "se2_pose_graph_manhattan_yaw_anchors_plus_loop_closure",
+    "loop_closures": 3,
+    "manhattan_anchors": 117,
+    "max_yaw_correction_deg": 12.559,
     "drift_correction_ON": {
-      "footprint_m2": 58.98,
-      "error_m2": 0.02,
-      "residual_loop_drift_cm": 0.4
+      "rooms_matched": "4/4",
+      "walls_scored": 16,
+      "walls_missing": 0,
+      "wall_error_mean_pct": 0.142,
+      "wall_error_max_pct": 0.357,
+      "footprint_m2": 54.16,
+      "footprint_error_pct": 0.111,
+      "overlap_area_m2": 0.0,
+      "pct_openings_le_2cm": 100.0,
+      "loop_closure_gap_cm": 0.0,
+      "mean_centroid_err_cm": 2.56,
+      "max_centroid_err_cm": 3.84
     },
     "drift_correction_OFF": {
-      "footprint_m2": 61.83,
-      "error_m2": 2.87,
-      "residual_loop_drift_cm": 38.6
+      "rooms_matched": "4/4",
+      "walls_scored": 9,
+      "walls_missing": 7,
+      "wall_error_mean_pct": 1.391,
+      "wall_error_max_pct": 4.595,
+      "footprint_m2": 53.99,
+      "footprint_error_pct": 0.203,
+      "overlap_area_m2": 0.0,
+      "pct_openings_le_2cm": 9.1,
+      "loop_closure_gap_cm": 26.83,
+      "mean_centroid_err_cm": 60.78,
+      "max_centroid_err_cm": 105.42
     },
-    "gate": "PASS",
-    "ablation_finding": "Drift correction eliminates 38.2cm of accumulated loop-closure drift and reduces footprint distortion from 5.4% down to 0.4%."
+    "gate": "PASS"
   },
   "damage_evaluation": {
+    "evidence": "passthrough",
+    "note": "Damage regions are copied from ground truth in passthrough mode; detector not yet run on images.",
     "classes_detected": [
-      "water_stain",
-      "drywall_crack"
+      "drywall_crack",
+      "water_stain"
     ],
-    "multi_class_spanning_gate": "PASS",
-    "ci_95_calibration_coverage_pct": 100.0,
-    "calibration_gate": "PASS",
+    "multi_class_gate": "PASS",
+    "extent_ci95_coverage_pct": 100.0,
     "mean_extent_error_pct": 0.0,
     "rules_fired": [
-      "RULE_ELEC_01",
       "RULE_CRK_01",
+      "RULE_ELEC_01",
       "RULE_WTR_01"
     ],
-    "concealed_rules_gate": "PASS",
-    "scope_line_items_count": 28,
-    "scoping_gate": "PASS",
-    "overall_damage_gate": "PASS"
+    "scope_line_items_count": 28
+  },
+  "timing_s": {
+    "lidar": 8.13,
+    "video": 0.34,
+    "photos": 0.01
   }
 }

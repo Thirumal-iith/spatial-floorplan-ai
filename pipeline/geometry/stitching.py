@@ -10,8 +10,31 @@ import numpy as np
 
 
 class MultiRoomStitcher:
+    OVERLAP_TOL_M2 = 0.05
+    RASTER_RES_M = 0.01
+
     def __init__(self, wall_thickness_m: float = 0.12):
         self.wall_thickness = wall_thickness_m
+
+    def union_and_overlap(self, polys: List[List[List[float]]]) -> Tuple[float, float]:
+        """Union area and total pairwise-overlap area via 1 cm rasterisation."""
+        import cv2
+        if not polys:
+            return 0.0, 0.0
+        allp = np.vstack([np.asarray(p, dtype=float) for p in polys])
+        mn = allp.min(axis=0) - 0.05
+        size = np.ceil((allp.max(axis=0) + 0.05 - mn) / self.RASTER_RES_M).astype(int) + 1
+        count = np.zeros((size[1], size[0]), dtype=np.uint8)
+        for p in polys:
+            m = np.zeros_like(count)
+            pix = np.round((np.asarray(p, dtype=float) - mn) / self.RASTER_RES_M).astype(np.int32)
+            cv2.fillPoly(m, [pix], 1)
+            count += m
+        cell = self.RASTER_RES_M ** 2
+        overlap = float((count > 1).sum() * cell)
+        # Exact shoelace areas minus rasterised overlap (avoids boundary-pixel bias of a raster union)
+        net = sum(self._calculate_polygon_area(p) for p in polys)
+        return max(net - overlap, 0.0), overlap
 
     def stitch_rooms(
         self,
@@ -26,6 +49,25 @@ class MultiRoomStitcher:
         """
         if not room_data_list:
             return {"rooms": [], "total_footprint_m2": 0.0, "overlaps_detected": False}
+
+        if all(r.get("pose_placed") for r in room_data_list):
+            # Rooms already in a common world frame from (drift-corrected) poses
+            for r in room_data_list:
+                r["placed_polygon"] = [list(p) for p in r["polygon"]]
+                for w in r.get("walls", []):
+                    w["placed_start_point"] = w.get("start_point")
+                    w["placed_end_point"] = w.get("end_point")
+            union, overlap = self.union_and_overlap([r["placed_polygon"] for r in room_data_list])
+            net = sum(self._calculate_polygon_area(r["placed_polygon"]) for r in room_data_list)
+            return {
+                "rooms": room_data_list,
+                "total_footprint_m2": float(round(union, 3)),
+                "net_floor_area_m2": float(round(net, 3)),
+                "overlap_area_m2": float(round(overlap, 3)),
+                "overlaps_detected": overlap > self.OVERLAP_TOL_M2,
+                "placement_method": "pose_graph",
+                "adjacency_graph": {},
+            }
 
         if len(room_data_list) == 1:
             # Single room property
@@ -116,19 +158,19 @@ class MultiRoomStitcher:
                 orphan_room["transform"] = {"rot_deg": 0.0, "trans": [0.0, 0.0]}
                 placed_rooms[orphan_id] = orphan_room
 
-        # Step 3: Check for polygon overlaps
-        overlaps = self._detect_polygon_overlaps(list(placed_rooms.values()))
-
-        # Step 4: Calculate combined property footprint
-        total_area = sum(self._calculate_polygon_area(r["placed_polygon"]) for r in placed_rooms.values())
-        # Add partition wall allowance (~8% for standard residential floor plans)
-        total_footprint = total_area * 1.08
+        # Step 3: exact overlap + union footprint (no partition-wall fudge factor)
+        polys = [r["placed_polygon"] for r in placed_rooms.values()]
+        union, overlap = self.union_and_overlap(polys)
+        overlaps = overlap > self.OVERLAP_TOL_M2
+        total_area = sum(self._calculate_polygon_area(p) for p in polys)
 
         return {
             "rooms": list(placed_rooms.values()),
-            "total_footprint_m2": float(round(total_footprint, 2)),
-            "net_floor_area_m2": float(round(total_area, 2)),
+            "total_footprint_m2": float(round(union, 3)),
+            "net_floor_area_m2": float(round(total_area, 3)),
+            "overlap_area_m2": float(round(overlap, 3)),
             "overlaps_detected": overlaps,
+            "placement_method": "portal_matching",
             "adjacency_graph": adjacency_graph
         }
 

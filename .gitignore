@@ -17,3 +17,8 @@ uploads/
 results_photo/
 results_ply/
 android_tools/
+
+android_build/
+benchmark/data/tier3_lidar_raw*/
+eval_out.txt
+repro_out.txt

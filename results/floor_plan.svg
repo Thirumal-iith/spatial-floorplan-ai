@@ -14,101 +14,61 @@
     </pattern>
   </defs>
   <rect width="100%" height="100%" fill="url(#grid)" />
-  <polygon points="381.7,1044.9 487.1,1044.9 487.1,749.0 381.7,749.0" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
-  <polygon points="495.5,713.9 495.5,1079.9 798.4,1080.0 798.4,714.0" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
-  <polygon points="373.3,1041.1 373.3,752.7 120.0,752.7 120.0,1041.1" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
-  <polygon points="833.6,1044.9 1080.0,1044.9 1080.0,819.5 833.6,819.5" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
-  <line x1="381.7" y1="1044.9" x2="487.1" y2="1044.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="434.4" y="1062.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">1.50m</text>
-  <line x1="487.1" y1="1044.9" x2="487.1" y2="749.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="505.1" y="896.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.20m</text>
-  <line x1="487.1" y1="749.0" x2="381.7" y2="749.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="434.4" y="731.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">1.50m</text>
-  <line x1="381.7" y1="749.0" x2="381.7" y2="1044.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="363.7" y="896.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.20m</text>
-  <text x="434.4" y="884.9" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Central Hallway</text>
-  <text x="434.4" y="906.9" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">6.29 m²</text>
-  <text x="434.4" y="924.9" fill="#64748b" font-size="10" text-anchor="middle">H: 2.70m</text>
-  <line x1="495.5" y1="713.9" x2="495.5" y2="1079.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="477.5" y="896.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">5.20m</text>
-  <line x1="495.5" y1="1079.9" x2="798.4" y2="1080.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="646.9" y="1098.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.30m</text>
-  <line x1="798.4" y1="1080.0" x2="798.4" y2="714.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="816.4" y="897.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">5.20m</text>
-  <line x1="798.4" y1="714.0" x2="495.5" y2="713.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="647.0" y="695.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.30m</text>
-  <text x="647.0" y="884.9" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Living Room</text>
-  <text x="647.0" y="906.9" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">22.37 m²</text>
-  <text x="647.0" y="924.9" fill="#64748b" font-size="10" text-anchor="middle">H: 2.70m</text>
-  <line x1="373.3" y1="1041.1" x2="373.3" y2="752.7" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="391.3" y="896.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.10m</text>
-  <line x1="373.3" y1="752.7" x2="120.0" y2="752.7" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="246.6" y="734.7" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.60m</text>
-  <line x1="120.0" y1="752.7" x2="120.0" y2="1041.1" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="102.0" y="896.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.10m</text>
-  <line x1="120.0" y1="1041.1" x2="373.3" y2="1041.1" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="246.6" y="1059.1" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.60m</text>
-  <text x="246.6" y="884.9" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Primary Bedroom</text>
-  <text x="246.6" y="906.9" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">14.74 m²</text>
-  <text x="246.6" y="924.9" fill="#64748b" font-size="10" text-anchor="middle">H: 2.70m</text>
-  <line x1="833.6" y1="1044.9" x2="1080.0" y2="1044.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="956.8" y="1062.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.50m</text>
-  <line x1="1080.0" y1="1044.9" x2="1080.0" y2="819.5" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="1098.0" y="932.2" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.20m</text>
-  <line x1="1080.0" y1="819.5" x2="833.6" y2="819.5" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="956.8" y="801.5" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.50m</text>
-  <line x1="833.6" y1="819.5" x2="833.6" y2="1044.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
-  <text x="815.6" y="932.2" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.20m</text>
-  <text x="956.8" y="920.2" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Kitchen</text>
-  <text x="956.8" y="942.2" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">11.21 m²</text>
-  <text x="956.8" y="960.2" fill="#64748b" font-size="10" text-anchor="middle">H: 2.70m</text>
-  <line x1="487.1" y1="925.2" x2="453.0" y2="906.9" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="453.0" cy="906.9" r="24" fill="url(#waterHatch)" stroke="#38bdf8" stroke-width="2.5"/>
-  <rect x="368.0" y="858.9" width="170" height="36" rx="6" fill="#0c4a6e" fill-opacity="0.95" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="453.0" y="873.9" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">WATER STAIN: 1.45 m²</text>
-  <text x="453.0" y="886.9" fill="#38bdf8" font-size="8.5" font-weight="600" text-anchor="middle">IICRC S500 (Flood Cut 2ft)</text>
-  <line x1="381.7" y1="886.3" x2="419.7" y2="894.0" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="419.7" cy="894.0" r="24" fill="url(#crackHatch)" stroke="#ef4444" stroke-width="2.5"/>
-  <rect x="334.7" y="846.0" width="170" height="36" rx="6" fill="#450a0a" fill-opacity="0.95" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="419.7" y="861.0" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">SHEAR CRACK: 1.70 m LF</text>
-  <text x="419.7" y="874.0" fill="#ef4444" font-size="8.5" font-weight="600" text-anchor="middle">ASTM E2126 (Epoxy Inject)</text>
-  <line x1="615.2" y1="1080.0" x2="621.8" y2="1041.8" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="621.8" cy="1041.8" r="24" fill="url(#waterHatch)" stroke="#38bdf8" stroke-width="2.5"/>
-  <rect x="536.8" y="993.8" width="170" height="36" rx="6" fill="#0c4a6e" fill-opacity="0.95" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="621.8" y="1008.8" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">WATER STAIN: 1.45 m²</text>
-  <text x="621.8" y="1021.8" fill="#38bdf8" font-size="8.5" font-weight="600" text-anchor="middle">IICRC S500 (Flood Cut 2ft)</text>
-  <line x1="661.1" y1="713.9" x2="658.1" y2="752.5" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="658.1" cy="752.5" r="24" fill="url(#crackHatch)" stroke="#ef4444" stroke-width="2.5"/>
-  <rect x="573.1" y="704.5" width="170" height="36" rx="6" fill="#450a0a" fill-opacity="0.95" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="658.1" y="719.5" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">SHEAR CRACK: 1.70 m LF</text>
-  <text x="658.1" y="732.5" fill="#ef4444" font-size="8.5" font-weight="600" text-anchor="middle">ASTM E2126 (Epoxy Inject)</text>
-  <line x1="253.6" y1="752.7" x2="251.7" y2="791.4" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="251.7" cy="791.4" r="24" fill="url(#waterHatch)" stroke="#38bdf8" stroke-width="2.5"/>
-  <rect x="166.7" y="743.4" width="170" height="36" rx="6" fill="#0c4a6e" fill-opacity="0.95" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="251.7" y="758.4" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">WATER STAIN: 1.45 m²</text>
-  <text x="251.7" y="771.4" fill="#38bdf8" font-size="8.5" font-weight="600" text-anchor="middle">IICRC S500 (Flood Cut 2ft)</text>
-  <line x1="257.3" y1="1041.1" x2="254.4" y2="1002.5" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="254.4" cy="1002.5" r="24" fill="url(#crackHatch)" stroke="#ef4444" stroke-width="2.5"/>
-  <rect x="169.4" y="954.5" width="170" height="36" rx="6" fill="#450a0a" fill-opacity="0.95" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="254.4" y="969.5" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">SHEAR CRACK: 1.70 m LF</text>
-  <text x="254.4" y="982.5" fill="#ef4444" font-size="8.5" font-weight="600" text-anchor="middle">ASTM E2126 (Epoxy Inject)</text>
-  <line x1="1080.0" y1="925.2" x2="1041.3" y2="927.4" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="1041.3" cy="927.4" r="24" fill="url(#waterHatch)" stroke="#38bdf8" stroke-width="2.5"/>
-  <rect x="956.3" y="879.4" width="170" height="36" rx="6" fill="#0c4a6e" fill-opacity="0.95" stroke="#38bdf8" stroke-width="1.5"/>
-  <text x="1041.3" y="894.4" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">WATER STAIN: 1.45 m²</text>
-  <text x="1041.3" y="907.4" fill="#38bdf8" font-size="8.5" font-weight="600" text-anchor="middle">IICRC S500 (Flood Cut 2ft)</text>
-  <line x1="833.6" y1="956.7" x2="871.5" y2="949.2" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="3,3"/>
-  <circle cx="871.5" cy="949.2" r="24" fill="url(#crackHatch)" stroke="#ef4444" stroke-width="2.5"/>
-  <rect x="786.5" y="901.2" width="170" height="36" rx="6" fill="#450a0a" fill-opacity="0.95" stroke="#ef4444" stroke-width="1.5"/>
-  <text x="871.5" y="916.2" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle">SHEAR CRACK: 1.70 m LF</text>
-  <text x="871.5" y="929.2" fill="#ef4444" font-size="8.5" font-weight="600" text-anchor="middle">ASTM E2126 (Epoxy Inject)</text>
+  <polygon points="1080.0,1078.5 628.8,1078.6 628.7,714.9 1079.9,714.7" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
+  <polygon points="474.1,1079.9 120.1,1080.0 120.0,768.0 474.0,767.9" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
+  <polygon points="489.5,703.2 489.4,426.0 792.4,425.9 792.5,703.1" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
+  <polygon points="488.4,1079.6 488.2,714.7 618.3,714.6 618.4,1079.5" fill="#1e293b" fill-opacity="0.85" stroke="#64748b" stroke-width="2"/>
+  <line x1="1080.0" y1="1078.5" x2="628.8" y2="1078.6" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="854.4" y="1060.6" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">5.21m</text>
+  <line x1="628.8" y1="1078.6" x2="628.7" y2="714.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="646.7" y="896.8" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.20m</text>
+  <line x1="628.7" y1="714.9" x2="1079.9" y2="714.7" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="854.3" y="732.8" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">5.21m</text>
+  <line x1="1079.9" y1="714.7" x2="1080.0" y2="1078.5" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="1061.9" y="896.6" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.20m</text>
+  <text x="854.3" y="884.7" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Room 01</text>
+  <text x="854.3" y="906.7" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">21.89 m²</text>
+  <text x="854.3" y="924.7" fill="#64748b" font-size="10" text-anchor="middle">H: 2.74m</text>
+  <line x1="474.1" y1="1079.9" x2="120.1" y2="1080.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="297.1" y="1061.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.09m</text>
+  <line x1="120.1" y1="1080.0" x2="120.0" y2="768.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="138.1" y="924.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.60m</text>
+  <line x1="120.0" y1="768.0" x2="474.0" y2="767.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="297.0" y="786.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.09m</text>
+  <line x1="474.0" y1="767.9" x2="474.1" y2="1079.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="456.0" y="923.9" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.60m</text>
+  <text x="297.0" y="912.0" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Room 02</text>
+  <text x="297.0" y="934.0" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">14.73 m²</text>
+  <text x="297.0" y="952.0" fill="#64748b" font-size="10" text-anchor="middle">H: 2.68m</text>
+  <line x1="489.5" y1="703.2" x2="489.4" y2="426.0" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="507.4" y="564.6" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.20m</text>
+  <line x1="489.4" y1="426.0" x2="792.4" y2="425.9" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="640.9" y="444.0" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.50m</text>
+  <line x1="792.4" y1="425.9" x2="792.5" y2="703.1" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="774.4" y="564.5" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.20m</text>
+  <line x1="792.5" y1="703.1" x2="489.5" y2="703.2" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="641.0" y="685.2" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">3.50m</text>
+  <text x="640.9" y="552.6" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Room 03</text>
+  <text x="640.9" y="574.6" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">11.20 m²</text>
+  <text x="640.9" y="592.6" fill="#64748b" font-size="10" text-anchor="middle">H: 2.71m</text>
+  <line x1="488.4" y1="1079.6" x2="488.2" y2="714.7" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="506.3" y="897.1" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.21m</text>
+  <line x1="488.2" y1="714.7" x2="618.3" y2="714.6" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="553.3" y="732.6" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">1.50m</text>
+  <line x1="618.3" y1="714.6" x2="618.4" y2="1079.5" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="600.4" y="897.1" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">4.21m</text>
+  <line x1="618.4" y1="1079.5" x2="488.4" y2="1079.6" stroke="#f8fafc" stroke-width="6" stroke-linecap="round"/>
+  <text x="553.4" y="1061.6" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle" dominant-baseline="middle">1.50m</text>
+  <text x="553.3" y="885.1" fill="#f1f5f9" font-size="16" font-weight="bold" text-anchor="middle">Hallway 04</text>
+  <text x="553.3" y="907.1" fill="#38bdf8" font-size="13" font-weight="600" text-anchor="middle">6.33 m²</text>
+  <text x="553.3" y="925.1" fill="#64748b" font-size="10" text-anchor="middle">H: 2.70m</text>
   <!-- Title Block -->
   <g transform="translate(40, 40)">
     <rect width="420" height="110" rx="8" fill="#1e293b" fill-opacity="0.95" stroke="#334155" stroke-width="1.5"/>
-    <text x="20" y="32" fill="#f8fafc" font-size="15" font-weight="800">MULTI-ROOM BLUEPRINT: tier3_lidar</text>
+    <text x="20" y="32" fill="#f8fafc" font-size="15" font-weight="800">MULTI-ROOM BLUEPRINT: tier3_lidar_raw</text>
     <text x="20" y="56" fill="#38bdf8" font-size="11" font-weight="600">MODE: MULTI-ROOM GRAPH STITCHING (4 ROOMS)  |  TIER: LIDAR</text>
-    <text x="20" y="78" fill="#94a3b8" font-size="12">Total Footprint: <tspan fill="#f8fafc" font-weight="bold">58.98 m²</tspan> (4 Connected Rooms)</text>
-    <text x="20" y="98" fill="#f43f5e" font-size="12" font-weight="bold">Scope Estimate: $2,436.12</text>
+    <text x="20" y="78" fill="#94a3b8" font-size="12">Total Footprint: <tspan fill="#f8fafc" font-weight="bold">54.16 m²</tspan> (4 Connected Rooms)</text>
+    <text x="20" y="98" fill="#f43f5e" font-size="12" font-weight="bold">Scope Estimate: $0.00</text>
   </g>
   <!-- North Arrow -->
   <g transform="translate(1120, 60)">

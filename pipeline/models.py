@@ -32,6 +32,14 @@ class DamageRegion(BaseModel):
         description="Bounding coordinates on surface: u_min, u_max (horizontal), v_min, v_max (height above floor)"
     )
     severity: str = Field(default="moderate", description="minor, moderate, severe")
+    crack_subtype: Optional[str] = Field(default=None, description="diagonal_shear, vertical_settlement, horizontal_joint, hairline_crazing, wall_cavity_breach")
+    structural_classification: Optional[str] = Field(default=None, description="structural, non_structural")
+    standard_reference: Optional[str] = Field(default=None, description="ASTM E2126, ASTM C840, IBC §1808, IBC Table 2306.3, IBC §2508")
+    failure_mechanism: Optional[str] = Field(default=None, description="Engineering failure explanation")
+    remediation_protocol: Optional[str] = Field(default=None, description="Recommended remediation protocol")
+    linear_extent_m: Optional[float] = None
+    confidence_pct: Optional[float] = None
+    notes: Optional[str] = None
 
 
 class Wall(BaseModel):

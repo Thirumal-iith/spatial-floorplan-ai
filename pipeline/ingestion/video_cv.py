@@ -139,74 +139,77 @@ class VideoProcessor:
         ceiling_h = 2.70
         img_processor = ImageCVProcessor(default_ceiling_m=ceiling_h)
 
-        # 2. Build room segments
-        room_segments = []
+        # 2. Build initial room segments from doorway transitions
+        raw_segments = []
         for r_i in range(num_rooms):
             start_f = transitions[r_i]
             end_f = transitions[r_i + 1] if r_i < num_rooms - 1 else len(frames)
-            room_segments.append((start_f, end_f))
+            raw_segments.append((start_f, end_f))
 
+        # 3. Classify each segment by accumulating computer vision typology evidence across all frames
+        from pipeline.ingestion.room_classifier import RoomTypologyClassifier
+        room_classifier = RoomTypologyClassifier()
+        scored_segments = []
+        for sf, ef in raw_segments:
+            seg_frames = frames[sf:ef]
+            scores = {"living": 0.0, "bathroom": 0.0, "bedroom": 0.0, "kitchen": 0.0, "hallway": 0.0}
+            for rf in seg_frames:
+                c_res = room_classifier.classify_image(rf)
+                for k, v in c_res.get("scores", {}).items():
+                    scores[k] = scores.get(k, 0.0) + v
+            # Strict Kitchen verification: kitchen requires genuine countertop + cabinetry
+            if scores["kitchen"] < 10.0:
+                scores["kitchen"] = 0.0
+            winner = max(scores, key=scores.get)
+            scored_segments.append((winner, sf, ef, scores))
+
+        # 4. Merge consecutive segments that share the same room typology (e.g. 180° pan inside bathroom)
+        merged_segments = []
+        for winner, sf, ef, scores in scored_segments:
+            if merged_segments and merged_segments[-1]["type"] == winner:
+                merged_segments[-1]["ef"] = ef
+                merged_segments[-1]["frame_count"] += (ef - sf)
+                for k, v in scores.items():
+                    merged_segments[-1]["scores"][k] += v
+            else:
+                merged_segments.append({
+                    "type": winner,
+                    "sf": sf,
+                    "ef": ef,
+                    "frame_count": (ef - sf),
+                    "scores": scores
+                })
+
+        num_final_rooms = len(merged_segments)
         rooms_output = []
         assigned_types = set()
 
-        for r_idx, (sf, ef) in enumerate(room_segments):
+        type_names = {
+            "living": "Living Area",
+            "bathroom": "Bathroom",
+            "bedroom": "Primary Bedroom",
+            "kitchen": "Kitchen Area",
+            "hallway": "Central Hallway"
+        }
+
+        for r_idx, seg in enumerate(merged_segments):
+            r_type = seg["type"]
+            sf, ef = seg["sf"], seg["ef"]
             r_frames = frames[sf:ef]
             r_frame_paths = frame_paths[sf:ef]
             r_traj = trajectory[sf:ef] if len(trajectory) >= ef else trajectory
 
-            # Semantic Room Typology Classification via Computer Vision
-            from pipeline.ingestion.room_classifier import RoomTypologyClassifier
-            room_classifier = RoomTypologyClassifier()
-            mid_frame = r_frames[len(r_frames) // 2] if r_frames else None
-            if mid_frame is not None:
-                c_res = room_classifier.classify_image(mid_frame, filename=f"room_{r_idx+1}")
-                c_type = c_res["room_type"]
-                c_name = c_res["room_name"]
+            # Format room display name
+            base_name = type_names.get(r_type, "Living Area")
+            if r_type in assigned_types:
+                count = sum(1 for t in assigned_types if t.startswith(r_type)) + 1
+                r_name = f"{base_name} {count}"
+                r_type_key = f"{r_type}_{count}"
             else:
-                c_type = "living" if r_idx == 0 else "bedroom"
-                c_name = "Living Area" if r_idx == 0 else f"Bedroom {r_idx}"
+                r_name = base_name
+                r_type_key = r_type
+            assigned_types.add(r_type_key)
 
-            h_energies, v_energies, variances, saturations = [], [], [], []
-            for rf in r_frames:
-                gray = cv2.cvtColor(rf, cv2.COLOR_BGR2GRAY)
-                hsv = cv2.cvtColor(rf, cv2.COLOR_BGR2HSV)
-                sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-                sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-                h_energies.append(np.mean(np.abs(sobely)))
-                v_energies.append(np.mean(np.abs(sobelx)))
-                variances.append(float(np.var(gray)))
-                saturations.append(float(np.mean(hsv[:, :, 1])))
-
-            mean_h = np.mean(h_energies) if h_energies else 1.0
-            mean_v = np.mean(v_energies) if v_energies else 1.0
-            edge_ratio = mean_h / max(mean_v, 1e-3)
-            avg_var = np.mean(variances) if variances else 1000.0
-            avg_sat = np.mean(saturations) if saturations else 60.0
-
-            # Architectural circulation prior: Room 1 is primary circulation node (Living Area)
-            if r_idx == 0 and "living" not in assigned_types:
-                r_name = "Living Area"
-                r_type = "living"
-            elif c_type not in assigned_types and c_type != "living":
-                r_type = c_type
-                r_name = c_name
-            elif edge_ratio > 1.12 and "kitchen" not in assigned_types:
-                r_name = "Kitchen Area"
-                r_type = "kitchen"
-            elif (avg_var > 1700.0 or avg_sat < 42.0) and "bathroom" not in assigned_types and num_rooms >= 4:
-                r_name = "Bathroom"
-                r_type = "bathroom"
-            elif "bedroom_primary" not in assigned_types:
-                r_name = "Primary Bedroom"
-                r_type = "bedroom_primary"
-            elif "bathroom" not in assigned_types:
-                r_name = "Bathroom"
-                r_type = "bathroom"
-            else:
-                r_name = f"Bedroom {r_idx + 1}"
-                r_type = f"bedroom_{r_idx + 1}"
-
-            assigned_types.add(r_type)
             r_id = f"video_room_{r_idx + 1:02d}"
 
             # Calculate room dimensions
@@ -218,9 +221,13 @@ class VideoProcessor:
             else:
                 w_m, l_m = 4.30, 3.60
 
-            # Scale bathroom if compact
+            # Scale dimensions based on architectural typology
             if r_type == "bathroom":
                 w_m, l_m = 2.40, 2.10
+            elif r_type == "hallway":
+                w_m, l_m = 1.60, 3.60
+            elif r_type == "living":
+                w_m, l_m = max(w_m, 4.20), max(l_m, 3.60)
 
             fl_area = round(w_m * l_m, 2)
             w_h, l_h = w_m / 2.0, l_m / 2.0
@@ -231,7 +238,7 @@ class VideoProcessor:
                 [-w_h, l_h]
             ]
 
-            # 3. Detect damages SPECIFIC to this room's keyframes
+            # 5. Detect damages SPECIFIC to this room's keyframes
             photo_analysis = img_processor.analyze_photo_set(r_frame_paths, room_name=r_name)
             damages = photo_analysis.get("detected_damages", [])
 
@@ -252,9 +259,9 @@ class VideoProcessor:
                     d["wall_id"] = f"{r_id}_w2"
                     w_damages[2].append(d)
 
-            # 4. Openings & Connecting Doorways based on Architectural Circulation Graph
+            # 6. Openings & Connecting Doorways based on Architectural Circulation Graph
             w_openings = {1: [], 2: [], 3: [], 4: []}
-            if num_rooms == 1:
+            if num_final_rooms == 1:
                 # Single isolated room
                 w_openings[1].append({
                     "opening_id": f"op_{r_id}_door_main",
@@ -273,7 +280,7 @@ class VideoProcessor:
             else:
                 # Multi-Room Hub-and-Spoke Residential Adjacency
                 if r_idx == 0:
-                    # Room 1: Living Area (Central Circulation Hub)
+                    # Room 1: Primary Social / Circulation Hub (Living Area)
                     w_openings[1].append({
                         "opening_id": f"op_{r_id}_door_main",
                         "type": "door",
@@ -281,8 +288,8 @@ class VideoProcessor:
                         "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
                         "offset_along_wall_m": round(w_m / 2.0, 2)
                     })
-                    # East wall connects to Room 2 (Kitchen)
-                    if num_rooms >= 2:
+                    # East wall connects to Room 2
+                    if num_final_rooms >= 2:
                         w_openings[2].append({
                             "opening_id": f"op_{r_id}_to_video_room_02",
                             "type": "door",
@@ -291,8 +298,8 @@ class VideoProcessor:
                             "offset_along_wall_m": round(l_m / 2.0, 2),
                             "connected_room_id": "video_room_02"
                         })
-                    # West wall connects to Room 3 (Primary Bedroom)
-                    if num_rooms >= 3:
+                    # West wall connects to Room 3
+                    if num_final_rooms >= 3:
                         w_openings[4].append({
                             "opening_id": f"op_{r_id}_to_video_room_03",
                             "type": "door",
@@ -310,7 +317,7 @@ class VideoProcessor:
                         "offset_along_wall_m": round(w_m / 2.0, 2)
                     })
                 elif r_idx == 1:
-                    # Room 2: Kitchen Area (East of Living Area)
+                    # Room 2: Adjoining room (Bathroom or private zone)
                     # West wall connects back to Living Area
                     w_openings[4].append({
                         "opening_id": f"op_{r_id}_to_video_room_01",
@@ -320,35 +327,16 @@ class VideoProcessor:
                         "offset_along_wall_m": round(l_m / 2.0, 2),
                         "connected_room_id": "video_room_01"
                     })
-                    # East wall kitchen window
+                    # East wall ventilation window
                     w_openings[2].append({
-                        "opening_id": f"op_{r_id}_win_kitchen",
+                        "opening_id": f"op_{r_id}_win_02",
                         "type": "window",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.20, "video"),
-                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.00, "video"),
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.90 if r_type == "bathroom" else 1.20, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(0.90 if r_type == "bathroom" else 1.20, "video"),
                         "offset_along_wall_m": round(l_m / 2.0, 2)
                     })
-                elif r_idx == 2:
-                    # Room 3: Primary Bedroom (West of Living Area)
-                    # East wall connects back to Living Area
-                    w_openings[2].append({
-                        "opening_id": f"op_{r_id}_to_video_room_01",
-                        "type": "door",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
-                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
-                        "offset_along_wall_m": round(l_m / 2.0, 2),
-                        "connected_room_id": "video_room_01"
-                    })
-                    # West wall bedroom window
-                    w_openings[4].append({
-                        "opening_id": f"op_{r_id}_win_bed",
-                        "type": "window",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.40, "video"),
-                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.20, "video"),
-                        "offset_along_wall_m": round(l_m / 2.0, 2)
-                    })
-                    # North wall connects to Bathroom if 4+ rooms
-                    if num_rooms >= 4:
+                    # North wall connects to Room 3 if 4+ rooms
+                    if num_final_rooms >= 4:
                         w_openings[3].append({
                             "opening_id": f"op_{r_id}_to_video_room_04",
                             "type": "door",
@@ -357,16 +345,22 @@ class VideoProcessor:
                             "offset_along_wall_m": round(w_m / 2.0, 2),
                             "connected_room_id": "video_room_04"
                         })
-                elif r_idx == 3:
-                    # Room 4: Bathroom (North of Primary Bedroom)
-                    # South wall connects back to Bedroom
-                    w_openings[1].append({
-                        "opening_id": f"op_{r_id}_to_video_room_03",
+                elif r_idx == 2:
+                    # Room 3: Secondary room (connects back to Living Area)
+                    w_openings[2].append({
+                        "opening_id": f"op_{r_id}_to_video_room_01",
                         "type": "door",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.75, "video"),
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
                         "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
-                        "offset_along_wall_m": round(w_m / 2.0, 2),
-                        "connected_room_id": "video_room_03"
+                        "offset_along_wall_m": round(l_m / 2.0, 2),
+                        "connected_room_id": "video_room_01"
+                    })
+                    w_openings[4].append({
+                        "opening_id": f"op_{r_id}_win_03",
+                        "type": "window",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.40, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.20, "video"),
+                        "offset_along_wall_m": round(l_m / 2.0, 2)
                     })
                 else:
                     prev_id = f"video_room_{r_idx:02d}"
@@ -431,4 +425,4 @@ class VideoProcessor:
             }
             rooms_output.append(room_obj)
 
-        return rooms_output if num_rooms > 1 else rooms_output[0]
+        return rooms_output

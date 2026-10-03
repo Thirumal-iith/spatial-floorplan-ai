@@ -30,6 +30,9 @@ from pipeline.ingestion.ply_parser import PointCloudParser
 from pipeline.geometry.pointcloud_pipeline import PointCloudProcessor
 from pipeline.ingestion.image_cv import ImageCVProcessor
 from pipeline.ingestion.video_cv import VideoProcessor
+from pipeline.ingestion.lidar_capture import is_lidar_capture, capture_info
+from pipeline.geometry.lidar_layout import LidarReconstructor
+from pipeline.geometry.drift_correction import se2_of
 
 
 class PipelineRunner:
@@ -59,22 +62,47 @@ class PipelineRunner:
 
         # Check for pre-loaded benchmark scenario or real sensor data
         scenario_file = os.path.join(input_dir, "scenario.json")
-        if os.path.exists(scenario_file):
+        lidar_drift_meta, telemetry = None, {}
+        if is_lidar_capture(input_dir):
+            rooms_raw, lidar_drift_meta, telemetry = LidarReconstructor().reconstruct(
+                input_dir, drift_correction=self.drift_correction)
+            staged_damages, raw_poses = [], []
+            src = capture_info(input_dir).get("source", "device export")
+            data_provenance = f"perceived_from_raw_lidar_frames (source: {src})"
+        elif os.path.exists(scenario_file):
             with open(scenario_file, "r") as f:
                 scenario_data = json.load(f)
             rooms_raw = scenario_data.get("rooms", [])
             staged_damages = scenario_data.get("staged_damages", [])
             raw_poses = [np.array(p) for p in scenario_data.get("poses", [])] if "poses" in scenario_data else []
+            data_provenance = "scenario_json_passthrough (synthetic; geometry read from file, not perceived)"
         else:
             # Generate or reconstruct from subfolders
             rooms_raw, staged_damages, raw_poses = self._ingest_directory(input_dir, tier)
+            data_provenance = "raw_sensor_ingestion"
 
         # 1. Apply Drift Correction if poses exist
-        drift_meta = {"drift_correction_applied": self.drift_correction, "loop_closures_found": 1}
+        drift_meta = lidar_drift_meta or {"drift_correction_applied": False, "loop_closures_found": 0,
+                                          "residual_drift_m": None, "method": "no_poses_available"}
         if raw_poses and len(raw_poses) > 1:
-            _, drift_meta = self.pgo_optimizer.optimize_trajectory(
-                raw_poses, apply_drift_correction=self.drift_correction
+            anchors = []
+            for r in rooms_raw:
+                k = r.get("observed_at_pose")
+                poly_c = r.get("polygon")
+                if k is not None and poly_c and len(poly_c) >= 2:
+                    e = np.subtract(poly_c[1], poly_c[0])
+                    anchors.append((int(k), float(np.arctan2(e[1], e[0]))))
+            used_poses, drift_meta = self.pgo_optimizer.optimize_trajectory(
+                raw_poses, apply_drift_correction=self.drift_correction, manhattan_anchors=anchors
             )
+            # Place rooms observed in a camera frame into the world using the (corrected or raw) pose
+            for r in rooms_raw:
+                k = r.get("observed_at_pose")
+                if k is None or k >= len(used_poses):
+                    continue
+                R2, t2 = se2_of(used_poses[k])
+                r["polygon"] = [[round(float(v), 4) for v in (R2 @ np.asarray(p) + t2)] for p in r["polygon"]]
+                r["pose_placed"] = True
 
         # 2. Geometric Reconstruction per room
         processed_rooms = []
@@ -87,10 +115,6 @@ class PipelineRunner:
             poly = r_raw.get("polygon", [[0,0], [4,0], [4,3], [0,3]])
             raw_height = r_raw.get("ceiling_height_m", 2.70)
             nominal_height = raw_height.get("val", 2.70) if isinstance(raw_height, dict) else float(raw_height)
-            
-            # Add synthetic depth noise if tier is photo or video without ground truth
-            if tier == "photos":
-                nominal_height = round(nominal_height * 0.96, 2)
 
             n_pts = len(poly)
             # If room already contains processed walls (e.g. from PointCloudProcessor), reuse them
@@ -126,13 +150,20 @@ class PipelineRunner:
                         matches_idx = (sd.get("wall_index") == i and sd.get("room_id", r_id) == r_id)
                         if matches_wall or matches_idx:
                             ext_val = sd["extent_m2"].get("val", sd["extent_m2"]) if isinstance(sd["extent_m2"], dict) else float(sd["extent_m2"])
-                            wall_damages.append({
+                            dmg_entry = {
                                 "damage_id": sd["damage_id"],
                                 "damage_class": sd["damage_class"],
                                 "extent_m2": UncertaintyCalibrator.calibrate_area(ext_val, tier),
                                 "location_on_surface": sd["location_on_surface"],
                                 "severity": sd.get("severity", "moderate")
-                            })
+                            }
+                            # Preserve engineering taxonomy and diagnostics if present
+                            for k in ("crack_subtype", "structural_classification", "standard_reference",
+                                      "failure_mechanism", "remediation_protocol", "linear_extent_m",
+                                      "confidence_pct", "notes"):
+                                if k in sd:
+                                    dmg_entry[k] = sd[k]
+                            wall_damages.append(dmg_entry)
 
                     walls_processed.append({
                         "wall_id": wall_id,
@@ -156,6 +187,7 @@ class PipelineRunner:
                 "name": name,
                 "room_type": r_raw.get("room_type", "living" if "living" in name.lower() else ("bedroom" if "bed" in name.lower() else ("kitchen" if "kitchen" in name.lower() else ("bathroom" if "bath" in name.lower() else "hallway")))),
                 "polygon": poly,
+                "pose_placed": bool(r_raw.get("pose_placed", False)),
                 "floor_area_m2": UncertaintyCalibrator.calibrate_area(room_area, tier),
                 "ceiling_height_m": UncertaintyCalibrator.calibrate_ceiling_height(nominal_height, tier),
                 "walls": walls_processed,
@@ -235,11 +267,16 @@ class PipelineRunner:
             "tier": tier,
             "timestamp": datetime.now().isoformat(),
             "processing_time_seconds": elapsed_time,
-            "drift_correction_applied": drift_meta.get("drift_correction_applied", True),
-            "loop_closures_detected": drift_meta.get("loop_closures_found", 1),
+            "data_provenance": data_provenance,
+            "drift_correction_applied": drift_meta.get("drift_correction_applied", False),
+            "loop_closures_detected": drift_meta.get("loop_closures_found", 0),
+            "drift_metrics": drift_meta,
+            "perception_telemetry": telemetry,
             "total_footprint_m2": UncertaintyCalibrator.calibrate_area(total_fp, tier),
             "net_floor_area_m2": UncertaintyCalibrator.calibrate_area(stitched.get("net_floor_area_m2", total_fp * 0.92), tier),
             "overlaps_detected": stitched.get("overlaps_detected", False),
+            "overlap_area_m2": stitched.get("overlap_area_m2", 0.0),
+            "placement_method": stitched.get("placement_method", "single_room"),
             "room_inventory": room_inventory,
             "rooms": placed_rooms,
             "concealed_damage_flags": all_concealed_flags,

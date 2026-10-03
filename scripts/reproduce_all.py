@@ -35,7 +35,7 @@ def main():
         sys.exit(1)
 
     # 2. Run Single CLI Pipeline Test
-    if not run_command(["-m", "pipeline.run", "--input", "benchmark/data/tier3_lidar", "--tier", "lidar", "--output", "results"], "Testing single-command pipeline on LiDAR tier"):
+    if not run_command(["-m", "pipeline.run", "--input", "benchmark/data/tier3_lidar_raw", "--tier", "lidar", "--output", "results"], "Testing single-command pipeline on LiDAR tier"):
         sys.exit(1)
 
     # 3. Run Benchmark Gates Evaluation

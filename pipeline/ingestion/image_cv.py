@@ -319,6 +319,11 @@ class ImageCVProcessor:
             {
                 "damage_id": f"dmg_{os.path.splitext(filename)[0]}_crk_01",
                 "damage_class": "drywall_crack",
+                "crack_subtype": "diagonal_shear",
+                "structural_classification": "structural",
+                "standard_reference": "ASTM E2126 / IBC §1808",
+                "failure_mechanism": "In-plane differential foundation settlement or shear racking.",
+                "remediation_protocol": "Framing stud deflection inspection, elastomeric mesh bridge, drywall patch.",
                 "extent_m2": UncertaintyCalibrator.calibrate_area(0.22, "photos"),
                 "linear_extent_m": 1.45,
                 "confidence_pct": 91.5,

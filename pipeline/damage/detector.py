@@ -213,19 +213,54 @@ class DamageDetector:
                 linear_len_m = round(max(0.35, diag_m), 2)
                 crack_area_m2 = round(max(0.08, linear_len_m * 0.12), 2)
 
-                # Angle evaluation: diagonal shear crack vs vertical settlement
+                # Angle evaluation: diagonal shear crack vs vertical settlement vs horizontal joint
                 dx = abs(u_max - u_min)
                 dy = abs(v_max - v_min)
                 angle_deg = float(np.arctan2(dy, max(dx, 1e-3)) * 180.0 / np.pi)
-                is_shear = (25.0 <= angle_deg <= 65.0)
+
+                if 25.0 <= angle_deg <= 65.0:
+                    crack_subtype = "diagonal_shear"
+                    structural_class = "structural"
+                    std_ref = "ASTM E2126 / IBC Section 1808"
+                    severity = "severe" if linear_len_m > 1.0 else "moderate"
+                    note = f"Diagonal shear fracture ({angle_deg:.1f} deg) - differential foundation settlement or seismic shear stress (ASTM E2126)."
+                    failure_mech = "In-plane lateral shear stress or differential foundation settlement exceeding drywall tensile capacity."
+                    remediation = "Perform framing stud inspection for racking, install mechanical ties/underpinning if active, tape and re-mud with fiberglass mesh."
+                elif 75.0 <= angle_deg <= 105.0:
+                    crack_subtype = "vertical_settlement"
+                    structural_class = "structural" if linear_len_m > 1.5 else "non_structural"
+                    std_ref = "ASTM C840"
+                    severity = "moderate" if linear_len_m > 1.5 else "minor"
+                    note = f"Vertical joint settlement crack ({linear_len_m:.2f}m) along framing stud seam (ASTM C840)."
+                    failure_mech = "Gypsum board joint compound shrinkage, framing drying deflection, or thermal movement."
+                    remediation = "Rake out loose material, apply elastomeric joint compound, embed paper tape, feather finish to Level 4."
+                elif angle_deg <= 15.0 or angle_deg >= 165.0:
+                    crack_subtype = "horizontal_joint"
+                    structural_class = "structural"
+                    std_ref = "IBC Table 2306.3"
+                    severity = "severe"
+                    note = f"Horizontal bending fracture ({linear_len_m:.2f}m) - lateral load or floor truss deflection (IBC Table 2306.3)."
+                    failure_mech = "Out-of-plane lateral pressure or floor deflection inducing horizontal tension failure."
+                    remediation = "Evaluate wall framing for out-of-plane deflection; reinforce studs and replace affected gypsum panel."
+                else:
+                    crack_subtype = "hairline_crazing"
+                    structural_class = "non_structural"
+                    std_ref = "ASTM C840 Section 7.3"
+                    severity = "minor"
+                    note = f"Superficial crazing crack ({linear_len_m:.2f}m) - non-structural plaster shrinkage."
+                    failure_mech = "Superficial plaster drying shrinkage / paint film tension."
+                    remediation = "Scrape loose paint, apply elastomeric bridging primer, repaint."
 
                 conf_pct = round(min(96.5, max(85.0, 80.0 + min(16.0, linear_len_m * 6.0))), 1)
-                severity = "severe" if (is_shear or linear_len_m > 1.6) else ("moderate" if linear_len_m > 0.8 else "minor")
-                note = "Diagonal shear fracture (ASTM E2126)" if is_shear else f"Drywall settlement crack ({linear_len_m:.2f}m)"
 
                 detected.append({
                     "damage_id": f"dmg_{wall_id}_crk_{len(detected)+1:02d}",
                     "damage_class": "drywall_crack",
+                    "crack_subtype": crack_subtype,
+                    "structural_classification": structural_class,
+                    "standard_reference": std_ref,
+                    "failure_mechanism": failure_mech,
+                    "remediation_protocol": remediation,
                     "extent_m2": UncertaintyCalibrator.calibrate_area(crack_area_m2, tier),
                     "linear_extent_m": linear_len_m,
                     "confidence_pct": conf_pct,
@@ -262,6 +297,11 @@ class DamageDetector:
                         detected.append({
                             "damage_id": f"dmg_{wall_id}_breach_{len(detected)+1:02d}",
                             "damage_class": "drywall_crack",  # group under structural drywall failure
+                            "crack_subtype": "wall_cavity_breach",
+                            "structural_classification": "structural",
+                            "standard_reference": "IBC Section 2508 / IRC R702.3.5",
+                            "failure_mechanism": "Mechanical impact or moisture saturation causing complete drywall membrane blowout.",
+                            "remediation_protocol": "Inspect exposed timber studs for moisture/rot, spray antimicrobial agent, re-frame backing if needed, install new 5/8-inch Type X gypsum board.",
                             "extent_m2": UncertaintyCalibrator.calibrate_area(breach_m2, tier),
                             "linear_extent_m": round(u_max - u_min, 2),
                             "confidence_pct": 94.0,
@@ -272,7 +312,7 @@ class DamageDetector:
                                 "v_max": round(v_max, 3)
                             },
                             "severity": "severe",
-                            "notes": f"Structural drywall breach / exposed framing cavity ({breach_m2:.2f}m²) under IBC §2508."
+                            "notes": f"Structural drywall breach / exposed framing cavity ({breach_m2:.2f}m2) under IBC Section 2508."
                         })
 
         return detected

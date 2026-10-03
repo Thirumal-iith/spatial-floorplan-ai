@@ -124,7 +124,7 @@ def load_sample_api():
         "lidar_bedroom": (os.path.join(PROJECT_ROOT, "sample_captures", "bedroom_lidar.ply"), "lidar"),
         "video_walkthrough": (os.path.join(PROJECT_ROOT, "sample_captures", "room_walkthrough.mp4"), "video"),
         "photo_damage": (os.path.join(PROJECT_ROOT, "sample_captures", "water_damage_wall.jpg"), "photos"),
-        "multi_room": (os.path.join(PROJECT_ROOT, "benchmark", "data", "tier3_lidar"), "lidar"),
+        "multi_room": (os.path.join(PROJECT_ROOT, "benchmark", "data", "tier3_lidar_raw"), "lidar"),
     }
 
     if sample_key not in samples_map:

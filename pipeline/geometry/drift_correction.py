@@ -1,125 +1,195 @@
 """
 pipeline/geometry/drift_correction.py
-Pose Graph Optimization (PGO), Loop Closure, and Plane-Anchored Alignment
-to eliminate accumulated odometry drift across multi-room captures.
-Provides an explicit ON/OFF ablation hook required by the evaluation gates.
+
+2D pose-graph optimisation for multi-room captures.
+
+Why 2D: floor plans live in the ground plane and the gravity axis is observable from
+the IMU on every phone, so drift that matters for a floor plan is yaw + x/y.
+
+Two kinds of constraints correct the odometry:
+  1. Plane-anchored (Manhattan) yaw constraints. When a room is observed at keyframe k,
+     its dominant wall direction in world must be a multiple of 90 deg. The difference
+     gives an absolute yaw measurement at k.
+  2. Loop closures. The capture protocol starts at a marked spot in the connector and
+     returns over it between rooms and at the end. Revisits of the start position
+     (detected after yaw correction) become position-equality constraints.
+
+Solved as two linear least-squares problems (yaw first, then translation). This is
+the standard linearised SE(2) decoupling and is exact for the yaw subproblem.
+
+apply_drift_correction=False returns the raw poses ("poses as-is") for the ablation.
 """
 
 from typing import List, Dict, Tuple, Optional
 import numpy as np
 
 
-class PoseGraphOptimizer:
-    def __init__(self, loop_distance_threshold_m: float = 1.2, plane_angle_threshold_deg: float = 8.0):
-        self.loop_dist_thresh = loop_distance_threshold_m
-        self.plane_angle_thresh = np.radians(plane_angle_threshold_deg)
+def _wrap(a: float) -> float:
+    return (a + np.pi) % (2 * np.pi) - np.pi
 
+
+def yaw_of(T: np.ndarray) -> float:
+    """Heading proxy used everywhere: direction of the pose's x-axis in the ground plane."""
+    return float(np.arctan2(T[1, 0], T[0, 0]))
+
+
+def se2_of(T: np.ndarray):
+    """(2x2 rotation, 2-vector) ground-plane transform of a z-up pose."""
+    a = yaw_of(T)
+    c, s = np.cos(a), np.sin(a)
+    return np.array([[c, -s], [s, c]]), np.asarray(T[:2, 3], dtype=float)
+
+
+def _to_se2(poses: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    """Return unwrapped yaw (N,) and xy (N,2)."""
+    raw = np.array([np.arctan2(T[1, 0], T[0, 0]) for T in poses])
+    theta = np.empty_like(raw)
+    theta[0] = raw[0]
+    for i in range(1, len(raw)):
+        theta[i] = theta[i - 1] + _wrap(raw[i] - raw[i - 1])
+    xy = np.array([[T[0, 3], T[1, 3]] for T in poses])
+    return theta, xy
+
+
+def _from_se2(theta: np.ndarray, xy: np.ndarray, template: List[np.ndarray]) -> List[np.ndarray]:
+    """Apply the yaw change as a rotation about gravity, keeping pitch/roll and height."""
+    theta_old, _ = _to_se2(template)
+    out = []
+    for th, th0, p, T in zip(theta, theta_old, xy, template):
+        M = np.array(T, dtype=float).copy()
+        d = th - th0
+        c, s = np.cos(d), np.sin(d)
+        Rz = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
+        M[:3, :3] = Rz @ M[:3, :3]
+        M[0, 3], M[1, 3] = p
+        out.append(M)
+    return out
+
+
+class PoseGraphOptimizer:
+    def __init__(self, loop_radius_m: float = 0.5, min_loop_gap: int = 20,
+                 w_odom: float = 1.0, w_anchor: float = 30.0, w_loop: float = 30.0):
+        self.loop_radius = loop_radius_m
+        self.min_gap = min_loop_gap
+        self.w_odom, self.w_anchor, self.w_loop = w_odom, w_anchor, w_loop
+
+    # ------------------------------------------------------------------ public
     def optimize_trajectory(
         self,
-        raw_poses: List[np.ndarray],  # list of (4, 4) camera-to-world matrices
+        raw_poses: List[np.ndarray],
         detected_wall_planes: Optional[List[Dict]] = None,
-        apply_drift_correction: bool = True
+        apply_drift_correction: bool = True,
+        manhattan_anchors: Optional[List[Tuple[int, float]]] = None,
+        loop_closure_hints: Optional[List[Tuple[int, int]]] = None,
     ) -> Tuple[List[np.ndarray], Dict]:
         """
-        raw_poses: sequential 4x4 SE(3) poses.
-        apply_drift_correction: True for PGO + loop closure, False for 'poses used as-is' ablation.
-        Returns: (optimized_poses, metadata_dict)
+        manhattan_anchors: (keyframe_index, wall_direction_in_camera_frame_rad)
+        loop_closure_hints: optional explicit (i, j) position-equality pairs
         """
-        if not apply_drift_correction or len(raw_poses) < 10:
+        raw_poses = [np.asarray(p, dtype=float) for p in raw_poses]
+        n = len(raw_poses)
+        closure_err_raw = self._closure_error(raw_poses)
+        if not apply_drift_correction or n < 3:
             return raw_poses, {
                 "drift_correction_applied": False,
+                "method": "raw_poses_as_is",
                 "loop_closures_found": 0,
-                "residual_drift_m": self._calculate_loop_drift(raw_poses),
-                "method": "raw_poses_as_is"
+                "manhattan_anchors_used": 0,
+                "residual_drift_m": closure_err_raw,
             }
 
-        # 1. Detect loop closure between trajectory start and trajectory end
-        start_pos = raw_poses[0][:3, 3]
-        end_pos = raw_poses[-1][:3, 3]
-        initial_drift = np.linalg.norm(end_pos - start_pos)
+        theta, xy = _to_se2(raw_poses)
+        dtheta = np.diff(theta)
+        # odometry translation expressed in the frame of pose i
+        dt_local = np.array([self._rot(-theta[i]) @ (xy[i + 1] - xy[i]) for i in range(n - 1)])
 
-        # In a closed-loop walk (per capture protocol), start and end are at the same hallway origin.
-        loop_closure_detected = initial_drift < 2.5  # within loop catch radius
+        # ---- 1. yaw: odometry + Manhattan anchors. The Manhattan frame is defined by the
+        # earliest anchor (least drift), so no assumption about the world axes is needed.
+        anchors = []
+        quarter = np.pi / 2
+        ref = None
+        for k, local_angle in sorted(manhattan_anchors or []):
+            if 0 <= k < n:
+                a = theta[k] + local_angle
+                if ref is None:
+                    ref = a
+                snapped = ref + np.round((a - ref) / quarter) * quarter
+                anchors.append((k, theta[k] + (snapped - a)))
+        theta_c = self._solve_yaw(theta, dtheta, anchors)
 
-        if not loop_closure_detected:
-            # Check intermediate loop closures (e.g. entering and leaving hallway)
-            min_dist = float('inf')
-            best_pair = None
-            for i in range(len(raw_poses) // 4):
-                for j in range(3 * len(raw_poses) // 4, len(raw_poses)):
-                    dist = np.linalg.norm(raw_poses[j][:3, 3] - raw_poses[i][:3, 3])
-                    if dist < min_dist:
-                        min_dist = dist
-                        best_pair = (i, j)
-            if best_pair and min_dist < self.loop_dist_thresh:
-                loop_closure_detected = True
+        # ---- 2. re-integrate with corrected yaw, detect loop closures
+        xy_pred = self._integrate(xy[0], theta_c, dt_local)
+        closures = list(loop_closure_hints or []) or self._detect_closures(xy_pred)
 
-        corrected_poses = [p.copy() for p in raw_poses]
-        num_poses = len(raw_poses)
+        # ---- 3. translation: odometry + closures
+        xy_c = self._solve_xy(xy[0], theta_c, dt_local, closures)
+        corrected = _from_se2(theta_c, xy_c, raw_poses)
 
-        if loop_closure_detected:
-            # Calculate loop closure error transformation Delta_T = T_start * inv(T_end)
-            T_start = raw_poses[0]
-            T_end = raw_poses[-1]
-            delta_trans = T_start[:3, 3] - T_end[:3, 3]
-
-            # Relative rotation error
-            R_err = T_start[:3, :3] @ T_end[:3, :3].T
-            # Trace formula for angle of rotation error
-            trace_val = np.clip((np.trace(R_err) - 1) / 2.0, -1.0, 1.0)
-            rot_angle = np.arccos(trace_val)
-
-            # Smoothly distribute translation and rotation corrections along the trajectory arc
-            # using spherical linear / arc-length weighted relaxation
-            total_path_length = sum(
-                np.linalg.norm(raw_poses[k][:3, 3] - raw_poses[k-1][:3, 3])
-                for k in range(1, num_poses)
-            )
-            accumulated_dist = 0.0
-
-            for k in range(num_poses):
-                if k > 0:
-                    accumulated_dist += np.linalg.norm(raw_poses[k][:3, 3] - raw_poses[k-1][:3, 3])
-                weight = accumulated_dist / max(total_path_length, 1e-6)
-                
-                # Apply fraction of translation drift correction
-                corrected_poses[k][:3, 3] += weight * delta_trans
-
-                # Apply fraction of rotational drift around z-axis (yaw)
-                if abs(rot_angle) > 1e-4:
-                    theta_k = weight * rot_angle
-                    # Yaw correction matrix
-                    c, s = np.cos(theta_k), np.sin(theta_k)
-                    R_yaw = np.array([
-                        [c, -s, 0],
-                        [s,  c, 0],
-                        [0,  0, 1]
-                    ])
-                    corrected_poses[k][:3, :3] = R_yaw @ corrected_poses[k][:3, :3]
-
-        # 2. Plane-anchored co-planarity refinement (if wall planes provided)
-        if detected_wall_planes:
-            corrected_poses = self._refine_with_plane_anchors(corrected_poses, detected_wall_planes)
-
-        final_loop_drift = float(np.linalg.norm(corrected_poses[-1][:3, 3] - corrected_poses[0][:3, 3]))
-
-        return corrected_poses, {
+        return corrected, {
             "drift_correction_applied": True,
-            "loop_closures_found": 1 if loop_closure_detected else 0,
-            "initial_drift_m": float(initial_drift),
-            "residual_drift_m": float(final_loop_drift),
-            "improvement_m": float(max(0.0, initial_drift - final_loop_drift)),
-            "method": "pose_graph_loop_closure_with_plane_anchoring"
+            "method": "se2_pose_graph_manhattan_yaw_anchors_plus_loop_closure",
+            "loop_closures_found": len(closures),
+            "loop_closure_pairs": [list(map(int, c)) for c in closures],
+            "manhattan_anchors_used": len(anchors),
+            "max_yaw_correction_deg": float(np.degrees(np.max(np.abs(theta_c - theta)))) if n else 0.0,
+            "initial_drift_m": closure_err_raw,
+            "residual_drift_m": self._closure_error(corrected),
         }
 
-    def _calculate_loop_drift(self, poses: List[np.ndarray]) -> float:
+    # ----------------------------------------------------------------- solvers
+    def _solve_yaw(self, theta, dtheta, anchors):
+        n = len(theta)
+        rows, rhs = [], []
+        for i, d in enumerate(dtheta):
+            r = np.zeros(n); r[i + 1], r[i] = self.w_odom, -self.w_odom
+            rows.append(r); rhs.append(self.w_odom * d)
+        gauge_w = 1e-3 if anchors else 1e3
+        r = np.zeros(n); r[0] = gauge_w
+        rows.append(r); rhs.append(gauge_w * theta[0])
+        for k, target in anchors:
+            r = np.zeros(n); r[k] = self.w_anchor
+            rows.append(r); rhs.append(self.w_anchor * target)
+        return np.linalg.lstsq(np.array(rows), np.array(rhs), rcond=None)[0]
+
+    def _solve_xy(self, p0, theta, dt_local, closures):
+        n = len(theta)
+        rows, rhs = [], []
+        for i in range(n - 1):
+            d = self._rot(theta[i]) @ dt_local[i]
+            r = np.zeros(n); r[i + 1], r[i] = self.w_odom, -self.w_odom
+            rows.append(r); rhs.append(self.w_odom * d)
+        r = np.zeros(n); r[0] = 1e3
+        rows.append(r); rhs.append(1e3 * np.asarray(p0))
+        for i, j in closures:
+            r = np.zeros(n); r[j], r[i] = self.w_loop, -self.w_loop
+            rows.append(r); rhs.append(np.zeros(2))
+        return np.linalg.lstsq(np.array(rows), np.array(rhs), rcond=None)[0]
+
+    def _detect_closures(self, xy):
+        """Revisits of the start marker: local minima of distance to pose 0 within radius."""
+        d = np.linalg.norm(xy - xy[0], axis=1)
+        closures, last = [], 0
+        for j in range(self.min_gap, len(d)):
+            lo, hi = max(0, j - 10), min(len(d), j + 11)
+            if d[j] < self.loop_radius and d[j] == d[lo:hi].min() and j - last >= self.min_gap:
+                closures.append((0, j))
+                last = j
+        return closures
+
+    # ----------------------------------------------------------------- helpers
+    @staticmethod
+    def _rot(a):
+        c, s = np.cos(a), np.sin(a)
+        return np.array([[c, -s], [s, c]])
+
+    def _integrate(self, p0, theta, dt_local):
+        out = [np.asarray(p0, dtype=float)]
+        for i, d in enumerate(dt_local):
+            out.append(out[-1] + self._rot(theta[i]) @ d)
+        return np.array(out)
+
+    @staticmethod
+    def _closure_error(poses) -> float:
         if len(poses) < 2:
             return 0.0
-        return float(np.linalg.norm(poses[-1][:3, 3] - poses[0][:3, 3]))
-
-    def _refine_with_plane_anchors(self, poses: List[np.ndarray], wall_planes: List[Dict]) -> List[np.ndarray]:
-        """
-        Enforces co-planarity on shared partition walls between adjoining rooms.
-        """
-        # Refines relative camera orientation to remain strictly aligned with Manhattan axes
-        return poses
+        return float(np.linalg.norm(poses[-1][:2, 3] - poses[0][:2, 3]))
