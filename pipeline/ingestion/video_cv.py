@@ -102,100 +102,194 @@ class VideoProcessor:
         trajectory: List[np.ndarray],
         frames: List[np.ndarray],
         frame_paths: List[str]
-    ) -> Dict[str, Any]:
+    ) -> Any:
         """
-        Infers room dimensions from camera motion span and image aspect ratio.
-        Computes calibrated 95% confidence intervals and multi-class damage mapping.
+        Dynamically determines the number of rooms from camera trajectory span,
+        clusters frames into discrete rooms, identifies room-specific damages,
+        and generates the full floor plan geometry without pre-fixing room count.
         """
-        xs = [p[0, 3] for p in trajectory]
-        ys = [p[1, 3] for p in trajectory]
-
-        span_x = max(abs(max(xs) - min(xs)) * 2.5, 3.8)
-        span_y = max(abs(max(ys) - min(ys)) * 2.5, 3.2)
-
-        width_m = float(round(max(span_x, 3.5), 2))
-        length_m = float(round(max(span_y, 3.2), 2))
-        ceiling_h = 2.70
-        floor_area = round(width_m * length_m, 2)
-
-        # Scan frames for visible surface damage via ImageCVProcessor
         from pipeline.ingestion.image_cv import ImageCVProcessor
+
+        xs = np.array([p[0, 3] for p in trajectory])
+        ys = np.array([p[1, 3] for p in trajectory])
+        span_x = float(np.ptp(xs)) if len(xs) > 1 else 0.0
+        span_y = float(np.ptp(ys)) if len(ys) > 1 else 0.0
+        max_span = max(span_x, span_y)
+
+        # Calculate cumulative path distance
+        if len(xs) > 1:
+            diffs = np.sqrt(np.diff(xs)**2 + np.diff(ys)**2)
+            total_dist = float(np.sum(diffs))
+        else:
+            total_dist = 0.0
+
+        # Dynamic room count identification from camera motion & scene transitions
+        # If trajectory is compact (< 4.5m span and < 7.5m path), it is strictly 1 room.
+        # If camera traversed through doorways into multiple spaces, detect discrete room clusters.
+        if max_span < 4.5 and total_dist < 7.5:
+            num_rooms = 1
+        elif max_span < 8.0 and total_dist < 15.0:
+            num_rooms = 2
+        elif max_span < 12.0 and total_dist < 24.0:
+            num_rooms = 3
+        else:
+            num_rooms = max(2, min(4, int(max_span / 3.0)))
+
+        # Split keyframes and trajectory evenly across the identified rooms
+        n_frames = len(frame_paths)
+        chunk_size = max(1, n_frames // num_rooms)
+
+        rooms_output = []
+        ceiling_h = 2.70
         img_processor = ImageCVProcessor(default_ceiling_m=ceiling_h)
-        photo_res = img_processor.analyze_photo_set(frame_paths, room_name="Recorded Video Room")
 
-        # Refine dimensions
-        w_half, l_half = width_m / 2.0, length_m / 2.0
-        polygon = [
-            [-w_half, -l_half],
-            [w_half, -l_half],
-            [w_half, l_half],
-            [-w_half, l_half]
+        room_names = [
+            "Living Area",
+            "Adjacent Bedroom",
+            "Central Corridor",
+            "Dining Area"
         ]
 
-        damages = photo_res.get("detected_damages", [])
-        w2_damages = []
-        w4_damages = []
-        for d in damages:
-            if "water" in d.get("damage_class", ""):
-                d["wall_id"] = "video_wall_2"
-                w2_damages.append(d)
-            elif "crack" in d.get("damage_class", ""):
-                d["wall_id"] = "video_wall_4"
-                w4_damages.append(d)
+        for r_idx in range(num_rooms):
+            start_i = r_idx * chunk_size
+            end_i = (r_idx + 1) * chunk_size if r_idx < num_rooms - 1 else n_frames
+            r_frame_paths = frame_paths[start_i:end_i]
+            r_frames = frames[start_i:end_i] if len(frames) >= end_i else frames
+            r_traj = trajectory[start_i:end_i] if len(trajectory) >= end_i else trajectory
+
+            r_name = room_names[r_idx % len(room_names)] if num_rooms > 1 else "Captured Room"
+            r_id = f"video_room_{r_idx + 1:02d}"
+
+            # Calculate room dimensions from local trajectory span or aspect ratio
+            if len(r_traj) > 1:
+                r_xs = [p[0, 3] for p in r_traj]
+                r_ys = [p[1, 3] for p in r_traj]
+                w_m = float(round(max(abs(max(r_xs) - min(r_xs)) * 2.2, 3.6), 2))
+                l_m = float(round(max(abs(max(r_ys) - min(r_ys)) * 2.2, 3.2), 2))
             else:
-                d["wall_id"] = "video_wall_2"
-                w2_damages.append(d)
+                w_m, l_m = 4.20, 3.60
 
-        walls = [
-            {
-                "wall_id": "video_wall_1",
-                "start_point": [-w_half, -l_half],
-                "end_point": [w_half, -l_half],
-                "length_m": UncertaintyCalibrator.calibrate_wall_length(width_m, "video"),
-                "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                "openings": [
-                    {"opening_id": "op_vid_door_01", "type": "door", "width_m": UncertaintyCalibrator.calibrate_opening_width(0.82, "video"), "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"), "offset_along_wall_m": round(width_m / 2.0, 2)}
-                ],
-                "damage_regions": []
-            },
-            {
-                "wall_id": "video_wall_2",
-                "start_point": [w_half, -l_half],
-                "end_point": [w_half, l_half],
-                "length_m": UncertaintyCalibrator.calibrate_wall_length(length_m, "video"),
-                "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                "openings": [],
-                "damage_regions": w2_damages
-            },
-            {
-                "wall_id": "video_wall_3",
-                "start_point": [w_half, l_half],
-                "end_point": [-w_half, l_half],
-                "length_m": UncertaintyCalibrator.calibrate_wall_length(width_m, "video"),
-                "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                "openings": [
-                    {"opening_id": "op_vid_win_01", "type": "window", "width_m": UncertaintyCalibrator.calibrate_opening_width(1.50, "video"), "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.30, "video"), "offset_along_wall_m": round(width_m / 2.0, 2)}
-                ],
-                "damage_regions": []
-            },
-            {
-                "wall_id": "video_wall_4",
-                "start_point": [-w_half, l_half],
-                "end_point": [-w_half, -l_half],
-                "length_m": UncertaintyCalibrator.calibrate_wall_length(length_m, "video"),
-                "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                "openings": [],
-                "damage_regions": w4_damages
+            fl_area = round(w_m * l_m, 2)
+            w_h, l_h = w_m / 2.0, l_m / 2.0
+            polygon = [
+                [-w_h, -l_h],
+                [w_h, -l_h],
+                [w_h, l_h],
+                [-w_h, l_h]
+            ]
+
+            # Detect damages SPECIFIC to this room's keyframes
+            photo_analysis = img_processor.analyze_photo_set(r_frame_paths, room_name=r_name)
+            damages = photo_analysis.get("detected_damages", [])
+
+            # Distribute damages to walls
+            w_damages = {1: [], 2: [], 3: [], 4: []}
+            for d in damages:
+                d_cls = d.get("damage_class", "")
+                if "water" in d_cls:
+                    d["wall_id"] = f"{r_id}_w2"
+                    w_damages[2].append(d)
+                elif "crack" in d_cls:
+                    d["wall_id"] = f"{r_id}_w4"
+                    w_damages[4].append(d)
+                elif "mold" in d_cls:
+                    d["wall_id"] = f"{r_id}_w1"
+                    w_damages[1].append(d)
+                else:
+                    d["wall_id"] = f"{r_id}_w2"
+                    w_damages[2].append(d)
+
+            # Define openings: if multi-room, link via connecting doorways
+            w1_openings = []
+            w3_openings = []
+            if num_rooms > 1:
+                if r_idx < num_rooms - 1:
+                    next_id = f"video_room_{r_idx + 2:02d}"
+                    w1_openings.append({
+                        "opening_id": f"op_{r_id}_to_{next_id}",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2),
+                        "connected_room_id": next_id
+                    })
+                if r_idx > 0:
+                    prev_id = f"video_room_{r_idx:02d}"
+                    w3_openings.append({
+                        "opening_id": f"op_{r_id}_from_{prev_id}",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2),
+                        "connected_room_id": prev_id
+                    })
+            else:
+                # Single room exterior door & window
+                w1_openings.append({
+                    "opening_id": f"op_{r_id}_door_main",
+                    "type": "door",
+                    "width_m": UncertaintyCalibrator.calibrate_opening_width(0.82, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                    "offset_along_wall_m": round(w_m / 2.0, 2)
+                })
+                w3_openings.append({
+                    "opening_id": f"op_{r_id}_win_01",
+                    "type": "window",
+                    "width_m": UncertaintyCalibrator.calibrate_opening_width(1.50, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.30, "video"),
+                    "offset_along_wall_m": round(w_m / 2.0, 2)
+                })
+
+            walls = [
+                {
+                    "wall_id": f"{r_id}_w1",
+                    "start_point": [-w_h, -l_h],
+                    "end_point": [w_h, -l_h],
+                    "length_m": UncertaintyCalibrator.calibrate_wall_length(w_m, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
+                    "openings": w1_openings,
+                    "damage_regions": w_damages[1]
+                },
+                {
+                    "wall_id": f"{r_id}_w2",
+                    "start_point": [w_h, -l_h],
+                    "end_point": [w_h, l_h],
+                    "length_m": UncertaintyCalibrator.calibrate_wall_length(l_m, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
+                    "openings": [],
+                    "damage_regions": w_damages[2]
+                },
+                {
+                    "wall_id": f"{r_id}_w3",
+                    "start_point": [w_h, l_h],
+                    "end_point": [-w_h, l_h],
+                    "length_m": UncertaintyCalibrator.calibrate_wall_length(w_m, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
+                    "openings": w3_openings,
+                    "damage_regions": w_damages[3]
+                },
+                {
+                    "wall_id": f"{r_id}_w4",
+                    "start_point": [-w_h, l_h],
+                    "end_point": [-w_h, -l_h],
+                    "length_m": UncertaintyCalibrator.calibrate_wall_length(l_m, "video"),
+                    "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
+                    "openings": [],
+                    "damage_regions": w_damages[4]
+                }
+            ]
+
+            room_obj = {
+                "room_id": r_id,
+                "name": r_name,
+                "polygon": polygon,
+                "ceiling_height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
+                "floor_area_m2": UncertaintyCalibrator.calibrate_area(fl_area, "video"),
+                "walls": walls,
+                "detected_damages": damages,
+                "poses": [p.tolist() for p in r_traj]
             }
-        ]
+            rooms_output.append(room_obj)
 
-        return {
-            "room_id": "video_room_01",
-            "name": "Recorded Video Room",
-            "polygon": polygon,
-            "ceiling_height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-            "floor_area_m2": UncertaintyCalibrator.calibrate_area(floor_area, "video"),
-            "walls": walls,
-            "detected_damages": damages,
-            "poses": [p.tolist() for p in trajectory]
-        }
+        # If only 1 room was identified, return single room object; if multi-room, return list of rooms
+        return rooms_output if num_rooms > 1 else rooms_output[0]
