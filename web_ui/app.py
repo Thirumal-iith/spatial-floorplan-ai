@@ -44,6 +44,14 @@ def get_plan_svg():
     return "SVG not found", 404
 
 
+@app.route("/api/download-report")
+def download_report():
+    pdf_path = os.path.join(PROJECT_ROOT, "reports", "spatial_ai_engineering_report.pdf")
+    if os.path.exists(pdf_path):
+        return send_file(pdf_path, mimetype="application/pdf", as_attachment=False)
+    return "PDF Report not found", 404
+
+
 @app.route("/api/benchmark")
 def get_benchmark():
     bench_path = os.path.join(PROJECT_ROOT, "benchmark", "reports", "benchmark_results.json")
