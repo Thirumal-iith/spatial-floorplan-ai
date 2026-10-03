@@ -170,8 +170,12 @@ def upload_file_api():
         plan = runner.process_capture(save_path, tier=tier)
         results_dir = os.path.join(PROJECT_ROOT, "results")
         os.makedirs(results_dir, exist_ok=True)
-        with open(os.path.join(results_dir, "plan.json"), "w") as f:
-            json.dump(plan, f, indent=2)
+        import time
+        annotated_path = os.path.join(PROJECT_ROOT, "web_ui", "static", "latest_annotated.jpg")
+        plan["has_annotated_image"] = os.path.exists(annotated_path)
+        plan["annotated_image_url"] = f"/static/latest_annotated.jpg?t={int(time.time()*1000)}"
+        plan["uploaded_filename"] = file.filename
+        plan["tier"] = tier
 
         runner.renderer.render_svg(plan, os.path.join(results_dir, "floor_plan.svg"))
         return jsonify(plan)

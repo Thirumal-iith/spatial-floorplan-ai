@@ -36,10 +36,13 @@ class ImageCVProcessor:
 
                 # 1. Detect structural line features via Canny + HoughLinesP
                 gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-                edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-                lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=80, minLineLength=50, maxLineGap=10)
+                edges = cv2.Canny(gray, 40, 130, apertureSize=3)
+                lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=60, minLineLength=40, maxLineGap=12)
 
-                # Count horizontal and vertical structural lines
+                # Create annotated visualization copy
+                annotated = bgr.copy()
+
+                # Count horizontal and vertical structural lines & draw them
                 vert_lines, horiz_lines = 0, 0
                 if lines is not None:
                     for line in lines:
@@ -47,13 +50,39 @@ class ImageCVProcessor:
                         angle = abs(np.arctan2(y2 - y1, x2 - x1) * 180.0 / np.pi)
                         if 75 <= angle <= 105:
                             vert_lines += 1
+                            cv2.line(annotated, (x1, y1), (x2, y2), (255, 230, 0), 2)  # Cyan for vertical corners
                         elif angle <= 15 or angle >= 165:
                             horiz_lines += 1
+                            cv2.line(annotated, (x1, y1), (x2, y2), (0, 255, 120), 2)  # Neon green for floor/ceiling
 
                 # 2. Advanced Damage Segmentation in HSV space
                 dmg = self._segment_damage_hsv(bgr, os.path.basename(img_path))
                 if dmg:
                     damage_candidates.extend(dmg)
+                    for d in dmg:
+                        loc = d.get("location_on_surface", {})
+                        # Draw bounding box
+                        u1 = int((loc.get("u_min", 0) / 3.5) * w)
+                        u2 = int((loc.get("u_max", 1) / 3.5) * w)
+                        v2 = int(h - (loc.get("v_min", 0) / 2.65) * h)
+                        v1 = int(h - (loc.get("v_max", 1) / 2.65) * h)
+                        cv2.rectangle(annotated, (u1, v1), (u2, v2), (0, 70, 255), 3)
+                        cv2.putText(annotated, f"DAMAGE: {d.get('damage_class','water_stain').upper()}", (u1, max(25, v1 - 8)),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 70, 255), 2)
+
+                # Overlay status banner
+                total_lines = vert_lines + horiz_lines
+                cv2.rectangle(annotated, (0, 0), (w, 48), (15, 23, 42), -1)
+                banner_txt = f"SPATIAL AI CV | Edges: {total_lines} (H:{horiz_lines} V:{vert_lines}) | Damage: {len(dmg)}"
+                cv2.putText(annotated, banner_txt, (15, 32), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (56, 189, 248), 2)
+
+                # Save annotated preview
+                try:
+                    for out_dir in ["results", os.path.join("web_ui", "static")]:
+                        os.makedirs(out_dir, exist_ok=True)
+                        cv2.imwrite(os.path.join(out_dir, "latest_annotated.jpg"), annotated)
+                except Exception as save_err:
+                    print(f"[IMAGE CV] Could not save annotated image: {save_err}")
 
             except Exception as e:
                 print(f"[IMAGE CV] Error processing {img_path}: {e}")
