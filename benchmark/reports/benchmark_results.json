@@ -1,11 +1,11 @@
 {
   "lidar": {
     "tier": "lidar",
-    "wall_error_mean_pct": 0.05,
-    "opening_error_mean_cm": 0.11,
+    "wall_error_mean_pct": 0.07,
+    "opening_error_mean_cm": 0.09,
     "pct_openings_le_2cm": 100.0,
     "max_ceiling_error_cm": 0.1,
-    "footprint_error_pct": 0.0,
+    "footprint_error_pct": 0.03,
     "overlaps_detected": false,
     "gates": {
       "opening_widths_gate": "PASS",
@@ -25,11 +25,11 @@
   },
   "video": {
     "tier": "video",
-    "wall_error_mean_pct": 0.25,
-    "opening_error_mean_cm": 0.49,
+    "wall_error_mean_pct": 0.34,
+    "opening_error_mean_cm": 0.48,
     "pct_openings_le_2cm": 100.0,
     "max_ceiling_error_cm": 0.3,
-    "footprint_error_pct": 0.03,
+    "footprint_error_pct": 0.07,
     "overlaps_detected": false,
     "gates": {
       "wall_accuracy_gate": "PASS",
@@ -38,11 +38,11 @@
   },
   "photos": {
     "tier": "photos",
-    "wall_error_mean_pct": 0.65,
-    "opening_error_mean_cm": 1.24,
-    "pct_openings_le_2cm": 87.5,
+    "wall_error_mean_pct": 0.87,
+    "opening_error_mean_cm": 1.22,
+    "pct_openings_le_2cm": 100.0,
     "max_ceiling_error_cm": 10.0,
-    "footprint_error_pct": 0.1,
+    "footprint_error_pct": 0.17,
     "overlaps_detected": false,
     "gates": {
       "photo_stitch_overlap_gate": "PASS",
@@ -51,16 +51,35 @@
   },
   "drift_ablation": {
     "drift_correction_ON": {
-      "footprint_m2": 59.0,
-      "error_m2": 0.0,
+      "footprint_m2": 58.98,
+      "error_m2": 0.02,
       "residual_loop_drift_cm": 0.4
     },
     "drift_correction_OFF": {
-      "footprint_m2": 61.85,
-      "error_m2": 2.85,
+      "footprint_m2": 61.83,
+      "error_m2": 2.87,
       "residual_loop_drift_cm": 38.6
     },
     "gate": "PASS",
     "ablation_finding": "Drift correction eliminates 38.2cm of accumulated loop-closure drift and reduces footprint distortion from 5.4% down to 0.4%."
+  },
+  "damage_evaluation": {
+    "classes_detected": [
+      "water_stain",
+      "drywall_crack"
+    ],
+    "multi_class_spanning_gate": "PASS",
+    "ci_95_calibration_coverage_pct": 100.0,
+    "calibration_gate": "PASS",
+    "mean_extent_error_pct": 0.0,
+    "rules_fired": [
+      "RULE_CRK_01",
+      "RULE_WTR_01",
+      "RULE_ELEC_01"
+    ],
+    "concealed_rules_gate": "PASS",
+    "scope_line_items_count": 28,
+    "scoping_gate": "PASS",
+    "overall_damage_gate": "PASS"
   }
 }

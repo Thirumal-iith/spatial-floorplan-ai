@@ -58,6 +58,10 @@ class BenchmarkEvaluator:
         drift_ablation = self._score_drift_ablation(lidar_out, lidar_no_drift_out)
         results["drift_ablation"] = drift_ablation
 
+        # 6. Evaluate Damage Accuracy & Building Code Rules (REQ-11, REQ-12, REQ-13, REQ-14)
+        damage_score = self._score_damage_evaluation(lidar_out)
+        results["damage_evaluation"] = damage_score
+
         return results
 
     def _score_tier(self, plan: Dict[str, Any], tier: str) -> Dict[str, Any]:
@@ -199,6 +203,65 @@ class BenchmarkEvaluator:
             "ablation_finding": "Drift correction eliminates 38.2cm of accumulated loop-closure drift and reduces footprint distortion from 5.4% down to 0.4%."
         }
 
+    def _score_damage_evaluation(self, plan: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Evaluates Damage Accuracy Gate (REQ-11, REQ-12, REQ-13, REQ-14):
+        - Multi-class staged damage identification (water_stain + drywall_crack)
+        - Extent accuracy and 95% Confidence Interval calibration coverage
+        - Building code rule trigger verification (IICRC S500 RULE_WTR_01, NEC RULE_ELEC_01)
+        - Keyed Xactimate insurance scoping line items
+        """
+        gt_damages = self.gt.get("rooms", {}).get("room_living", {}).get("staged_damages", [])
+        
+        detected_damages = []
+        for r in plan.get("rooms", []):
+            for w in r.get("walls", []):
+                detected_damages.extend(w.get("damage_regions", []))
+
+        classes_gt = {d["damage_class"] for d in gt_damages}
+        classes_pred = {d["damage_class"] for d in detected_damages}
+
+        has_multi_class = len(classes_pred) >= 2 and classes_gt.issubset(classes_pred)
+
+        calibration_hits = 0
+        extent_errors_pct = []
+        for gt_d in gt_damages:
+            gt_val = gt_d["extent_m2"]
+            match = next((d for d in detected_damages if d["damage_class"] == gt_d["damage_class"]), None)
+            if match:
+                pred_ext = match["extent_m2"]
+                pred_val = pred_ext["val"] if isinstance(pred_ext, dict) else float(pred_ext)
+                err_pct = abs(pred_val - gt_val) / gt_val * 100.0
+                extent_errors_pct.append(err_pct)
+                if isinstance(pred_ext, dict) and "ci_95" in pred_ext:
+                    ci_low, ci_high = pred_ext["ci_95"]
+                    if ci_low <= gt_val <= ci_high:
+                        calibration_hits += 1
+
+        cal_coverage = (calibration_hits / max(len(gt_damages), 1)) * 100.0
+
+        flags = plan.get("concealed_damage_flags", [])
+        rules_fired = {f["rule_fired"] for f in flags}
+        rules_ok = ("RULE_WTR_01" in rules_fired) and ("RULE_ELEC_01" in rules_fired)
+
+        scope_items = plan.get("scope_line_items", [])
+        scope_ok = len(scope_items) >= 4 and any("WTR" in s.get("category", "") for s in scope_items)
+
+        gate_pass = has_multi_class and (cal_coverage >= 95.0) and rules_ok and scope_ok
+
+        return {
+            "classes_detected": list(classes_pred),
+            "multi_class_spanning_gate": "PASS" if has_multi_class else "FAIL",
+            "ci_95_calibration_coverage_pct": round(cal_coverage, 1),
+            "calibration_gate": "PASS" if cal_coverage >= 95.0 else "FAIL",
+            "mean_extent_error_pct": round(float(np.mean(extent_errors_pct)), 2) if extent_errors_pct else 0.0,
+            "rules_fired": list(rules_fired),
+            "concealed_rules_gate": "PASS" if rules_ok else "FAIL",
+            "scope_line_items_count": len(scope_items),
+            "scoping_gate": "PASS" if scope_ok else "FAIL",
+            "overall_damage_gate": "PASS" if gate_pass else "FAIL"
+        }
+
 
 def main():
     evaluator = BenchmarkEvaluator()
@@ -240,7 +303,15 @@ def main():
     print(f"  • With Drift Correction ON:  Loop Drift = {drift['drift_correction_ON']['residual_loop_drift_cm']} cm, Error = {drift['drift_correction_ON']['error_m2']} m²")
     print(f"  • With Drift Correction OFF: Loop Drift = {drift['drift_correction_OFF']['residual_loop_drift_cm']} cm, Error = {drift['drift_correction_OFF']['error_m2']} m²")
     print(f"  • Ablation Finding: {drift['ablation_finding']}")
-    print(f"  • Gate: {drift['gate']}\n")
+    print(f"  • Gate: {drift['gate']}")
+
+    print("\n--- 6. Damage Identification & Uncertainty Calibration Gate ---")
+    dmg = report["damage_evaluation"]
+    print(f"  • Multi-Class Spanning (>=2 classes): {dmg['classes_detected']} (Gate: {dmg['multi_class_spanning_gate']})")
+    print(f"  • Extent CI-95 Calibration Coverage: {dmg['ci_95_calibration_coverage_pct']}% (Gate: {dmg['calibration_gate']})")
+    print(f"  • Concealed Code Rules Fired: {dmg['rules_fired']} (Gate: {dmg['concealed_rules_gate']})")
+    print(f"  • Keyed Scope Line Items: {dmg['scope_line_items_count']} items (Gate: {dmg['scoping_gate']})")
+    print(f"  • Overall Damage Gate: {dmg['overall_damage_gate']}\n")
 
 
 if __name__ == "__main__":
