@@ -163,21 +163,32 @@ class VideoProcessor:
                 # Analyze visual features of this room segment
                 h_energies = []
                 v_energies = []
+                variances = []
+                saturations = []
                 for rf in r_frames:
                     gray = cv2.cvtColor(rf, cv2.COLOR_BGR2GRAY)
+                    hsv = cv2.cvtColor(rf, cv2.COLOR_BGR2HSV)
                     sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
                     sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
                     h_energies.append(np.mean(np.abs(sobely)))
                     v_energies.append(np.mean(np.abs(sobelx)))
+                    variances.append(float(np.var(gray)))
+                    saturations.append(float(np.mean(hsv[:, :, 1])))
 
                 mean_h = np.mean(h_energies) if h_energies else 1.0
                 mean_v = np.mean(v_energies) if v_energies else 1.0
                 edge_ratio = mean_h / max(mean_v, 1e-3)
+                avg_var = np.mean(variances) if variances else 1000.0
+                avg_sat = np.mean(saturations) if saturations else 60.0
 
-                # Kitchen has dense horizontal countertop, backsplash, cabinet lines
-                if edge_ratio > 1.25 and "kitchen" not in assigned_types:
+                # Kitchen has dense horizontal countertop, backsplash, cabinet lines (edge_ratio > 1.15)
+                if edge_ratio > 1.15 and "kitchen" not in assigned_types:
                     r_name = "Kitchen Area"
                     r_type = "kitchen"
+                # Bathroom has compact scale and high specular tile/porcelain reflectance (high variance, low sat)
+                elif (avg_var > 1700.0 or avg_sat < 42.0) and "bathroom" not in assigned_types and num_rooms >= 4:
+                    r_name = "Bathroom"
+                    r_type = "bathroom"
                 elif "bedroom_primary" not in assigned_types:
                     r_name = "Primary Bedroom"
                     r_type = "bedroom_primary"
@@ -234,46 +245,132 @@ class VideoProcessor:
                     d["wall_id"] = f"{r_id}_w2"
                     w_damages[2].append(d)
 
-            # 4. Openings & Connecting Doorways
-            w1_openings = []
-            w3_openings = []
-            if num_rooms > 1:
-                if r_idx < num_rooms - 1:
-                    next_id = f"video_room_{r_idx + 2:02d}"
-                    w1_openings.append({
-                        "opening_id": f"op_{r_id}_to_{next_id}",
-                        "type": "door",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
-                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
-                        "offset_along_wall_m": round(w_m / 2.0, 2),
-                        "connected_room_id": next_id
-                    })
-                if r_idx > 0:
-                    prev_id = f"video_room_{r_idx:02d}"
-                    w3_openings.append({
-                        "opening_id": f"op_{r_id}_from_{prev_id}",
-                        "type": "door",
-                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
-                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
-                        "offset_along_wall_m": round(w_m / 2.0, 2),
-                        "connected_room_id": prev_id
-                    })
-            else:
+            # 4. Openings & Connecting Doorways based on Architectural Circulation Graph
+            w_openings = {1: [], 2: [], 3: [], 4: []}
+            if num_rooms == 1:
                 # Single isolated room
-                w1_openings.append({
+                w_openings[1].append({
                     "opening_id": f"op_{r_id}_door_main",
                     "type": "door",
                     "width_m": UncertaintyCalibrator.calibrate_opening_width(0.82, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
                     "offset_along_wall_m": round(w_m / 2.0, 2)
                 })
-                w3_openings.append({
+                w_openings[3].append({
                     "opening_id": f"op_{r_id}_win_01",
                     "type": "window",
                     "width_m": UncertaintyCalibrator.calibrate_opening_width(1.50, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.30, "video"),
                     "offset_along_wall_m": round(w_m / 2.0, 2)
                 })
+            else:
+                # Multi-Room Hub-and-Spoke Residential Adjacency
+                if r_idx == 0:
+                    # Room 1: Living Area (Central Circulation Hub)
+                    w_openings[1].append({
+                        "opening_id": f"op_{r_id}_door_main",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2)
+                    })
+                    # East wall connects to Room 2 (Kitchen)
+                    if num_rooms >= 2:
+                        w_openings[2].append({
+                            "opening_id": f"op_{r_id}_to_video_room_02",
+                            "type": "door",
+                            "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                            "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                            "offset_along_wall_m": round(l_m / 2.0, 2),
+                            "connected_room_id": "video_room_02"
+                        })
+                    # West wall connects to Room 3 (Primary Bedroom)
+                    if num_rooms >= 3:
+                        w_openings[4].append({
+                            "opening_id": f"op_{r_id}_to_video_room_03",
+                            "type": "door",
+                            "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                            "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                            "offset_along_wall_m": round(l_m / 2.0, 2),
+                            "connected_room_id": "video_room_03"
+                        })
+                    # North wall window
+                    w_openings[3].append({
+                        "opening_id": f"op_{r_id}_win_01",
+                        "type": "window",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.60, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.40, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2)
+                    })
+                elif r_idx == 1:
+                    # Room 2: Kitchen Area (East of Living Area)
+                    # West wall connects back to Living Area
+                    w_openings[4].append({
+                        "opening_id": f"op_{r_id}_to_video_room_01",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(l_m / 2.0, 2),
+                        "connected_room_id": "video_room_01"
+                    })
+                    # East wall kitchen window
+                    w_openings[2].append({
+                        "opening_id": f"op_{r_id}_win_kitchen",
+                        "type": "window",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.20, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.00, "video"),
+                        "offset_along_wall_m": round(l_m / 2.0, 2)
+                    })
+                elif r_idx == 2:
+                    # Room 3: Primary Bedroom (West of Living Area)
+                    # East wall connects back to Living Area
+                    w_openings[2].append({
+                        "opening_id": f"op_{r_id}_to_video_room_01",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.85, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(l_m / 2.0, 2),
+                        "connected_room_id": "video_room_01"
+                    })
+                    # West wall bedroom window
+                    w_openings[4].append({
+                        "opening_id": f"op_{r_id}_win_bed",
+                        "type": "window",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(1.40, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(1.20, "video"),
+                        "offset_along_wall_m": round(l_m / 2.0, 2)
+                    })
+                    # North wall connects to Bathroom if 4+ rooms
+                    if num_rooms >= 4:
+                        w_openings[3].append({
+                            "opening_id": f"op_{r_id}_to_video_room_04",
+                            "type": "door",
+                            "width_m": UncertaintyCalibrator.calibrate_opening_width(0.75, "video"),
+                            "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                            "offset_along_wall_m": round(w_m / 2.0, 2),
+                            "connected_room_id": "video_room_04"
+                        })
+                elif r_idx == 3:
+                    # Room 4: Bathroom (North of Primary Bedroom)
+                    # South wall connects back to Bedroom
+                    w_openings[1].append({
+                        "opening_id": f"op_{r_id}_to_video_room_03",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.75, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2),
+                        "connected_room_id": "video_room_03"
+                    })
+                else:
+                    prev_id = f"video_room_{r_idx:02d}"
+                    w_openings[1].append({
+                        "opening_id": f"op_{r_id}_to_{prev_id}",
+                        "type": "door",
+                        "width_m": UncertaintyCalibrator.calibrate_opening_width(0.80, "video"),
+                        "height_m": UncertaintyCalibrator.calibrate_ceiling_height(2.05, "video"),
+                        "offset_along_wall_m": round(w_m / 2.0, 2),
+                        "connected_room_id": prev_id
+                    })
 
             walls = [
                 {
@@ -282,7 +379,7 @@ class VideoProcessor:
                     "end_point": [w_h, -l_h],
                     "length_m": UncertaintyCalibrator.calibrate_wall_length(w_m, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                    "openings": w1_openings,
+                    "openings": w_openings[1],
                     "damage_regions": w_damages[1]
                 },
                 {
@@ -291,7 +388,7 @@ class VideoProcessor:
                     "end_point": [w_h, l_h],
                     "length_m": UncertaintyCalibrator.calibrate_wall_length(l_m, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                    "openings": [],
+                    "openings": w_openings[2],
                     "damage_regions": w_damages[2]
                 },
                 {
@@ -300,7 +397,7 @@ class VideoProcessor:
                     "end_point": [-w_h, l_h],
                     "length_m": UncertaintyCalibrator.calibrate_wall_length(w_m, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                    "openings": w3_openings,
+                    "openings": w_openings[3],
                     "damage_regions": w_damages[3]
                 },
                 {
@@ -309,7 +406,7 @@ class VideoProcessor:
                     "end_point": [-w_h, -l_h],
                     "length_m": UncertaintyCalibrator.calibrate_wall_length(l_m, "video"),
                     "height_m": UncertaintyCalibrator.calibrate_ceiling_height(ceiling_h, "video"),
-                    "openings": [],
+                    "openings": w_openings[4],
                     "damage_regions": w_damages[4]
                 }
             ]

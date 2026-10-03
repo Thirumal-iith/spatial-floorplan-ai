@@ -52,6 +52,11 @@ class MultiRoomStitcher:
         if start_id is None:
             start_id = list(pending_rooms.keys())[0]
 
+        for r in room_data_list:
+            for w in r.get("walls", []):
+                w["placed_start_point"] = w.get("start_point", [0.0, 0.0])
+                w["placed_end_point"] = w.get("end_point", [1.0, 0.0])
+
         root_room = pending_rooms.pop(start_id)
         root_room["placed_polygon"] = [list(pt) for pt in root_room["polygon"]]
         root_room["transform"] = {"rot_deg": 0.0, "trans": [0.0, 0.0]}
@@ -77,6 +82,18 @@ class MultiRoomStitcher:
                     
                     pending_room["placed_polygon"] = aligned_poly
                     pending_room["transform"] = transform
+
+                    # Transform placed wall points into world space
+                    rot_deg = transform.get("rot_deg", 0.0)
+                    trans = transform.get("trans", [0.0, 0.0])
+                    rad = np.radians(rot_deg)
+                    cos_r, sin_r = np.cos(rad), np.sin(rad)
+                    R_mat = np.array([[cos_r, -sin_r], [sin_r, cos_r]])
+                    for w in pending_room.get("walls", []):
+                        p1 = R_mat @ np.array(w["start_point"]) + np.array(trans)
+                        p2 = R_mat @ np.array(w["end_point"]) + np.array(trans)
+                        w["placed_start_point"] = [float(round(p1[0], 3)), float(round(p1[1], 3))]
+                        w["placed_end_point"] = [float(round(p2[0], 3)), float(round(p2[1], 3))]
                     
                     placed_rooms[pending_id] = pending_room
                     del pending_rooms[pending_id]
@@ -143,6 +160,8 @@ class MultiRoomStitcher:
                         continue
                     if c_conn and c_conn != target_id:
                         continue
+                    if (c_conn and not t_conn) or (t_conn and not c_conn):
+                        continue
 
                     # Dimension check (within 10cm)
                     w_cd = cd["width_m"]["val"] if isinstance(cd.get("width_m"), dict) else cd.get("width_m", 0.8)
@@ -186,8 +205,8 @@ class MultiRoomStitcher:
             for op in wall.get("openings", []):
                 if op.get("type") == "door":
                     op_copy = dict(op)
-                    op_copy["wall_start"] = wall["start_point"]
-                    op_copy["wall_end"] = wall["end_point"]
+                    op_copy["wall_start"] = wall.get("placed_start_point", wall["start_point"])
+                    op_copy["wall_end"] = wall.get("placed_end_point", wall["end_point"])
                     doors.append(op_copy)
         return doors
 

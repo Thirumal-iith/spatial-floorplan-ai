@@ -1082,7 +1082,8 @@
           living_areas: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('living') || r.room_type === 'living').length : 1,
           kitchens: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('kitchen') || r.room_type === 'kitchen').length : 0,
           bedrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bed') || (r.room_type||'').includes('bed')).length : 0,
-          bathrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bath') || r.room_type === 'bathroom').length : 0
+          bathrooms: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('bath') || r.room_type === 'bathroom').length : 0,
+          connectors: (planData && planData.rooms) ? planData.rooms.filter(r => (r.name||'').toLowerCase().includes('hall') || (r.name||'').toLowerCase().includes('connect') || (r.name||'').toLowerCase().includes('corridor')).length : 0
         };
 
         let roomsHtml = planData.rooms.map((r, idx) => {
@@ -1182,22 +1183,26 @@
               </span>
               <span class="badge badge-pass" style="font-size:0.68rem;">${inv.total_rooms} ${inv.total_rooms === 1 ? 'ROOM DETECTED' : 'ROOMS DETECTED'}</span>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.45rem; text-align:center;">
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.45rem; text-align:center;">
               <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
                 <div style="font-size:0.65rem; color:#94a3b8;">🛋️ LIVING</div>
-                <div style="font-size:1.1rem; font-weight:800; color:#38bdf8;">${inv.living_areas}</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#38bdf8;">${inv.living_areas || 0}</div>
               </div>
               <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
                 <div style="font-size:0.65rem; color:#94a3b8;">🍳 KITCHEN</div>
-                <div style="font-size:1.1rem; font-weight:800; color:#f59e0b;">${inv.kitchens}</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#f59e0b;">${inv.kitchens || 0}</div>
               </div>
               <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
                 <div style="font-size:0.65rem; color:#94a3b8;">🛏️ BEDROOM</div>
-                <div style="font-size:1.1rem; font-weight:800; color:#818cf8;">${inv.bedrooms}</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#818cf8;">${inv.bedrooms || 0}</div>
               </div>
               <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
                 <div style="font-size:0.65rem; color:#94a3b8;">🚿 BATHROOM</div>
-                <div style="font-size:1.1rem; font-weight:800; color:#06b6d4;">${inv.bathrooms}</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#06b6d4;">${inv.bathrooms || 0}</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <div style="font-size:0.65rem; color:#94a3b8;">🚪 CONNECTOR</div>
+                <div style="font-size:1.1rem; font-weight:800; color:#a855f7;">${inv.connectors || 0}</div>
               </div>
             </div>
           </div>

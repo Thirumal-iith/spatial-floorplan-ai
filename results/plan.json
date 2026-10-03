@@ -1,7 +1,7 @@
 {
   "property_id": "tier3_lidar",
   "tier": "lidar",
-  "timestamp": "2026-10-03T15:25:17.160263",
+  "timestamp": "2026-10-03T15:54:05.618957",
   "processing_time_seconds": 0.0,
   "drift_correction_applied": true,
   "loop_closures_detected": 0,
@@ -97,7 +97,15 @@
             "unit": "m"
           },
           "openings": [],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            0.0,
+            0.0
+          ],
+          "placed_end_point": [
+            1.497,
+            0.0
+          ]
         },
         {
           "wall_id": "connector_hall_w2",
@@ -191,6 +199,14 @@
               },
               "severity": "severe"
             }
+          ],
+          "placed_start_point": [
+            1.497,
+            0.0
+          ],
+          "placed_end_point": [
+            1.497,
+            4.203
           ]
         },
         {
@@ -220,7 +236,15 @@
             "unit": "m"
           },
           "openings": [],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            1.497,
+            4.203
+          ],
+          "placed_end_point": [
+            0.0,
+            4.203
+          ]
         },
         {
           "wall_id": "connector_hall_w4",
@@ -292,6 +316,14 @@
               },
               "severity": "moderate"
             }
+          ],
+          "placed_start_point": [
+            0.0,
+            4.203
+          ],
+          "placed_end_point": [
+            0.0,
+            0.0
           ]
         }
       ],
@@ -411,7 +443,15 @@
               "connected_room_id": "connector_hall"
             }
           ],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            1.617,
+            4.702
+          ],
+          "placed_end_point": [
+            1.617,
+            -0.498
+          ]
         },
         {
           "wall_id": "room_living_w2",
@@ -460,6 +500,14 @@
               },
               "severity": "severe"
             }
+          ],
+          "placed_start_point": [
+            1.617,
+            -0.498
+          ],
+          "placed_end_point": [
+            5.919,
+            -0.499
           ]
         },
         {
@@ -512,7 +560,15 @@
               "connected_room_id": null
             }
           ],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            5.919,
+            -0.499
+          ],
+          "placed_end_point": [
+            5.919,
+            4.701
+          ]
         },
         {
           "wall_id": "room_living_w4",
@@ -561,6 +617,14 @@
               },
               "severity": "moderate"
             }
+          ],
+          "placed_start_point": [
+            5.919,
+            4.701
+          ],
+          "placed_end_point": [
+            1.617,
+            4.702
           ]
         }
       ],
@@ -680,7 +744,15 @@
               "connected_room_id": "connector_hall"
             }
           ],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            -0.12,
+            0.053
+          ],
+          "placed_end_point": [
+            -0.12,
+            4.15
+          ]
         },
         {
           "wall_id": "room_bedroom_w2",
@@ -729,6 +801,14 @@
               },
               "severity": "severe"
             }
+          ],
+          "placed_start_point": [
+            -0.12,
+            4.15
+          ],
+          "placed_end_point": [
+            -3.718,
+            4.15
           ]
         },
         {
@@ -781,7 +861,15 @@
               "connected_room_id": null
             }
           ],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            -3.718,
+            4.15
+          ],
+          "placed_end_point": [
+            -3.718,
+            0.053
+          ]
         },
         {
           "wall_id": "room_bedroom_w4",
@@ -830,6 +918,14 @@
               },
               "severity": "moderate"
             }
+          ],
+          "placed_start_point": [
+            -3.718,
+            0.053
+          ],
+          "placed_end_point": [
+            -0.12,
+            0.053
           ]
         }
       ],
@@ -949,7 +1045,15 @@
               "connected_room_id": "connector_hall"
             }
           ],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            0.0,
+            0.0
+          ],
+          "placed_end_point": [
+            3.501,
+            0.0
+          ]
         },
         {
           "wall_id": "room_kitchen_w2",
@@ -998,6 +1102,14 @@
               },
               "severity": "severe"
             }
+          ],
+          "placed_start_point": [
+            3.501,
+            0.0
+          ],
+          "placed_end_point": [
+            3.501,
+            3.202
           ]
         },
         {
@@ -1027,7 +1139,15 @@
             "unit": "m"
           },
           "openings": [],
-          "damage_regions": []
+          "damage_regions": [],
+          "placed_start_point": [
+            3.501,
+            3.202
+          ],
+          "placed_end_point": [
+            0.0,
+            3.202
+          ]
         },
         {
           "wall_id": "room_kitchen_w4",
@@ -1076,6 +1196,14 @@
               },
               "severity": "moderate"
             }
+          ],
+          "placed_start_point": [
+            0.0,
+            3.202
+          ],
+          "placed_end_point": [
+            0.0,
+            0.0
           ]
         }
       ],
@@ -1545,6 +1673,5 @@
     "tier": "lidar",
     "compliance_gate": "PASSED"
   },
-  "cv_telemetry": {},
-  "has_annotated_image": false
+  "cv_telemetry": {}
 }

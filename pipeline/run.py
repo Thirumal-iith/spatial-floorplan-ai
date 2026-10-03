@@ -201,12 +201,14 @@ class PipelineRunner:
         kitchen_count = sum(1 for r in placed_rooms if "kitchen" in r.get("name", "").lower() or r.get("room_type") == "kitchen")
         bedroom_count = sum(1 for r in placed_rooms if "bed" in r.get("name", "").lower() or "bedroom" in str(r.get("room_type", "")))
         bathroom_count = sum(1 for r in placed_rooms if "bath" in r.get("name", "").lower() or r.get("room_type") == "bathroom")
-        other_count = max(0, len(placed_rooms) - (living_count + kitchen_count + bedroom_count + bathroom_count))
+        connector_count = sum(1 for r in placed_rooms if "hall" in r.get("name", "").lower() or "connect" in r.get("name", "").lower() or "corridor" in r.get("name", "").lower())
+        other_count = max(0, len(placed_rooms) - (living_count + kitchen_count + bedroom_count + bathroom_count + connector_count))
 
         if len(placed_rooms) == 1:
             inv_summary = f"1 Room ({placed_rooms[0].get('name', 'Main Room')})"
         else:
             parts = []
+            if connector_count > 0: parts.append(f"{connector_count} Connector{'s' if connector_count > 1 else ''}")
             if living_count > 0: parts.append(f"{living_count} Living")
             if kitchen_count > 0: parts.append(f"{kitchen_count} Kitchen")
             if bedroom_count > 0: parts.append(f"{bedroom_count} Bed")
@@ -220,6 +222,7 @@ class PipelineRunner:
             "kitchens": kitchen_count,
             "bedrooms": bedroom_count,
             "bathrooms": bathroom_count,
+            "connectors": connector_count,
             "other_rooms": other_count,
             "summary": inv_summary
         }
