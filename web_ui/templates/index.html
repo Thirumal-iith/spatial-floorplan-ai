@@ -249,6 +249,11 @@
     }
     .btn-action:hover { transform: translateY(-1px); }
 
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
     .metric-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -476,14 +481,23 @@
   </main>
 
   <!-- Permanent Global Inputs for Camera and File Upload -->
-  <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
-  <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="display:none;" onchange="handleFileUpload(event)">
-  <input type="file" id="fileInput" accept="*/*" style="display:none;" onchange="handleFileUpload(event)">
+  <input type="file" id="cameraPhotoInput" accept="image/*" capture="environment" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
+  <input type="file" id="cameraVideoInput" accept="video/*" capture="environment" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
+  <input type="file" id="fileInput" accept="*/*" style="position:fixed; top:-1000px; left:-1000px; opacity:0; width:1px; height:1px; pointer-events:none;" onchange="handleFileUpload(event)">
 
   <script>
     function triggerCameraPhoto() {
       const el = document.getElementById('cameraPhotoInput');
       if (el) {
+        el.value = '';
+        el.click();
+      }
+    }
+
+    function triggerCameraGallery() {
+      const el = document.getElementById('fileInput');
+      if (el) {
+        el.accept = 'image/*';
         el.value = '';
         el.click();
       }
@@ -500,9 +514,16 @@
     function triggerFileUpload() {
       const el = document.getElementById('fileInput');
       if (el) {
+        el.accept = '*/*';
         el.value = '';
         el.click();
       }
+    }
+
+    let photoViewMode = 'annotated';
+    function setPhotoViewMode(mode) {
+      photoViewMode = mode;
+      renderCurrentTab();
     }
 
     let currentSample = "lidar_living";
@@ -518,6 +539,26 @@
     let sbHasDamage = true;
 
     async function init() {
+      try {
+        const planRes = await fetch('/api/plan');
+        if (planRes.ok) {
+          const existingPlan = await planRes.json();
+          if (existingPlan && (existingPlan.tier === 'photos' || existingPlan.has_annotated_image)) {
+            planData = existingPlan;
+            refreshSvg();
+            const photoTabBtn = document.getElementById('tabPhotoBtn');
+            if (photoTabBtn) {
+              photoTabBtn.style.display = 'block';
+              switchTab('tabLivePhoto', photoTabBtn);
+            }
+            fetchBenchmark();
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Init plan check:', e);
+      }
+
       await loadSample('lidar_living', null);
       fetchBenchmark();
     }
@@ -590,7 +631,35 @@
         tier = 'photos';
       }
 
-      document.getElementById('svgViewport').innerHTML = `<p style="color: var(--accent-blue)">Ingesting & processing live ${tier.toUpperCase()} capture: <strong>${file.name}</strong>...</p>`;
+      // 1. Instant loading indicator in the main tab content area
+      const area = document.getElementById('tabContentArea');
+      if (area) {
+        area.innerHTML = `
+          <div style="background:rgba(15,23,42,0.92); border:2px dashed #38bdf8; border-radius:12px; padding:2rem 1rem; text-align:center; box-shadow:0 8px 32px rgba(56,189,248,0.25);">
+            <div style="width:48px; height:48px; border:4px solid rgba(56,189,248,0.2); border-top-color:#38bdf8; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 1rem;"></div>
+            <h3 style="color:#38bdf8; font-size:1.05rem; font-weight:800; margin-bottom:0.4rem;">Analyzing New Photo in Real Time...</h3>
+            <p style="color:#94a3b8; font-size:0.82rem; margin-bottom:0.75rem;">
+              Received: <strong>${file.name}</strong> &bull; Size: ${(file.size / 1024).toFixed(0)} KB<br/>
+              Running OpenCV Canny Edge Detection &amp; Hough Line Transforms...
+            </p>
+            <div style="display:inline-block; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:20px; padding:0.35rem 0.85rem; font-size:0.72rem; color:#38bdf8; font-family:'JetBrains Mono',monospace;">
+              Pipeline: Ingestion &rarr; Feature Detection &rarr; SVG Vector Reconstruction
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Loading state in the 2D floor plan SVG viewport
+      const svgViewport = document.getElementById('svgViewport');
+      if (svgViewport) {
+        svgViewport.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:220px; color:#38bdf8; gap:0.6rem;">
+            <div style="width:36px; height:36px; border:3px solid rgba(56,189,248,0.2); border-top-color:#38bdf8; border-radius:50%; animation:spin 0.9s linear infinite;"></div>
+            <div style="font-size:0.85rem; font-weight:700;">Recomputing 2D Floor Plan SVG from Camera Lines...</div>
+          </div>
+        `;
+      }
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('tier', tier);
@@ -603,6 +672,7 @@
         const data = await res.json();
         if (data.error) {
           alert('Upload Error: ' + data.error);
+          renderCurrentTab();
           return;
         }
         planData = data;
@@ -616,12 +686,15 @@
         }
       } catch (err) {
         alert('Processing failed: ' + err);
+        renderCurrentTab();
       }
     }
 
     function handleFileUpload(event) {
-      const file = event.target.files[0];
-      processUploadedFile(file);
+      if (event.target.files && event.target.files.length > 0) {
+        const file = event.target.files[0];
+        processUploadedFile(file);
+      }
     }
 
     function onDragOverZone(event) {
@@ -646,7 +719,7 @@
 
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
+      if (el) el.classList.add('active');
       activeTab = tabId;
       renderCurrentTab();
     }
@@ -660,11 +733,18 @@
 
       if (activeTab === "tabLivePhoto") {
         const imgUrl = (planData && planData.annotated_image_url) ? planData.annotated_image_url : ('/static/latest_annotated.jpg?t=' + Date.now());
+        const rawImgUrl = (planData && planData.raw_image_url) ? planData.raw_image_url : ('/static/latest_raw.jpg?t=' + Date.now());
+        const displayImg = (photoViewMode === 'raw') ? rawImgUrl : imgUrl;
         const fname = (planData && planData.uploaded_filename) ? planData.uploaded_filename : 'Live Camera Photo';
         const room = (planData && planData.rooms && planData.rooms.length > 0) ? planData.rooms[0] : {};
-        const areaVal = room.floor_area_m2 ? (room.floor_area_m2.val || room.floor_area_m2) : '19.97';
-        const damages = (room.detected_damages || []);
+        const areaVal = room.floor_area_m2 ? (room.floor_area_m2.val || room.floor_area_m2) : '20.91';
+        const damages = (room.detected_damages || planData.detected_damages || []);
         const wallsCount = (room.walls || []).length || 4;
+        const telem = (planData && planData.cv_telemetry) ? planData.cv_telemetry : (room.cv_telemetry || {});
+        const edgeCount = telem.total_edges || (telem.vert_lines ? (telem.vert_lines + telem.horiz_lines) : 95);
+        const resolution = telem.resolution || '1080x1440';
+        const hLines = telem.horiz_lines || '-';
+        const vLines = telem.vert_lines || '-';
 
         area.innerHTML = `
           <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.4); border-radius:12px; padding:1rem; margin-bottom:1rem; box-shadow:0 8px 32px rgba(0,0,0,0.4);">
@@ -676,12 +756,22 @@
               <span class="badge badge-pass" style="font-size:0.72rem;">OPENCV ACTIVE</span>
             </div>
 
-            <!-- Annotated Image Display -->
+            <!-- View Switcher (Annotated Vectors vs Raw Photo) -->
+            <div style="display:flex; justify-content:center; gap:0.5rem; margin-bottom:0.6rem;">
+              <button onclick="setPhotoViewMode('annotated')" style="padding:0.35rem 0.85rem; border-radius:6px; font-size:0.75rem; font-weight:700; ${photoViewMode === 'annotated' ? 'background:#38bdf8; color:#0f172a; border:none;' : 'background:rgba(255,255,255,0.06); color:#94a3b8; border:1px solid rgba(255,255,255,0.12);'} cursor:pointer;">
+                ⚡ OpenCV Vectors
+              </button>
+              <button onclick="setPhotoViewMode('raw')" style="padding:0.35rem 0.85rem; border-radius:6px; font-size:0.75rem; font-weight:700; ${photoViewMode === 'raw' ? 'background:#38bdf8; color:#0f172a; border:none;' : 'background:rgba(255,255,255,0.06); color:#94a3b8; border:1px solid rgba(255,255,255,0.12);'} cursor:pointer;">
+                📷 Original Raw Photo
+              </button>
+            </div>
+
+            <!-- Image Display -->
             <div style="border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); margin-bottom:0.85rem; background:#000; text-align:center;">
-              <img src="${imgUrl}" alt="Live CV Annotated Photo" style="max-height:280px; width:auto; max-width:100%; object-fit:contain; display:inline-block;" onerror="this.src='/static/icons/icon-512x512.png'">
-              <div style="background:rgba(15,23,42,0.95); padding:6px 10px; font-size:0.75rem; color:#94a3b8; font-family:'JetBrains Mono',monospace; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between;">
-                <span>File: <strong>${fname}</strong></span>
-                <span style="color:#10b981;">Canny &amp; Hough Line Vectors</span>
+              <img src="${displayImg}" alt="Live CV Photo" style="max-height:290px; width:auto; max-width:100%; object-fit:contain; display:inline-block;" onerror="this.src='/static/icons/icon-512x512.png'">
+              <div style="background:rgba(15,23,42,0.95); padding:6px 12px; font-size:0.75rem; color:#94a3b8; font-family:'JetBrains Mono',monospace; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between;">
+                <span>File: <strong>${fname}</strong> (${resolution})</span>
+                <span style="color:#10b981;">${photoViewMode === 'raw' ? 'Direct Camera Sensor' : 'Hough Lines & Bounding Active'}</span>
               </div>
             </div>
 
@@ -695,24 +785,26 @@
               <div style="background:rgba(255,255,255,0.04); padding:0.65rem; border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
                 <div style="font-size:0.7rem; color:var(--text-muted);">SURFACE DAMAGE ANALYSIS</div>
                 <div style="font-size:1.15rem; font-weight:800; color:${damages.length > 0 ? '#ef4444' : '#10b981'};">
-                  ${damages.length > 0 ? damages.length + ' Damage Zone(s)' : 'Clean Surface'}
+                  ${damages.length > 0 ? damages.length + ' Zone(s) Detected' : 'Clean Surface'}
                 </div>
-                <div style="font-size:0.72rem; color:#94a3b8;">${damages.length > 0 ? 'Contour Bounding Active' : 'Structural Vectors Mapped'}</div>
+                <div style="font-size:0.72rem; color:#94a3b8;">${edgeCount} Structural Edges (${hLines}H / ${vLines}V)</div>
               </div>
             </div>
 
             <!-- Quick Action Buttons -->
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn-action" style="flex:1; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#38bdf8; font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerCameraPhoto()">
-                📸 Retake / New Photo
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; margin-bottom:0.6rem;">
+              <button class="btn-action" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; color:#fff; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem; box-shadow:0 4px 14px rgba(56,189,248,0.35);" onclick="triggerCameraPhoto()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                📸 Retake Photo (Camera)
               </button>
-              <button class="btn-action" style="flex:1; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc; font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerFileUpload()">
-                📁 Pick from Files
-              </button>
-              <button class="btn-action" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); font-size:0.8rem; padding:0.6rem; display:flex; align-items:center; justify-content:center;" onclick="switchTab('tabConcealed', document.querySelectorAll('.tab')[3])">
-                Concealed Flags &rarr;
+              <button class="btn-action" style="background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.5); color:#c7d2fe; font-size:0.82rem; font-weight:800; padding:0.75rem 0.5rem; display:flex; align-items:center; justify-content:center; gap:0.35rem;" onclick="triggerCameraGallery()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                🖼️ Choose from Gallery
               </button>
             </div>
+            <button class="btn-action" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); font-size:0.82rem; padding:0.6rem; display:flex; align-items:center; justify-content:center;" onclick="switchTab('tabSpatial', document.querySelectorAll('.tab')[1])">
+              📐 View Reconstructed 2D Floor Plan &rarr;
+            </button>
           </div>
         `;
         return;

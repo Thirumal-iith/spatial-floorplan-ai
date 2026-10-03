@@ -157,7 +157,9 @@ class PipelineRunner:
                 "polygon": poly,
                 "floor_area_m2": UncertaintyCalibrator.calibrate_area(room_area, tier),
                 "ceiling_height_m": UncertaintyCalibrator.calibrate_ceiling_height(nominal_height, tier),
-                "walls": walls_processed
+                "walls": walls_processed,
+                "detected_damages": r_raw.get("detected_damages", []),
+                "cv_telemetry": r_raw.get("cv_telemetry", {})
             }
 
             # 3. Concealed Damage Engine
@@ -213,7 +215,8 @@ class PipelineRunner:
             "device_matrix_reference": {
                 "tier": tier,
                 "compliance_gate": "PASSED" if not stitched.get("overlaps_detected") else "FAILED"
-            }
+            },
+            "cv_telemetry": processed_rooms[0].get("cv_telemetry", {}) if processed_rooms else {}
         }
 
         return output_contract
